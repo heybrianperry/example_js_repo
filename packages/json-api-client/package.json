@@ -1,5 +1,5 @@
 {
-  "name": "@drupal/api-client",
+  "name": "@drupal/json-api-client",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -11,17 +11,18 @@
   "files": [
 		"dist/*"
 	],
-	"types": "./dist/index.d.ts",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
 		}
 	},
   "devDependencies": {
     "tsup": "^6.7.0"
+  },
+  "dependencies": {
+    "@drupal/api-client": "workspace:^0.0.0"
   }
 }

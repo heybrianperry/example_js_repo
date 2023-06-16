@@ -6,8 +6,17 @@
   "scripts": {
     "build:packages": "pnpm --filter './packages/**' build",
     "build:api-client": "pnpm --filter api-client build",
+    "build:json-api-client": "pnpm --filter json-api-client build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": ""
+  "author": "",
+  "pnpm": {
+    "overrides": {
+      "@drupal/json-api-client": "workspace:*"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3"
+  }
 }
