@@ -4,25 +4,27 @@
   "description": "",
   "scripts": {
     "build": "tsup src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
   "files": [
-		"dist/*"
-	],
+    "dist/*"
+  ],
   "types": "./dist/index.d.ts",
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"exports": {
-		".": {
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
       "types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs",
-			"require": "./dist/index.js"
-		}
-	},
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "devDependencies": {
-    "tsup": "^6.7.0"
+    "@vitest/coverage-v8": "^0.34.1",
+    "tsup": "^6.7.0",
+    "vitest": "^0.34.1"
   },
   "dependencies": {
     "@drupal/api-client": "workspace:^0.0.0"
