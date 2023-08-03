@@ -70,6 +70,12 @@ There are several scripts you can use in the monorepo.
   pnpm dev:json-api-client
   ```
 
+- Format code using Prettier:
+
+  ```bash
+  pnpm prettier:fix
+  ```
+
 - Run commands in a targeted project, folder, or workspace, using the
   [`pnpm` filter flag](https://pnpm.io/filtering).
 
@@ -87,3 +93,9 @@ use a filter. Please do not `cd` into the project directory and use `npm` or
 ### Coding Standards
 
 This project is being developed with a slight variation of the [Drupal JavaScript coding standards](https://www.drupal.org/docs/develop/standards/javascript/javascript-coding-standards) in order to have a set of guidelines that work well with TypeScript. Since the AirBnb style guide does not officially have TypeScript support, we are using the [eslint-config-airbnb-typescript](https://www.npmjs.com/package/eslint-config-airbnb-typescript) package to add Typescript compatibility. We are also using [TSDoc](https://tsdoc.org/) instead of [JSDoc3](https://jsdoc.app/) to standardize our doc comments.
+
+### Editor Integration
+
+#### VSCode
+
+We recommend using [VSCode](https://code.visualstudio.com/) as your editor. You will be prompted to install the recommended extensions when you open the project in VSCode. Settings are also included in this project to format code on save using Prettier.
