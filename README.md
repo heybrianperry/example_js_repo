@@ -2,7 +2,7 @@
 
 A core API client class that can be extended to support a variety of Drupal APIs, including:
 
-* Drupal JSON:API Client
+- Drupal JSON:API Client
 
 ## Prerequisites
 
@@ -65,6 +65,7 @@ There are several scripts you can use in the monorepo.
   pnpm build:pkgs
   ```
 - Start the `json-api-client` example in development mode:
+
   ```bash
   pnpm dev:json-api-client
   ```
@@ -84,4 +85,5 @@ use a filter. Please do not `cd` into the project directory and use `npm` or
 `yarn`.
 
 ### Coding Standards
+
 This project is being developed with a slight variation of the [Drupal JavaScript coding standards](https://www.drupal.org/docs/develop/standards/javascript/javascript-coding-standards) in order to have a set of guidelines that work well with TypeScript. Since the AirBnb style guide does not officially have TypeScript support, we are using the [eslint-config-airbnb-typescript](https://www.npmjs.com/package/eslint-config-airbnb-typescript) package to add Typescript compatibility. We are also using [TSDoc](https://tsdoc.org/) instead of [JSDoc3](https://jsdoc.app/) to standardize our doc comments.

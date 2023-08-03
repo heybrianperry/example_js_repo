@@ -1,1 +1,1 @@
-export * from './JsonApiClient';
+export * from "./JsonApiClient";

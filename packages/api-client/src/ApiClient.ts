@@ -1,9 +1,9 @@
-import { BaseUrl, ApiClientOptions } from './types';
+import { BaseUrl, ApiClientOptions } from "./types";
 
 export class ApiClient {
   baseUrl: BaseUrl;
-  apiPrefix: ApiClientOptions['apiPrefix'];
-  customFetch: ApiClientOptions['customFetch'];
+  apiPrefix: ApiClientOptions["apiPrefix"];
+  customFetch: ApiClientOptions["customFetch"];
 
   constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
     const { apiPrefix, customFetch } = options || {};
@@ -12,12 +12,11 @@ export class ApiClient {
     this.customFetch = customFetch;
   }
 
-  async fetch (input: RequestInfo, init?: RequestInit) {
+  async fetch(input: RequestInfo, init?: RequestInit) {
     if (this.customFetch) {
       return await this.customFetch(input, init);
-    }
-    else {
+    } else {
       return await fetch(input, init);
     }
   }
-};
+}
