@@ -82,3 +82,6 @@ If you need to run a command in a specific project, use the alias in the ROOT
 `package.json` scripts (`pnpm run` to see the full list in your terminal), or
 use a filter. Please do not `cd` into the project directory and use `npm` or
 `yarn`.
+
+### Coding Standards
+This project is being developed with a slight variation of the [Drupal JavaScript coding standards](https://www.drupal.org/docs/develop/standards/javascript/javascript-coding-standards) in order to have a set of guidelines that work well with TypeScript. Since the AirBnb style guide does not officially have TypeScript support, we are using the [eslint-config-airbnb-typescript](https://www.npmjs.com/package/eslint-config-airbnb-typescript) package to add Typescript compatibility. We are also using [TSDoc](https://tsdoc.org/) instead of [JSDoc3](https://jsdoc.app/) to standardize our doc comments.
