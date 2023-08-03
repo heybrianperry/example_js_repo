@@ -4,7 +4,9 @@
   "description": "",
   "scripts": {
     "build": "tsup src/index.ts",
-    "test": "vitest run --coverage"
+    "test": "vitest run --coverage",
+    "prettier": "prettier --check . --ignore-path ../../.prettierignore",
+    "prettier:fix": "prettier --check . --ignore-path ../../.prettierignore"
   },
   "keywords": [],
   "author": "",
