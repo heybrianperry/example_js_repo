@@ -1,5 +1,11 @@
-import { BaseUrl, ApiClientOptions } from "./types";
+import { ApiClientOptions, BaseUrl } from "./types";
 
+/**
+ * Base class providing common functionality for all API clients.
+ *
+ * @param baseUrl - The base URL for all API requests.
+ * @param options - Optional configuration options.
+ */
 export class ApiClient {
   baseUrl: BaseUrl;
   apiPrefix: ApiClientOptions["apiPrefix"];

@@ -18,5 +18,11 @@
     "paths": {
       "@drupal/api-client/*": ["./api-client/*"]
     }
+  },
+  "typedocOptions": {
+    "entryPoints": [
+      "packages/api-client/src/index.ts",
+      "packages/json-api-client/src/index.ts"
+    ]
   }
 }
