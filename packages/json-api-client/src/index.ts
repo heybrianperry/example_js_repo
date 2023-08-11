@@ -1,1 +1,3 @@
-export default "./JsonApiClient";
+import JsonApiClient from "./JsonApiClient";
+
+export default JsonApiClient;

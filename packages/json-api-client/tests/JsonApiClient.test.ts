@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { JsonApiClient } from "../src/JsonApiClient";
+import JsonApiClient from "../src/JsonApiClient";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 

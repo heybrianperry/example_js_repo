@@ -14,7 +14,8 @@
     "eslint": "pnpm --filter './packages/**' eslint",
     "eslint:fix": "pnpm --filter './packages/**' eslint:fix",
     "test": "pnpm recursive test",
-    "serve:docs": "typedoc && serve docs"
+    "serve:docs": "typedoc && serve docs",
+    "tsc": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

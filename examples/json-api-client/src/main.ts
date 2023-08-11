@@ -1,4 +1,4 @@
-import { JsonApiClient } from "@drupal/json-api-client";
+import JsonApiClient from "@drupal/json-api-client";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 

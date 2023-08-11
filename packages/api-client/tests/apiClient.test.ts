@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { ApiClient } from "../src/ApiClient";
+import ApiClient from "../src/ApiClient";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
