@@ -1,6 +1,6 @@
-import { ApiClient, BaseUrl, ApiClientOptions } from "@drupal/api-client";
+import ApiClient, { ApiClientOptions, BaseUrl } from "@drupal/api-client";
 
-export class JsonApiClient extends ApiClient {
+export default class JsonApiClient extends ApiClient {
   constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
     super(baseUrl, options);
     const { apiPrefix } = options || {};

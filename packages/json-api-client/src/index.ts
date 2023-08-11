@@ -1,1 +1,1 @@
-export * from "./JsonApiClient";
+export default "./JsonApiClient";
