@@ -11,6 +11,8 @@
     "build:docs": "typedoc",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
+    "eslint": "pnpm --filter './packages/**' eslint",
+    "eslint:fix": "pnpm --filter './packages/**' eslint:fix",
     "test": "pnpm recursive test",
     "serve:docs": "typedoc && serve docs"
   },

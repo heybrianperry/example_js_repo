@@ -6,7 +6,9 @@
     "build": "tsup src/index.ts",
     "test": "vitest run --coverage",
     "prettier": "prettier --check . --ignore-path ../../.prettierignore",
-    "prettier:fix": "prettier --check . --ignore-path ../../.prettierignore"
+    "prettier:fix": "prettier --check . --ignore-path ../../.prettierignore",
+    "eslint": "eslint --ext .ts src --ignore-path ../../.gitignore",
+    "eslint:fix": "eslint --ext .ts src --ignore-path ../../.gitignore --fix"
   },
   "keywords": [],
   "author": "",
