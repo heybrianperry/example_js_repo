@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+pnpm prettier
+pnpm eslint
+pnpm tsc
+pnpm build:packages
+# build examples
+pnpm test
