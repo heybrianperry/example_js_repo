@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "build": "tsup src/index.ts",
+    "arethetypeswrong": "pnpm attw --pack .",
+    "check:types": "pnpm arethetypeswrong && pnpm publint",
+    "build": "tsup src/index.ts && pnpm check:types",
     "test": "vitest run --coverage",
     "prettier": "prettier --check . --ignore-path ../../.prettierignore",
     "prettier:fix": "prettier --check . --ignore-path ../../.prettierignore",
@@ -20,14 +22,21 @@
   "module": "./dist/index.mjs",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.7.1",
     "@vitest/coverage-v8": "^0.34.1",
-    "tsup": "^6.7.0",
+    "publint": "^0.2.0",
+    "tsup": "^7.2.0",
     "vitest": "^0.34.1"
   }
 }

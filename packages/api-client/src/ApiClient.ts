@@ -1,10 +1,10 @@
-import { ApiClientOptions, BaseUrl } from "./types";
+import { ApiClientOptions, BaseUrl } from "./types.js";
 
 /**
  * Base class providing common functionality for all API clients.
  *
  * @param baseUrl - The base URL for all API requests.
- * @param options - Optional configuration options.
+ * @param options - Optional configuration options. {@link ApiClientOptions}
  */
 export default class ApiClient {
   baseUrl: BaseUrl;

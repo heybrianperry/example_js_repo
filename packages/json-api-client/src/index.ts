@@ -1,3 +1,3 @@
-import JsonApiClient from "./JsonApiClient";
+import JsonApiClient from "./JsonApiClient.js";
 
 export default JsonApiClient;

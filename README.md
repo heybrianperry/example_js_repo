@@ -11,8 +11,7 @@ A core API client class that can be extended to support a variety of Drupal APIs
 To configure the monorepo for development, the following should be installed
 locally:
 
-- Node.js version 18 LTS. We recommend using
-  [nvm](https://github.com/nvm-sh/nvm)
+- Node.js version 18 or current LTS [pnpm env](https://pnpm.io/cli/env) is recommended to manage node versions.
 - [npm](https://docs.npmjs.com/cli/v8/commands/npm) version 9.x.x
 - [pnpm](https://pnpm.io/installation) version 8.x
 
