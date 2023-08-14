@@ -5,6 +5,6 @@ pnpm prettier
 pnpm eslint
 pnpm tsc
 pnpm build:packages
+pnpm build:examples
 pnpm check:types
-# build examples
 pnpm test
