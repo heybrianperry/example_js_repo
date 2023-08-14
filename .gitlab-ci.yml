@@ -1,0 +1,30 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  image: node:18
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest-8 --activate
+    - pnpm config set store-dir .pnpm-store
+  script:
+    - pnpm install # install dependencies
+  cache:
+    key:
+      files:
+        - pnpm-lock.yaml
+    paths:
+      - .pnpm-store
+
+test:
+  stage: test
+  script:
+    - pnpm prettier
+    - pnpm eslint
+    - pnpm tsc
+    - pnpm build:packages
+    - pnpm build:examples
+    - pnpm check:types
+    - pnpm test
