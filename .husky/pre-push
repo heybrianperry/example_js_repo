@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+pnpm build:packages
+pnpm build:examples
 pnpm prettier
 pnpm eslint
 pnpm tsc
-pnpm build:packages
-pnpm build:examples
 pnpm check:types
 pnpm test
