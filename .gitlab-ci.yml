@@ -17,10 +17,10 @@ cache:
 test:
   stage: test
   script:
+    - pnpm build:packages
+    - pnpm build:examples
     - pnpm prettier
     - pnpm eslint
     - pnpm tsc
-    - pnpm build:packages
-    - pnpm build:examples
     - pnpm check:types
     - pnpm test
