@@ -1,4 +1,4 @@
-import { ApiClientOptions, BaseUrl } from "./types.js";
+import { ApiClientOptions, BaseUrl } from "./types";
 
 /**
  * Base class providing common functionality for all API clients.

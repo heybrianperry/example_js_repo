@@ -1,4 +1,4 @@
-import ApiClient from "./ApiClient.js";
+import ApiClient from "./ApiClient";
 
 export default ApiClient;
-export * from "./types.js";
+export * from "./types";

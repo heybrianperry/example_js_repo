@@ -5,7 +5,7 @@
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
     "check:types": "pnpm arethetypeswrong && pnpm publint",
-    "build": "tsup src/index.ts && pnpm check:types",
+    "build": "tsup src/index.ts",
     "test": "vitest run --coverage",
     "prettier": "prettier --check . --ignore-path ../../.prettierignore",
     "prettier:fix": "prettier --check . --ignore-path ../../.prettierignore",

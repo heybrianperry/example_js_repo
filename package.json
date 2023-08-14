@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:json-api-client": "pnpm --filter json-api-client-example dev",
+    "check:types": "pnpm --filter './packages/**' check:types",
     "build:packages": "pnpm --filter './packages/**' build",
     "build:examples": "pnpm --filter './examples/**' build",
     "build:api-client": "pnpm --filter api-client build",
