@@ -14,12 +14,21 @@ export default class ApiClient {
   customFetch: ApiClientOptions["customFetch"];
 
   constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
+    if (!baseUrl) {
+      throw new Error("baseUrl is required");
+    }
     const { apiPrefix, customFetch } = options || {};
     this.baseUrl = baseUrl;
     this.apiPrefix = apiPrefix;
     this.customFetch = customFetch;
   }
 
+  /**
+   * Wrapper for fetch that uses either default fetch or a custom fetch method if provided.
+   * @param input {@link RequestInfo}
+   * @param init {@link RequestInit}
+   * @returns a response
+   */
   async fetch(input: RequestInfo, init?: RequestInit) {
     if (this.customFetch) {
       return this.customFetch(input, init);
