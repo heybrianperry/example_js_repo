@@ -9,7 +9,7 @@ const customFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
 
 async function main() {
   const jsonApiClient = new JsonApiClient(baseUrl, { customFetch });
-  const collection = await jsonApiClient.getCollection("node--recipe");
+  const collection = await jsonApiClient.get("node--recipe");
   console.log("JSON:API Collection", collection);
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `

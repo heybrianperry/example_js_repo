@@ -7,7 +7,7 @@ export default class JsonApiClient extends ApiClient {
     this.apiPrefix = apiPrefix || "jsonapi";
   }
 
-  getCollection(type: string) {
+  get(type: string) {
     const [entityTypeId, bundleId] = type.split("--");
     return this.fetch(
       `${this.baseUrl}/${this.apiPrefix}/${entityTypeId}/${bundleId}`,
