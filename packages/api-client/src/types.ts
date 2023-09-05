@@ -1,3 +1,6 @@
+/**
+ * The base URL for all API requests.
+ */
 export type BaseUrl = string;
 
 export type ApiClientOptions = {
@@ -7,9 +10,13 @@ export type ApiClientOptions = {
   apiPrefix?: string;
   /**
    * Custom fetch method overrides fetch in the ApiClient
-   * @param input {@link RequestInfo}
-   * @param init {@link RequestInit}
-   * @returns a Response
+   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/fetch}
+   * @param input input to the customFetch
+   * @param init additional configuration for the request like the method to use, headers, etc.
+   * @returns a {@link Response} wrapped in a promise
    */
-  customFetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+  customFetch?: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
 };

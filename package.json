@@ -10,13 +10,13 @@
     "build:examples": "pnpm --filter './examples/**' build",
     "build:api-client": "pnpm --filter api-client build",
     "build:json-api-client": "pnpm --filter json-api-client build",
-    "build:docs": "typedoc",
+    "build:docs": "typedoc --plugin typedoc-plugin-mdn-links",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "eslint": "pnpm --filter './packages/**' eslint",
     "eslint:fix": "pnpm --filter './packages/**' eslint:fix",
     "test": "pnpm recursive test",
-    "serve:docs": "typedoc && serve docs",
+    "serve:docs": "pnpm build:docs && serve docs",
     "tsc": "tsc --noEmit",
     "prepare": "husky install"
   },
@@ -39,7 +39,9 @@
     "prettier": "3.0.1",
     "serve": "^14.2.0",
     "typedoc": "^0.24.8",
-    "typescript": "^5.1.3"
+    "typedoc-plugin-mdn-links": "^3.0.3",
+    "typescript": "^5.1.3",
+    "vitest": "0.34.1"
   },
   "engines": {
     "node": ">=18",

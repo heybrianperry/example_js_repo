@@ -15,6 +15,7 @@
     "pretty": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./packages",
+    "types": ["vitest/globals"],
     "paths": {
       "@drupal/api-client/*": ["./api-client/*"]
     }

@@ -2,11 +2,9 @@ import JsonApiClient from "@drupal/json-api-client";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
-const customFetch = (input: RequestInfo, init?: RequestInit) => {
+const customFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   console.log("Using custom fetch");
-  return fetch(input, init).then((response) => {
-    return response;
-  });
+  return fetch(input, init).then((response) => response);
 };
 
 async function main() {
