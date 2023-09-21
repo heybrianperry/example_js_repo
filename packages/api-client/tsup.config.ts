@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import { polyfillNode } from "esbuild-plugin-polyfill-node";
 import pkgJson from "./package.json";
 
 export default defineConfig({
@@ -12,4 +13,11 @@ export default defineConfig({
   external: [...Object.keys(pkgJson.devDependencies)],
   minify: true,
   platform: "neutral",
+  esbuildPlugins: [
+    polyfillNode({
+      globals: {
+        buffer: true,
+      },
+    }),
+  ],
 });

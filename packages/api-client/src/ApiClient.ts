@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import type { ApiClientOptions, BaseUrl } from "./types";
 
 /**
@@ -21,6 +22,11 @@ export default class ApiClient {
   customFetch: ApiClientOptions["customFetch"];
 
   /**
+   * {@link ApiClientOptions.authentication}
+   */
+  authentication: ApiClientOptions["authentication"];
+
+  /**
    *
    * @param baseUrl - The base URL for all API requests. {@link BaseUrl}
    * @param options - Optional configuration options. {@link ApiClientOptions}
@@ -29,10 +35,11 @@ export default class ApiClient {
     if (!baseUrl) {
       throw new Error("baseUrl is required");
     }
-    const { apiPrefix, customFetch } = options || {};
+    const { apiPrefix, customFetch, authentication } = options || {};
     this.baseUrl = baseUrl;
     this.apiPrefix = apiPrefix;
     this.customFetch = customFetch;
+    this.authentication = authentication;
   }
 
   /**
@@ -42,9 +49,35 @@ export default class ApiClient {
    * @returns a response wrapped in a promise
    */
   async fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+    const newInit = this.addAuthorizationHeader(init);
     if (this.customFetch) {
-      return this.customFetch(input, init);
+      return this.customFetch(input, newInit);
     }
-    return fetch(input, init);
+    return fetch(input, newInit);
+  }
+
+  /**
+   * Adds an authorization header to the provided RequestInit options if authentication
+   * of type "Basic" is configured.
+   *
+   * @param options - The RequestInit options to which the authorization header should be added.
+   * @returns The updated RequestInit options with the authorization header, if applicable.
+   */
+  addAuthorizationHeader(options: RequestInit | undefined): RequestInit {
+    const headers = new Headers(options?.headers);
+    if (this.authentication && this.authentication.type === "Basic") {
+      const encodedCredentials = Buffer.from(
+        `${this.authentication?.username}:${this.authentication?.password}`,
+      ).toString("base64");
+      headers.set(
+        "Authorization",
+        `${this.authentication.type} ${encodedCredentials}`,
+      );
+    }
+
+    return {
+      ...options,
+      headers,
+    };
   }
 }

@@ -19,4 +19,12 @@ export type ApiClientOptions = {
     input: RequestInfo | URL,
     init?: RequestInit,
   ) => Promise<Response>;
+
+  authentication?: Authentication;
+};
+
+type Authentication = {
+  type: "Basic";
+  username?: string;
+  password?: string;
 };
