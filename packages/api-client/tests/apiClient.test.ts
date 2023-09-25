@@ -11,11 +11,17 @@ test("Create default instance of class", () => {
 });
 
 test("Create instance of class with options", () => {
-  const optionsClient = new ApiClient(baseUrl, { apiPrefix });
+  const cache = {
+    get: async <T>() => ({}) as T,
+    set: async () => {},
+  };
+  const optionsClient = new ApiClient(baseUrl, { apiPrefix, cache });
   expect(optionsClient).toBeInstanceOf(ApiClient);
   expect(optionsClient.baseUrl).toBe(baseUrl);
   expect(optionsClient.fetch).toBeTypeOf("function");
   expect(optionsClient.apiPrefix).toBe(apiPrefix);
+  expect(optionsClient.cache?.get).toBeDefined();
+  expect(optionsClient.cache?.set).toBeDefined();
 });
 
 test("ApiClient class can be extended", () => {

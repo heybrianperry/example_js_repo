@@ -27,6 +27,11 @@ export default class ApiClient {
   authentication: ApiClientOptions["authentication"];
 
   /**
+   * {@link ApiClientOptions.cache}
+   */
+  cache: ApiClientOptions["cache"];
+
+  /**
    *
    * @param baseUrl - The base URL for all API requests. {@link BaseUrl}
    * @param options - Optional configuration options. {@link ApiClientOptions}
@@ -35,11 +40,12 @@ export default class ApiClient {
     if (!baseUrl) {
       throw new Error("baseUrl is required");
     }
-    const { apiPrefix, customFetch, authentication } = options || {};
+    const { apiPrefix, customFetch, authentication, cache } = options || {};
     this.baseUrl = baseUrl;
     this.apiPrefix = apiPrefix;
     this.customFetch = customFetch;
     this.authentication = authentication;
+    this.cache = cache;
   }
 
   /**

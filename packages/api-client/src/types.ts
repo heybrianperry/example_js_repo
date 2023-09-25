@@ -9,6 +9,11 @@ export type ApiClientOptions = {
    */
   apiPrefix?: string;
   /**
+   * Default cache implementation
+   * {@link Cache}
+   */
+  cache?: Cache;
+  /**
    * Custom fetch method overrides fetch in the ApiClient
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/fetch}
    * @param input input to the customFetch
@@ -28,3 +33,13 @@ type Authentication = {
   username?: string;
   password?: string;
 };
+
+/**
+ * The cache used by the ApiClient to store responses.
+ * @method get - gets a value from the cache
+ * @method set - sets a value in the cache
+ */
+export interface Cache {
+  get<T>(key: string, ...args: unknown[]): Promise<T>;
+  set<T>(key: string, value: T, ...args: unknown[]): Promise<unknown>;
+}

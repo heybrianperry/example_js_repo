@@ -17,6 +17,7 @@
     "eslint:fix": "pnpm --filter './packages/**' eslint:fix",
     "test": "pnpm recursive test",
     "serve:docs": "pnpm build:docs && serve docs",
+    "serve:json-api-client-example": "pnpm --filter json-api-client-example preview",
     "tsc": "tsc --noEmit",
     "prepare": "husky install"
   },
