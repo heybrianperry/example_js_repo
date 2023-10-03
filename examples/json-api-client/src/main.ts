@@ -54,6 +54,7 @@ async function main() {
   const jsonApiClient = new JsonApiClient(baseUrl, {
     customFetch,
     cache,
+    defaultLocale: "en",
   });
 
   const recipeCollection = await jsonApiClient.get<
@@ -61,6 +62,9 @@ async function main() {
   >("node--recipe");
 
   console.log("JSON:API Collection", recipeCollection);
+
+  const collection = await jsonApiClient.get("node--recipe", { locale: "es" });
+  console.log("JSON:API Collection", collection);
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <pre>${JSON.stringify(recipeCollection, null, 2)}</pre>

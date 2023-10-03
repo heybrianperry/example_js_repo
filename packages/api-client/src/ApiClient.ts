@@ -27,6 +27,11 @@ export default class ApiClient {
   authentication: ApiClientOptions["authentication"];
 
   /**
+   * {@link ApiClientOptions.defaultLocale}
+   */
+  defaultLocale: ApiClientOptions["defaultLocale"];
+
+  /**
    * {@link ApiClientOptions.cache}
    */
   cache: ApiClientOptions["cache"];
@@ -40,12 +45,14 @@ export default class ApiClient {
     if (!baseUrl) {
       throw new Error("baseUrl is required");
     }
-    const { apiPrefix, customFetch, authentication, cache } = options || {};
+    const { apiPrefix, customFetch, authentication, cache, defaultLocale } =
+      options || {};
     this.baseUrl = baseUrl;
     this.apiPrefix = apiPrefix;
     this.customFetch = customFetch;
     this.authentication = authentication;
     this.cache = cache;
+    this.defaultLocale = defaultLocale;
   }
 
   /**

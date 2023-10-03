@@ -26,6 +26,8 @@ export type ApiClientOptions = {
   ) => Promise<Response>;
 
   authentication?: Authentication;
+
+  defaultLocale?: Locale;
 };
 
 type Authentication = {
@@ -43,3 +45,5 @@ export interface Cache {
   get<T>(key: string, ...args: unknown[]): Promise<T>;
   set<T>(key: string, value: T, ...args: unknown[]): Promise<unknown>;
 }
+
+export type Locale = string;
