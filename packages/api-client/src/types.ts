@@ -25,9 +25,23 @@ export type ApiClientOptions = {
     init?: RequestInit,
   ) => Promise<Response>;
 
+  /**
+   * Represents an optional authentication configuration.
+   * @type {Authentication}
+   */
   authentication?: Authentication;
 
+  /**
+   * Represents an optional default locale setting.
+   * @type {Locale}
+   */
   defaultLocale?: Locale;
+
+  /**
+   * Custom serializer to use for deserializing api response.
+   * @type {Serializer}
+   */
+  serializer?: Serializer;
 };
 
 type Authentication = {
@@ -47,3 +61,19 @@ export interface Cache {
 }
 
 export type Locale = string;
+
+/**
+ * Represents a serializer interface that defines a method for deserializing data.
+ */
+export interface Serializer {
+  /**
+   * Deserialize the given data.
+   * @param body - The data to be deserialized, represented as a record of string keys and unknown values.
+   * @param options - (Optional) Additional options to be used during deserialization.
+   * @returns The deserialized data, which may be of any type.
+   */
+  deserialize(
+    body: Record<string, unknown>,
+    options?: Record<string, unknown>,
+  ): unknown;
+}

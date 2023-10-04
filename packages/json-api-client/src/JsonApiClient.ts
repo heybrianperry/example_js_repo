@@ -53,7 +53,10 @@ export default class JsonApiClient extends ApiClient {
       localeSegment ? `/${localeSegment}` : ""
     }/${this.apiPrefix}/${entityTypeId}/${bundleId}`;
     const response = await this.fetch(apiUrl);
-    const json = (await response.json()) as T;
+    let json = await response.json();
+    json = this.serializer
+      ? (this.serializer.deserialize(json) as T)
+      : (json as T);
     if (this.cache) {
       await this.cache?.set(cacheKey, json);
     }

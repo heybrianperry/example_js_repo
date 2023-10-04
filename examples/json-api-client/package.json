@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@drupal/json-api-client": "workspace:*",
-    "@drupal/api-client": "workspace:*"
+    "@drupal/api-client": "workspace:*",
+    "jsona": "^1.11.0"
   }
 }

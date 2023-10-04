@@ -1,6 +1,7 @@
 import { Cache } from "@drupal/api-client";
 import JsonApiClient from "@drupal/json-api-client";
 import * as JSONAPI from "jsonapi-typescript";
+import Jsona from "jsona";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -67,8 +68,14 @@ async function main() {
   console.log("JSON:API Collection", collection);
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-  <pre>${JSON.stringify(recipeCollection, null, 2)}</pre>
-`;
+  <pre>${JSON.stringify(recipeCollection, null, 2)}</pre>`;
+
+  /* Example using a deserializer */
+  const jsonApiClientJsona = new JsonApiClient(baseUrl, {
+    serializer: new Jsona(),
+  });
+  const jsonaCollection = await jsonApiClientJsona.get("node--recipe");
+  console.log("JSON:API Collection deserialized via jsona", jsonaCollection);
 }
 
 main();

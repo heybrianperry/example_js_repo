@@ -62,6 +62,9 @@ importers:
       '@drupal/json-api-client':
         specifier: workspace:*
         version: link:../../packages/json-api-client
+      jsona:
+        specifier: ^1.11.0
+        version: 1.11.0
     devDependencies:
       jsonapi-typescript:
         specifier: ^0.1.3
@@ -71,7 +74,7 @@ importers:
         version: 5.1.3
       vite:
         specifier: ^4.4.5
-        version: 4.4.7(@types/node@20.4.6)
+        version: 4.4.7
 
   packages/api-client:
     devDependencies:
@@ -112,9 +115,18 @@ importers:
       '@arethetypeswrong/cli':
         specifier: ^0.7.1
         version: 0.7.1
+      '@types/jsonapi-serializer':
+        specifier: ^3.6.6
+        version: 3.6.6
       '@vitest/coverage-v8':
         specifier: ^0.34.1
         version: 0.34.1(vitest@0.34.1)
+      jsona:
+        specifier: ^1.11.0
+        version: 1.11.0
+      jsonapi-serializer:
+        specifier: ^3.6.9
+        version: 3.6.9
       msw:
         specifier: 0.0.0-fetch.rc-17
         version: 0.0.0-fetch.rc-17(typescript@5.1.3)
@@ -598,6 +610,10 @@ packages:
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsonapi-serializer@3.6.6:
+    resolution: {integrity: sha512-V9Hv5Q52h4Oz9fUsCTrYPk2QnlRSW4ECcGk7A9ooLp+RbDiNpogaDueLvvPBuBuETeE4tb+DG4TjUXNlxAa8/g==}
     dev: true
 
   /@types/node@20.4.6:
@@ -2108,6 +2124,10 @@ packages:
     engines: {node: '>=0.8.19'}
     dev: true
 
+  /inflected@1.1.7:
+    resolution: {integrity: sha512-3lz7idKIPmKvz0wqlu1PUPSg5strJnCh2v2NldPQy13Fmd6WsWQ5yExDoiIX48lQ9mo8N7ztdDlkZxOauZ/E5g==}
+    dev: true
+
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
     dependencies:
@@ -2405,6 +2425,19 @@ packages:
     hasBin: true
     dependencies:
       minimist: 1.2.8
+    dev: true
+
+  /jsona@1.11.0:
+    resolution: {integrity: sha512-jH7f9TG+7aOFQ16BI2pCcoB2FNRz0Rny0icngddZLg8/It5gTDAlgfR6tvVNuor0yB1ZB60i3a/+TqKFgA+PdQ==}
+    dependencies:
+      tslib: 2.6.2
+
+  /jsonapi-serializer@3.6.9:
+    resolution: {integrity: sha512-LeRPlP93Mz6+Klu13OKcnXNLvtH1gbeo/yfThqihAMw7vUBCWWs6jHImpR/tQwzAxJi7F1+bfVJxeHoNCrbZiQ==}
+    engines: {node: '>=0.12'}
+    dependencies:
+      inflected: 1.1.7
+      lodash: 4.17.21
     dev: true
 
   /jsonapi-typescript@0.1.3:
@@ -3542,7 +3575,6 @@ packages:
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
-    dev: true
 
   /tsup@7.2.0(typescript@5.1.3):
     resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
@@ -3749,6 +3781,41 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: true
+
+  /vite@4.4.7:
+    resolution: {integrity: sha512-6pYf9QJ1mHylfVh39HpuSfMPojPSKVxZvnclX1K1FyZ1PXDOcLBibdq5t1qxJSnL63ca8Wf4zts6mD8u8oc9Fw==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      esbuild: 0.18.20
+      postcss: 8.4.27
+      rollup: 3.28.0
+    optionalDependencies:
+      fsevents: 2.3.2
     dev: true
 
   /vite@4.4.7(@types/node@20.4.6):
