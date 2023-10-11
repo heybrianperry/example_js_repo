@@ -4,7 +4,7 @@
   "description": "Drupal API Client Monorepo",
   "main": "index.js",
   "scripts": {
-    "dev:json-api-client": "pnpm --filter json-api-client-example dev",
+    "dev:json-api-client": "pnpm build:packages && pnpm --filter json-api-client-example dev",
     "check:types": "pnpm --filter './packages/**' check:types",
     "build:packages": "pnpm --filter './packages/**' build",
     "build:examples": "pnpm --filter './examples/**' build",

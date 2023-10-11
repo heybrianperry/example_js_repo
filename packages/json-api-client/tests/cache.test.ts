@@ -18,7 +18,7 @@ describe("Cache", () => {
       get: async (key: string) => store.get(key),
       set: async <T>(key: string, value: T) => store.set(key, value),
     };
-    context.client = new JsonApiClient(baseUrl, { cache });
+    context.client = new JsonApiClient(baseUrl, { cache, debug: true });
     context.fetchSpy = vi.spyOn(context.client, "fetch");
     context.cacheSpy = {
       get: vi.spyOn(cache, "get"),

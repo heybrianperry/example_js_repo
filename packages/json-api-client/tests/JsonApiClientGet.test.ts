@@ -61,4 +61,12 @@ describe("JsonApiClient", () => {
     // Assert that the data was fetched correctly
     expect(result).toEqual(nodeRecipeJsonAPISerializer);
   });
+
+  test("should log a debug message when 'get' method is called", async () => {
+    const client = new JsonApiClient(baseUrl, { debug: true });
+    const type = "node--recipe";
+    const logSpy = vi.spyOn(client, "log");
+    await client.get(type);
+    expect(logSpy).toHaveBeenCalledOnce();
+  });
 });

@@ -3,16 +3,25 @@
  */
 export type BaseUrl = string;
 
+/**
+ * Represents a logging method that takes a message as input.
+ *
+ * @param message - The message to log.
+ */
+export type LogMethod = (message: string) => void;
+
 export type ApiClientOptions = {
   /**
    * The base path for the JSON:API endpoint
    */
   apiPrefix?: string;
+
   /**
    * Default cache implementation
    * {@link Cache}
    */
   cache?: Cache;
+
   /**
    * Custom fetch method overrides fetch in the ApiClient
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/fetch}
@@ -42,6 +51,17 @@ export type ApiClientOptions = {
    * @type {Serializer}
    */
   serializer?: Serializer;
+
+  /**
+   * Represents a logger object with optional logging methods for various log levels.
+   */
+  logger?: {
+    /**
+     * A mapping of log levels to their corresponding logging methods.
+     * The keys are log levels, and the values are functions that take a message as input.
+     */
+    [key in LogLevels]?: LogMethod;
+  };
 };
 
 type Authentication = {
@@ -77,3 +97,12 @@ export interface Serializer {
     options?: Record<string, unknown>,
   ): unknown;
 }
+
+export type LogLevels =
+  | "error"
+  | "warn"
+  | "info"
+  | "http"
+  | "verbose"
+  | "debug"
+  | "silly";

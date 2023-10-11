@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
-import type { ApiClientOptions, BaseUrl } from "./types";
+import type { ApiClientOptions, BaseUrl, LogLevels } from "./types";
+import defaultLogger from "./utils/defaultLogger";
 
 /**
  * Base class providing common functionality for all API clients.
@@ -42,6 +43,11 @@ export default class ApiClient {
   serializer: ApiClientOptions["serializer"];
 
   /**
+   * {@link ApiClientOptions.logger}
+   */
+  logger: ApiClientOptions["logger"];
+
+  /**
    *
    * @param baseUrl - The base URL for all API requests. {@link BaseUrl}
    * @param options - Optional configuration options. {@link ApiClientOptions}
@@ -58,6 +64,7 @@ export default class ApiClient {
       cache,
       defaultLocale,
       serializer,
+      logger = defaultLogger,
     } = options || {};
     this.baseUrl = baseUrl;
     this.apiPrefix = apiPrefix;
@@ -66,6 +73,7 @@ export default class ApiClient {
     this.cache = cache;
     this.defaultLocale = defaultLocale;
     this.serializer = serializer;
+    this.logger = logger;
   }
 
   /**
@@ -105,5 +113,21 @@ export default class ApiClient {
       ...options,
       headers,
     };
+  }
+
+  /**
+   * Calls the appropriate logger method based on level
+   * @param level level based on npm log levels
+   * @param message the message to log
+   */
+  // This approach allows both this.log('error', 'message') and this.logger.error('message')
+  log(level: LogLevels, message: string) {
+    if (
+      this.logger &&
+      this.logger[level] &&
+      typeof this.logger[level] === "function"
+    ) {
+      this.logger[level]?.(message);
+    }
   }
 }

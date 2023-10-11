@@ -1,7 +1,8 @@
 import { Cache } from "@drupal/api-client";
 import JsonApiClient from "@drupal/json-api-client";
-import * as JSONAPI from "jsonapi-typescript";
 import Jsona from "jsona";
+import * as JSONAPI from "jsonapi-typescript";
+import { Logger } from "tslog";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -51,11 +52,16 @@ const cache = {
   },
 } satisfies Cache;
 
+// Example of using a custom logging library, in this case tslog.
+const customLogger = new Logger({ name: "JsonApiClient" });
+
 async function main() {
   const jsonApiClient = new JsonApiClient(baseUrl, {
     customFetch,
     cache,
     defaultLocale: "en",
+    logger: customLogger,
+    debug: true,
   });
 
   const recipeCollection = await jsonApiClient.get<
@@ -76,6 +82,18 @@ async function main() {
   });
   const jsonaCollection = await jsonApiClientJsona.get("node--recipe");
   console.log("JSON:API Collection deserialized via jsona", jsonaCollection);
+
+  /* Example using a default logger */
+  const jsonApiClientDefaultLogger = new JsonApiClient(baseUrl, {
+    debug: true,
+  });
+  const defaultLoggerCollection = await jsonApiClientDefaultLogger.get(
+    "node--recipe",
+  );
+  console.log(
+    "JSON:API Collection with default logger",
+    defaultLoggerCollection,
+  );
 }
 
 main();

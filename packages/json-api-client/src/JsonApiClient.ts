@@ -1,25 +1,25 @@
-import ApiClient, {
-  ApiClientOptions,
-  BaseUrl,
-  Locale,
-} from "@drupal/api-client";
+import ApiClient, { BaseUrl, Locale } from "@drupal/api-client";
+import { JsonApiClientOptions } from "./types";
 
 /**
  * JSON:API Client class provides functionality specific to JSON:API server.
- * @see {@link ApiClientOptions}
+ * @see {@link JsonApiClientOptions}
  * @see {@link BaseUrl}
  */
 export default class JsonApiClient extends ApiClient {
+  debug: JsonApiClientOptions["debug"];
+
   /**
    * Creates a new instance of the JsonApiClient.
    * @param baseUrl - The base URL of the API.
    * @param options - (Optional) Additional options for configuring the API client.
    */
-  constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
+  constructor(baseUrl: BaseUrl, options?: JsonApiClientOptions) {
     super(baseUrl, options);
-    const { apiPrefix, cache } = options || {};
+    const { apiPrefix, cache, debug } = options || {};
     this.apiPrefix = apiPrefix || "jsonapi";
     this.cache = cache;
+    this.debug = debug || false;
   }
 
   /**
@@ -45,6 +45,9 @@ export default class JsonApiClient extends ApiClient {
     if (this.cache) {
       const cachedResponse = await this.cache.get<T>(cacheKey);
       if (cachedResponse) {
+        if (this.debug) {
+          this.log("debug", `Fetching from cache for key ${cacheKey}`);
+        }
         return cachedResponse;
       }
     }
@@ -52,6 +55,9 @@ export default class JsonApiClient extends ApiClient {
     const apiUrl = `${this.baseUrl}${
       localeSegment ? `/${localeSegment}` : ""
     }/${this.apiPrefix}/${entityTypeId}/${bundleId}`;
+    if (this.debug) {
+      this.log("debug", `Fetching endpoint ${apiUrl}`);
+    }
     const response = await this.fetch(apiUrl);
     let json = await response.json();
     json = this.serializer
