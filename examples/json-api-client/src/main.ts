@@ -41,7 +41,7 @@ type Recipe = {
 const cache = {
   get: async <T>(key: string, _ttl: number) => {
     //                        ^define arbitrary arguments as needed
-    console.log(`Getting ${key} from cache...`);
+    console.log(`Checking cache for ${key}...`);
     // parse the JSON here so when we stringify it later it is not double stringified
     return JSON.parse(sessionStorage.getItem(key) as string) as T;
   },
@@ -93,6 +93,16 @@ async function main() {
   console.log(
     "JSON:API Collection with default logger",
     defaultLoggerCollection,
+  );
+
+  /* Example using a filter as string */
+  const filterCollectionUsingQueryString = await jsonApiClient.get(
+    "node--recipe",
+    { queryString: "filter[field_cooking_time][value]=60" },
+  );
+  console.log(
+    "JSON:API Collection with filter",
+    filterCollectionUsingQueryString,
   );
 }
 

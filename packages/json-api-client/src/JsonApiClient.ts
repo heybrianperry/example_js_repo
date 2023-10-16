@@ -1,3 +1,5 @@
+import { Sha256 } from "@aws-crypto/sha256-js";
+import { toHex } from "@smithy/util-hex-encoding";
 import ApiClient, { BaseUrl, Locale } from "@drupal/api-client";
 import { JsonApiClientOptions } from "./types";
 
@@ -35,12 +37,23 @@ export default class JsonApiClient extends ApiClient {
    * const collection = await jsonApiClient.get<JSONAPI.CollectionResourceDoc<string, Recipe>>("node--recipe");
    * ```
    */
-  async get<T>(type: string, options?: { locale?: Locale }) {
+  async get<T>(
+    type: string,
+    options?: {
+      locale?: Locale;
+      queryString?: string;
+    },
+  ) {
     const [entityTypeId, bundleId] = type.split("--");
     const localeSegment = options?.locale || this.defaultLocale;
-    const cacheKey = localeSegment
-      ? `${localeSegment}--${entityTypeId}--${bundleId}`
-      : `${entityTypeId}--${bundleId}`;
+    const queryString = options?.queryString ? `?${options?.queryString}` : "";
+
+    const cacheKey = await JsonApiClient.getCacheKey(
+      entityTypeId,
+      bundleId,
+      localeSegment,
+      queryString,
+    );
 
     if (this.cache) {
       const cachedResponse = await this.cache.get<T>(cacheKey);
@@ -52,9 +65,13 @@ export default class JsonApiClient extends ApiClient {
       }
     }
 
-    const apiUrl = `${this.baseUrl}${
-      localeSegment ? `/${localeSegment}` : ""
-    }/${this.apiPrefix}/${entityTypeId}/${bundleId}`;
+    const apiUrlObject = new URL(
+      `${localeSegment ?? ""}/${
+        this.apiPrefix
+      }/${entityTypeId}/${bundleId}${queryString}`,
+      this.baseUrl,
+    );
+    const apiUrl = apiUrlObject.toString();
     if (this.debug) {
       this.log("debug", `Fetching endpoint ${apiUrl}`);
     }
@@ -67,5 +84,44 @@ export default class JsonApiClient extends ApiClient {
       await this.cache?.set(cacheKey, json);
     }
     return json;
+  }
+
+  /**
+   * Generates a cache key based on the provided parameters.
+   *
+   * @param entityTypeId - The entity type identifier for caching.
+   * @param bundleId - The bundle identifier for caching.
+   * @param localeSegment - Optional. The locale segment used for cache key. Default is an empty string.
+   * @param queryString - Optional. The query string used for cache key. Default is an empty string.
+   *
+   * @returns A promise wrapping the generated cache key as a string.
+   *
+   * @example
+   * // Generate a cache key with entityTypeId and bundleId only
+   * const key1 = await MyClass.getCacheKey('entity1', 'bundle1');
+   * // key1: 'entity1--bundle1'
+   *
+   * @example
+   * // Generate a cache key with entityTypeId, bundleId, localeSegment, and queryString
+   * const key2 = await MyClass.getCacheKey('entity2', 'bundle2', 'en-US', 'param1=value1&param2=value2');
+   * // key2: 'en-US--entity2--bundle2--<sha256_hash_of_query_string>'
+   */
+  static async getCacheKey(
+    entityTypeId: string,
+    bundleId: string,
+    localeSegment?: string,
+    queryString?: string,
+  ): Promise<string> {
+    const localePart = localeSegment ? `${localeSegment}--` : "";
+    let queryStringPart = "";
+    if (queryString) {
+      const hash = new Sha256();
+      hash.update(queryString);
+      const hashResult = await hash.digest();
+      const hashResultHex = toHex(hashResult);
+      queryStringPart = `--${hashResultHex}`;
+    }
+
+    return `${localePart}${entityTypeId}--${bundleId}${queryStringPart}`;
   }
 }

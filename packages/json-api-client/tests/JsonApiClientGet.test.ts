@@ -6,6 +6,7 @@ import nodePageEnglish from "./mocks/data/node-page-en.json";
 import nodePageSpanish from "./mocks/data/node-page-es.json";
 import nodeRecipeJsona from "./mocks/data/node-recipe-deserialize-jsona.json";
 import nodeRecipeJsonAPISerializer from "./mocks/data/node-recipe-deserialize-jsonapi-serializer.json";
+import nodePageFilter from "./mocks/data/node-page-filter.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -68,5 +69,13 @@ describe("JsonApiClient", () => {
     const logSpy = vi.spyOn(client, "log");
     await client.get(type);
     expect(logSpy).toHaveBeenCalledOnce();
+  });
+
+  it("should fetch data for a given type and filter", async () => {
+    const apiClient = new JsonApiClient(baseUrl);
+    const type = "node--page";
+    const queryString = "filter[field_cooking_time][value]=30";
+    const result = await apiClient.get(type, { queryString });
+    expect(result).toEqual(nodePageFilter);
   });
 });
