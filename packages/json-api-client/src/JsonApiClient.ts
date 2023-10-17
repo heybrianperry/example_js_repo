@@ -59,7 +59,7 @@ export default class JsonApiClient extends ApiClient {
       const cachedResponse = await this.cache.get<T>(cacheKey);
       if (cachedResponse) {
         if (this.debug) {
-          this.log("debug", `Fetching from cache for key ${cacheKey}`);
+          this.log("verbose", `Fetching from cache for key ${cacheKey}`);
         }
         return cachedResponse;
       }
@@ -73,7 +73,7 @@ export default class JsonApiClient extends ApiClient {
     );
     const apiUrl = apiUrlObject.toString();
     if (this.debug) {
-      this.log("debug", `Fetching endpoint ${apiUrl}`);
+      this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
     const response = await this.fetch(apiUrl);
     let json = await response.json();
