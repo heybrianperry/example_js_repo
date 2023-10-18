@@ -63,7 +63,10 @@ export type ApiClientOptions = {
   };
 };
 
-type Authentication = {
+/**
+ * Represents the authentication configuration to use for authenticated API requests.
+ */
+export type Authentication = {
   /**
    * The type of authentication to use.
    */

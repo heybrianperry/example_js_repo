@@ -10,7 +10,7 @@
     "build:examples": "pnpm --filter './examples/**' build",
     "build:api-client": "pnpm --filter api-client build",
     "build:json-api-client": "pnpm --filter json-api-client build",
-    "build:docs": "typedoc --plugin typedoc-plugin-mdn-links",
+    "build:docs": "typedoc",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "eslint": "pnpm --filter './packages/**' eslint",
