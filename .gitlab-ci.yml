@@ -1,5 +1,7 @@
 stages:
   - test
+  - build
+  - deploy
 
 image: node:18
 before_script:
@@ -24,3 +26,22 @@ test:
     - pnpm tsc
     - pnpm check:types
     - pnpm test
+
+build-docs:
+  stage: build
+  script:
+    - pnpm build:packages
+    - pnpm build:docs
+  artifacts:
+    paths:
+      - docs
+
+deploy-docs:
+  stage: deploy
+  script:
+    - mv docs public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
