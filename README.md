@@ -29,11 +29,19 @@ There are two main workspaces in the monorepo, `packages`, and `examples`
 
 #### api-client
 
+The `api-client` package includes the base `ApiClient` class which is meant to be extended by other classes that implement logic to make it easy to fetch data from Drupal.
+
 #### json-api-client
+
+The `json-api-client` package includes the `JsonApiClient` class which extends the `ApiClient`, and makes it easy to fetch data from Drupal's JSON:API without deep knowledge of it.
 
 ### Examples
 
+Examples show how the packages can be used in a variety of ways.
+
 #### json-api-client-example
+
+The json-api-client-example utilizes the JsonApiClient class to demonstrate how various configuration options can be employed for retrieving data.
 
 ## Configure the Monorepo
 
@@ -61,7 +69,7 @@ There are several scripts you can use in the monorepo.
   ```
 - Build all packages in the monorepo:
   ```bash
-  pnpm build:pkgs
+  pnpm build:packages
   ```
 - Start the `json-api-client` example in development mode:
 
@@ -73,6 +81,18 @@ There are several scripts you can use in the monorepo.
 
   ```bash
   pnpm prettier:fix
+  ```
+
+- Build the examples
+
+  ```bash
+  pnpm build:examples
+  ```
+
+- Run the jso-api-client-example
+
+  ```bash
+  pnpm serve:json-api-client-example
   ```
 
 - Run commands in a targeted project, folder, or workspace, using the

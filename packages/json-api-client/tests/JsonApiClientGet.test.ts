@@ -1,12 +1,12 @@
 import Jsona from "jsona";
 import { Deserializer } from "jsonapi-serializer";
 import JsonApiClient from "../src/JsonApiClient";
-import nodePage from "./mocks/data/node-page.json";
 import nodePageEnglish from "./mocks/data/node-page-en.json";
 import nodePageSpanish from "./mocks/data/node-page-es.json";
+import nodePageFilter from "./mocks/data/node-page-filter.json";
+import nodePage from "./mocks/data/node-page.json";
 import nodeRecipeJsona from "./mocks/data/node-recipe-deserialize-jsona.json";
 import nodeRecipeJsonAPISerializer from "./mocks/data/node-recipe-deserialize-jsonapi-serializer.json";
-import nodePageFilter from "./mocks/data/node-page-filter.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -22,6 +22,17 @@ describe("JsonApiClient", () => {
 
     // Assert that the data was fetched correctly
     expect(result).toEqual(nodePage);
+  });
+
+  it("should throw an error if the type is not `entityType--bundle`", async () => {
+    const apiClient = new JsonApiClient(baseUrl);
+    const type = "nodePage";
+    try {
+      // @ts-expect-error
+      await apiClient.get(type);
+    } catch (error) {
+      expect(error).toBeInstanceOf(TypeError);
+    }
   });
 
   it("should fetch data for a given type with default locale", async () => {

@@ -1,7 +1,11 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
+import ApiClient, { BaseUrl } from "@drupal/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
-import ApiClient, { BaseUrl, Locale } from "@drupal/api-client";
-import { JsonApiClientOptions } from "./types";
+import type {
+  EntityTypeWithBundle,
+  GetOptions,
+  JsonApiClientOptions,
+} from "./types";
 
 /**
  * JSON:API Client class provides functionality specific to JSON:API server.
@@ -13,8 +17,8 @@ export default class JsonApiClient extends ApiClient {
 
   /**
    * Creates a new instance of the JsonApiClient.
-   * @param baseUrl - The base URL of the API.
-   * @param options - (Optional) Additional options for configuring the API client.
+   * @param baseUrl - The base URL of the API. {@link BaseUrl}
+   * @param options - (Optional) Additional options for configuring the API client. {@link JsonApiClientOptions}
    */
   constructor(baseUrl: BaseUrl, options?: JsonApiClientOptions) {
     super(baseUrl, options);
@@ -28,23 +32,20 @@ export default class JsonApiClient extends ApiClient {
    * Retrieves data of a specific entity type and bundle from the JSON:API.
    * @param type - The type of resource to retrieve, in the format "entityType--bundle".
    * For example, "node--page".
-   * @param options - (Optional) Additional options for customizing the request.
+   * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
    * @returns A Promise that resolves to the JSON data of the requested resource.
    *
    * @example
    * Using JSONAPI.CollectionResourceDoc type from the jsonapi-typescript package
-   * ```
+   * ```ts
    * const collection = await jsonApiClient.get<JSONAPI.CollectionResourceDoc<string, Recipe>>("node--recipe");
    * ```
    */
-  async get<T>(
-    type: string,
-    options?: {
-      locale?: Locale;
-      queryString?: string;
-    },
-  ) {
+  async get<T>(type: EntityTypeWithBundle, options?: GetOptions) {
     const [entityTypeId, bundleId] = type.split("--");
+    if (!entityTypeId || !bundleId) {
+      throw new TypeError(`type must be in the format "entityType--bundle"`);
+    }
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString ? `?${options?.queryString}` : "";
 

@@ -1,4 +1,5 @@
 import ApiClient from "../src/ApiClient";
+
 test('addAuthorizationHeader should add Basic authorization header if authentication type is "basic"', () => {
   // Arrange
   const apiClient = new ApiClient("https://example.com", {

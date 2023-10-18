@@ -35,14 +35,13 @@ export type ApiClientOptions = {
   ) => Promise<Response>;
 
   /**
-   * Represents an optional authentication configuration.
-   * @type {Authentication}
+   * The authentication configuration to use for authenticated API requests.
    */
   authentication?: Authentication;
 
   /**
-   * Represents an optional default locale setting.
-   * @type {Locale}
+   * The default locale to use for all API requests.
+   * @see {@link Locale}
    */
   defaultLocale?: Locale;
 
@@ -65,8 +64,17 @@ export type ApiClientOptions = {
 };
 
 type Authentication = {
+  /**
+   * The type of authentication to use.
+   */
   type: "Basic";
+  /**
+   * The username to use for Basic authentication.
+   */
   username?: string;
+  /**
+   * The password to use for Basic authentication.
+   */
   password?: string;
 };
 
