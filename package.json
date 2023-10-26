@@ -1,5 +1,6 @@
 {
   "name": "api_client",
+  "private": true,
   "version": "0.0.0",
   "description": "Drupal API Client Monorepo",
   "main": "index.js",
@@ -10,7 +11,7 @@
     "build:examples": "pnpm --filter './examples/**' build",
     "build:api-client": "pnpm --filter api-client build",
     "build:json-api-client": "pnpm --filter json-api-client build",
-    "build:docs": "typedoc --plugin typedoc-plugin-mdn-links",
+    "build:docs": "typedoc",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "eslint": "pnpm --filter './packages/**' eslint",
@@ -19,13 +20,15 @@
     "serve:docs": "pnpm build:docs && serve docs",
     "serve:json-api-client-example": "pnpm --filter json-api-client-example preview",
     "tsc": "tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "changeset": "changeset"
   },
   "keywords": [],
   "author": "",
   "pnpm": {
     "overrides": {
-      "@drupal/json-api-client": "workspace:*"
+      "@drupal-api-client/json-api-client": "workspace:*",
+      "esbuild": "0.18.20"
     }
   },
   "devDependencies": {
@@ -47,5 +50,8 @@
   "engines": {
     "node": ">=18",
     "pnpm": ">=8.x"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.26.2"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@drupal/json-api-client",
+  "name": "@drupal-api-client/json-api-client",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -45,7 +45,13 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.1.0",
-    "@drupal/api-client": "workspace:^0.0.0",
+    "@drupal-api-client/api-client": "workspace:^0.0.0",
     "@smithy/util-hex-encoding": "^2.0.0"
+  },
+  "typedocOptions": {
+    "entryPoints": [
+      "src/index.ts"
+    ],
+    "tsconfig": "./tsconfig.typedoc.json"
   }
 }

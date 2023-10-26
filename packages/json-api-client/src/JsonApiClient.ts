@@ -1,5 +1,5 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
-import ApiClient, { BaseUrl } from "@drupal/api-client";
+import ApiClient, { BaseUrl } from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
   EntityTypeWithBundle,
@@ -31,7 +31,7 @@ export default class JsonApiClient extends ApiClient {
   /**
    * Retrieves data of a specific entity type and bundle from the JSON:API.
    * @param type - The type of resource to retrieve, in the format "entityType--bundle".
-   * For example, "node--page".
+   * For example, "node--page". {@link EntityTypeWithBundle}
    * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
    * @returns A Promise that resolves to the JSON data of the requested resource.
    *

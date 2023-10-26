@@ -1,5 +1,5 @@
-import { Cache } from "@drupal/api-client";
-import JsonApiClient from "@drupal/json-api-client";
+import { Cache } from "@drupal-api-client/api-client";
+import JsonApiClient from "@drupal-api-client/json-api-client";
 import Jsona from "jsona";
 import * as JSONAPI from "jsonapi-typescript";
 import { Logger } from "tslog";

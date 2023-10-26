@@ -36,7 +36,7 @@ build-docs:
     paths:
       - docs
 
-deploy-docs:
+pages:
   stage: deploy
   script:
     - mv docs public
@@ -44,4 +44,4 @@ deploy-docs:
     paths:
       - public
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == "main"

@@ -118,3 +118,15 @@ This project is being developed with a slight variation of the [Drupal JavaScrip
 #### VSCode
 
 We recommend using [VSCode](https://code.visualstudio.com/) as your editor. You will be prompted to install the recommended extensions when you open the project in VSCode. Settings are also included in this project to format code on save using Prettier.
+
+## Versions and Releases
+
+### Generating a Changeset
+
+To generate a new changeset, run `pnpm changeset` in the root of the repository.
+The generated Markdown files in the `.changeset` directory should be committed
+to the repository.
+
+### Creating and Publishing New Versions
+
+Versions and releases are currently created manually.

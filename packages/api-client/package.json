@@ -1,5 +1,5 @@
 {
-  "name": "@drupal/api-client",
+  "name": "@drupal-api-client/api-client",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -42,5 +42,11 @@
     "publint": "^0.2.0",
     "tsup": "^7.2.0",
     "vitest": "^0.34.1"
+  },
+  "typedocOptions": {
+    "entryPoints": [
+      "src/index.ts"
+    ],
+    "tsconfig": "./tsconfig.typedoc.json"
   }
 }
