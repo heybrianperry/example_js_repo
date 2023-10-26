@@ -1,15 +1,17 @@
 # jsonapi-client
 
-This package contains the `JsonApiClient` class which extends the base `ApiClient` class from the `@drupal/api-client` package. See https://www.drupal.org/project/api_client for more information about this project.
+This package contains the `JsonApiClient` class which extends the base `ApiClient` class from the `@drupal-api-client/api-client` package. See https://www.drupal.org/project/api_client for more information about this project.
 
 ## Installation
 
-<!-- Add installation information when we know which namespace we are using -->
+```
+npm i @drupal-api-client/json-api-client
+```
 
 ## Usage
 
 ```ts
-import { JsonApiClient } from "@drupal/json-api-client";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import NodeCache from "node-cache";
 import Jsona from "jsona";
 

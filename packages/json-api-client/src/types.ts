@@ -1,5 +1,5 @@
-import type { Locale } from "@drupal/api-client";
-import { ApiClientOptions } from "@drupal/api-client";
+import type { Locale } from "@drupal-api-client/api-client";
+import { ApiClientOptions } from "@drupal-api-client/api-client";
 
 /**
  * Options for customizing the JsonApiClient.

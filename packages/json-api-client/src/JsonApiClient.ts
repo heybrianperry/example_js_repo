@@ -1,5 +1,5 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
-import ApiClient, { BaseUrl } from "@drupal/api-client";
+import ApiClient, { BaseUrl } from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
   EntityTypeWithBundle,

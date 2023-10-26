@@ -17,7 +17,7 @@
     "baseUrl": "./packages",
     "types": ["vitest/globals"],
     "paths": {
-      "@drupal/api-client/*": ["./api-client/*"]
+      "@drupal-api-client/api-client/*": ["./api-client/*"]
     }
   },
   "typedocOptions": {
