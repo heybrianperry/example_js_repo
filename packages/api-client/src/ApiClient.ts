@@ -1,4 +1,4 @@
-import { Buffer } from "buffer";
+import { stringToBase64 } from "uint8array-extras";
 import type { ApiClientOptions, BaseUrl, LogLevels } from "./types";
 import defaultLogger from "./utils/defaultLogger";
 
@@ -100,9 +100,9 @@ export default class ApiClient {
   addAuthorizationHeader(options: RequestInit | undefined): RequestInit {
     const headers = new Headers(options?.headers);
     if (this.authentication && this.authentication.type === "Basic") {
-      const encodedCredentials = Buffer.from(
+      const encodedCredentials = stringToBase64(
         `${this.authentication?.username}:${this.authentication?.password}`,
-      ).toString("base64");
+      );
       headers.set(
         "Authorization",
         `${this.authentication.type} ${encodedCredentials}`,
