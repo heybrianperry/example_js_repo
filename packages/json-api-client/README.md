@@ -11,7 +11,7 @@ npm i @drupal-api-client/json-api-client
 ## Usage
 
 ```ts
-import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import JsonApiClient from "@drupal-api-client/json-api-client";
 import NodeCache from "node-cache";
 import Jsona from "jsona";
 
