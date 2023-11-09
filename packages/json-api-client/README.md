@@ -18,6 +18,8 @@ import Jsona from "jsona";
 // the baseUrl to fetch data from
 const myDrupalUrl = process.env.MY_DRUPAL_SITE || "https://drupal.example.com";
 
+const nodeCache = new NodeCache();
+
 const client = new JsonApiClient(myDrupalUrl, {
   // supply a custom fetch method in order to add  certain headers to each request
   // or any other logic you may need before the fetch call
@@ -34,10 +36,12 @@ const client = new JsonApiClient(myDrupalUrl, {
   // the optional cache will cache a request and return the cached data if the request
   // is made again with the same type same data.
   // The default cache includes an interface that must be implemented.
-  // Here is an example using the node-cache package. node-cache implements get and set
-  // methods so it is compatible with the cache interface.
+  // Here is an example using the node-cache package.
   // See https://www.npmjs.com/package/node-cache for details on the node-cache package.
-  cache: new NodeCache(),
+  cache: {
+    get: async <T,>(key: string) => nodeCache.get(key) as T,
+    set: async (key: string, value: unknown) => nodeCache.set(key, value),
+  },
   // the optional authentication object will be used to authenticate requests.
   // Currently Basic auth is supported.
   authentication: {
