@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import customFetch from "isomorphic-fetch";
-import ApiClient from "../src/ApiClient";
+import { ApiClient } from "../src/ApiClient";
 
 const baseUrl = "https://dev-drupal-api-client.poc";
 

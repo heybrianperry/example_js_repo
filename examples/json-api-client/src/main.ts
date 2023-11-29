@@ -1,6 +1,6 @@
 import { Cache } from "@drupal-api-client/api-client";
-import JsonApiClient from "@drupal-api-client/json-api-client";
-import Jsona from "jsona";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
 import * as JSONAPI from "jsonapi-typescript";
 import { Logger } from "tslog";
 
@@ -64,13 +64,17 @@ async function main() {
     debug: true,
   });
 
-  const recipeCollection = await jsonApiClient.get<
+  const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
+
+  const recipeCollection = await jsonApiClient.getCollection<
     JSONAPI.CollectionResourceDoc<string, Recipe>
   >("node--recipe");
 
   console.log("JSON:API Collection", recipeCollection);
 
-  const collection = await jsonApiClient.get("node--recipe", { locale: "es" });
+  const collection = await jsonApiClient.getCollection("node--recipe", {
+    locale: "es",
+  });
   console.log("JSON:API Collection", collection);
 
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
@@ -79,30 +83,50 @@ async function main() {
   /* Example using a deserializer */
   const jsonApiClientJsona = new JsonApiClient(baseUrl, {
     serializer: new Jsona(),
+    debug: true,
   });
-  const jsonaCollection = await jsonApiClientJsona.get("node--recipe");
+  const jsonaCollection = await jsonApiClientJsona.getCollection(
+    "node--recipe",
+  );
   console.log("JSON:API Collection deserialized via jsona", jsonaCollection);
 
   /* Example using a default logger */
   const jsonApiClientDefaultLogger = new JsonApiClient(baseUrl, {
     debug: true,
   });
-  const defaultLoggerCollection = await jsonApiClientDefaultLogger.get(
-    "node--recipe",
-  );
+  const defaultLoggerCollection =
+    await jsonApiClientDefaultLogger.getCollection("node--recipe");
   console.log(
     "JSON:API Collection with default logger",
     defaultLoggerCollection,
   );
 
   /* Example using a filter as string */
-  const filterCollectionUsingQueryString = await jsonApiClient.get(
+  const filterCollectionUsingQueryString = await jsonApiClient.getCollection(
     "node--recipe",
     { queryString: "filter[field_cooking_time][value]=60" },
   );
   console.log(
     "JSON:API Collection with filter",
     filterCollectionUsingQueryString,
+  );
+
+  /* Example fetching a single resource by ID */
+  const singleResource = await jsonApiClient.getResource(
+    "node--recipe",
+    resourceId,
+  );
+  console.log("JSON:API Single resource", singleResource);
+  const singleResourceSpanish = await jsonApiClient.getResource(
+    "node--recipe",
+    resourceId,
+    {
+      locale: "es",
+    },
+  );
+  console.log(
+    "JSON:API Single resource overriding default locale",
+    singleResourceSpanish,
   );
 }
 

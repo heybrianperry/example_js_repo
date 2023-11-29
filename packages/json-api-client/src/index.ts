@@ -1,4 +1,4 @@
-import JsonApiClient from "./JsonApiClient";
+import { JsonApiClient } from "./JsonApiClient";
 
-export default JsonApiClient;
 export * from "./types";
+export { JsonApiClient };

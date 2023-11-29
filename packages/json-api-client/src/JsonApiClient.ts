@@ -1,7 +1,8 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
-import ApiClient, { BaseUrl } from "@drupal-api-client/api-client";
+import { ApiClient, BaseUrl } from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
+  CreateCacheKeyParams,
   EntityTypeWithBundle,
   GetOptions,
   JsonApiClientOptions,
@@ -12,7 +13,7 @@ import type {
  * @see {@link JsonApiClientOptions}
  * @see {@link BaseUrl}
  */
-export default class JsonApiClient extends ApiClient {
+export class JsonApiClient extends ApiClient {
   debug: JsonApiClientOptions["debug"];
 
   /**
@@ -29,7 +30,7 @@ export default class JsonApiClient extends ApiClient {
   }
 
   /**
-   * Retrieves data of a specific entity type and bundle from the JSON:API.
+   * Retrieves a collection of data of a specific entity type and bundle from the JSON:API.
    * @param type - The type of resource to retrieve, in the format "entityType--bundle".
    * For example, "node--page". {@link EntityTypeWithBundle}
    * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
@@ -41,38 +42,33 @@ export default class JsonApiClient extends ApiClient {
    * const collection = await jsonApiClient.get<JSONAPI.CollectionResourceDoc<string, Recipe>>("node--recipe");
    * ```
    */
-  async get<T>(type: EntityTypeWithBundle, options?: GetOptions) {
+  async getCollection<T>(type: EntityTypeWithBundle, options?: GetOptions) {
     const [entityTypeId, bundleId] = type.split("--");
     if (!entityTypeId || !bundleId) {
       throw new TypeError(`type must be in the format "entityType--bundle"`);
     }
     const localeSegment = options?.locale || this.defaultLocale;
-    const queryString = options?.queryString ? `?${options?.queryString}` : "";
+    const queryString = options?.queryString;
 
-    const cacheKey = await JsonApiClient.getCacheKey(
+    const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
       localeSegment,
       queryString,
-    );
+    });
 
-    if (this.cache) {
-      const cachedResponse = await this.cache.get<T>(cacheKey);
-      if (cachedResponse) {
-        if (this.debug) {
-          this.log("verbose", `Fetching from cache for key ${cacheKey}`);
-        }
-        return cachedResponse;
-      }
+    const cachedResponse = await this.getCachedResponse<T>(cacheKey);
+    if (cachedResponse) {
+      return cachedResponse;
     }
 
-    const apiUrlObject = new URL(
-      `${localeSegment ?? ""}/${
-        this.apiPrefix
-      }/${entityTypeId}/${bundleId}${queryString}`,
-      this.baseUrl,
-    );
-    const apiUrl = apiUrlObject.toString();
+    const apiUrl = this.createURL({
+      localeSegment,
+      entityTypeId,
+      bundleId,
+      queryString,
+    });
+
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
@@ -88,33 +84,137 @@ export default class JsonApiClient extends ApiClient {
   }
 
   /**
+   * Retrieves data for a resource by ID of a specific entity type and bundle from the JSON:API.
+   * @param type - The type of resource to retrieve, in the format "entityType--bundle".
+   * For example, "node--page". {@link EntityTypeWithBundle}
+   * @param resourceId - The ID of the individual resource to retrieve.
+   * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
+   * @returns A Promise that resolves to the JSON data of the requested resource.
+   *
+   * @example
+   * Using JSONAPI.CollectionResourceDoc type from the jsonapi-typescript package
+   * ```ts
+   * const collection = await jsonApiClient.get<JSONAPI.CollectionResourceDoc<string, Recipe>>("node--recipe");
+   * ```
+   */
+  async getResource<T>(
+    type: EntityTypeWithBundle,
+    resourceId: string,
+    options?: GetOptions,
+  ) {
+    const [entityTypeId, bundleId] = type.split("--");
+    if (!entityTypeId || !bundleId) {
+      throw new TypeError(`type must be in the format "entityType--bundle"`);
+    }
+    const localeSegment = options?.locale || this.defaultLocale;
+    const queryString = options?.queryString;
+
+    const cacheKey = await JsonApiClient.createCacheKey({
+      entityTypeId,
+      bundleId,
+      resourceId,
+      localeSegment,
+      queryString,
+    });
+
+    const cachedResponse = await this.getCachedResponse<T>(cacheKey);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    const apiUrl = this.createURL({
+      localeSegment,
+      entityTypeId,
+      bundleId,
+      resourceId,
+      queryString,
+    });
+
+    if (this.debug) {
+      this.log("verbose", `Fetching endpoint ${apiUrl}`);
+    }
+    const response = await this.fetch(apiUrl);
+    let json = await response.json();
+    json = this.serializer
+      ? (this.serializer.deserialize(json) as T)
+      : (json as T);
+    if (this.cache) {
+      await this.cache?.set(cacheKey, json);
+    }
+    return json;
+  }
+
+  createURL({
+    localeSegment,
+    entityTypeId,
+    bundleId,
+    resourceId,
+    queryString,
+  }: {
+    [key: string]: string | undefined;
+  }) {
+    const apiUrlObject = new URL(
+      `${localeSegment ?? ""}/${this.apiPrefix}/${entityTypeId}/${bundleId}${
+        resourceId ? `/${resourceId}` : ""
+      }${queryString ? `?${queryString}` : ""}`,
+      this.baseUrl,
+    );
+    const apiUrl = apiUrlObject.toString();
+
+    return apiUrl;
+  }
+
+  /**
+   * Retrieves a cached response from the cache.
+   * @param cacheKey - The cache key to use for retrieving the cached response.
+   * @returns A promise wrapping the cached response as a generic type.
+   */
+  async getCachedResponse<T>(cacheKey: string) {
+    if (!this.cache) {
+      return null;
+    }
+    if (this.debug) {
+      this.log("verbose", `Checking cache for key ${cacheKey}...`);
+    }
+    const cachedResponse = await this.cache.get<T>(cacheKey);
+    if (!cachedResponse) {
+      if (this.debug) {
+        this.log("verbose", `No cached response found for key ${cacheKey}...`);
+      }
+      return null;
+    }
+    if (this.debug) {
+      this.log("verbose", `Found cached response for key ${cacheKey}...`);
+    }
+    return cachedResponse;
+  }
+
+  /**
    * Generates a cache key based on the provided parameters.
    *
-   * @param entityTypeId - The entity type identifier for caching.
-   * @param bundleId - The bundle identifier for caching.
-   * @param localeSegment - Optional. The locale segment used for cache key. Default is an empty string.
-   * @param queryString - Optional. The query string used for cache key. Default is an empty string.
-   *
+   * @params params - The parameters to use for generating the cache key. {@link createCacheKeyParams}
    * @returns A promise wrapping the generated cache key as a string.
    *
    * @example
    * // Generate a cache key with entityTypeId and bundleId only
-   * const key1 = await MyClass.getCacheKey('entity1', 'bundle1');
+   * const key1 = await MyClass.createCacheKey('entity1', 'bundle1');
    * // key1: 'entity1--bundle1'
    *
    * @example
    * // Generate a cache key with entityTypeId, bundleId, localeSegment, and queryString
-   * const key2 = await MyClass.getCacheKey('entity2', 'bundle2', 'en-US', 'param1=value1&param2=value2');
+   * const key2 = await MyClass.createCacheKey('entity2', 'bundle2', 'en-US', 'param1=value1&param2=value2');
    * // key2: 'en-US--entity2--bundle2--<sha256_hash_of_query_string>'
    */
-  static async getCacheKey(
-    entityTypeId: string,
-    bundleId: string,
-    localeSegment?: string,
-    queryString?: string,
-  ): Promise<string> {
+  static async createCacheKey({
+    entityTypeId,
+    bundleId,
+    localeSegment,
+    resourceId,
+    queryString,
+  }: CreateCacheKeyParams): Promise<string> {
     const localePart = localeSegment ? `${localeSegment}--` : "";
     let queryStringPart = "";
+    const id = resourceId ? `--${resourceId}` : "";
     if (queryString) {
       const hash = new Sha256();
       hash.update(queryString);
@@ -123,6 +223,6 @@ export default class JsonApiClient extends ApiClient {
       queryStringPart = `--${hashResultHex}`;
     }
 
-    return `${localePart}${entityTypeId}--${bundleId}${queryStringPart}`;
+    return `${localePart}${entityTypeId}--${bundleId}${id}${queryStringPart}`;
   }
 }

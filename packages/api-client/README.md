@@ -4,7 +4,9 @@ This package contains the base class for the Drupal API Client. For more informa
 
 ## Installation
 
-<!-- Add installation information when we know which namespace we are using -->
+```shell
+npm install @drupal-api-client/api-client
+```
 
 ## Usage
 

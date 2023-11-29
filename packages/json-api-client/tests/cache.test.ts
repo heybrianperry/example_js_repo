@@ -1,5 +1,5 @@
 import type { SpyInstance } from "vitest";
-import JsonApiClient from "../src";
+import { JsonApiClient } from "../src";
 
 interface CacheTestContext {
   client: JsonApiClient;
@@ -8,6 +8,7 @@ interface CacheTestContext {
     set: SpyInstance;
   };
   fetchSpy?: SpyInstance;
+  resourceId: string;
 }
 
 describe("Cache", () => {
@@ -24,35 +25,70 @@ describe("Cache", () => {
       get: vi.spyOn(cache, "get"),
       set: vi.spyOn(cache, "set"),
     };
+    context.resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it<CacheTestContext>("should be able to set a value", async ({
+  it<CacheTestContext>("should be able to set a collection value", async ({
     client,
     cacheSpy,
   }) => {
-    const result = await client.get("node--recipe");
+    const result = await client.getCollection("node--recipe");
 
     expect(cacheSpy.set).toHaveBeenCalled();
     expect(cacheSpy.set).toHaveBeenCalledWith("node--recipe", result);
   });
-  it<CacheTestContext>("should be able to get a value", async ({
+  it<CacheTestContext>("should be able to get a collection value", async ({
     client,
     cacheSpy,
     fetchSpy,
   }) => {
-    await client.get("node--recipe");
+    await client.getCollection("node--recipe");
     expect(cacheSpy.get).toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledOnce();
     expect(cacheSpy.get).toHaveBeenCalledWith("node--recipe");
     expect(cacheSpy.get).toHaveReturnedWith(client.cache?.get("node--recipe"));
 
     // Call again to ensure we're getting the cached value
-    await client.get("node--recipe");
+    await client.getCollection("node--recipe");
     expect(fetchSpy).toHaveBeenCalledOnce();
     expect(cacheSpy.get).toHaveReturnedWith(client.cache?.get("node--recipe"));
+  });
+  it<CacheTestContext>("should be able to set a resource value", async ({
+    client,
+    cacheSpy,
+    resourceId,
+  }) => {
+    const result = await client.getResource("node--recipe", resourceId);
+
+    expect(cacheSpy.set).toHaveBeenCalled();
+    expect(cacheSpy.set).toHaveBeenCalledWith(
+      `node--recipe--${resourceId}`,
+      result,
+    );
+  });
+  it<CacheTestContext>("should be able to get a resource value", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+    resourceId,
+  }) => {
+    await client.getResource("node--recipe", resourceId);
+    expect(cacheSpy.get).toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
+    expect(cacheSpy.get).toHaveBeenCalledWith(`node--recipe--${resourceId}`);
+    expect(cacheSpy.get).toHaveReturnedWith(
+      client.cache?.get(`node--recipe--${resourceId}`),
+    );
+
+    // Call again to ensure we're getting the cached value
+    await client.getResource("node--recipe", resourceId);
+    expect(fetchSpy).toHaveBeenCalledOnce();
+    expect(cacheSpy.get).toHaveReturnedWith(
+      client.cache?.get(`node--recipe--${resourceId}`),
+    );
   });
 });

@@ -6,7 +6,7 @@ import defaultLogger from "./utils/defaultLogger";
  * Base class providing common functionality for all API clients.
  * @see {@link ApiClientOptions} and {@link BaseUrl}
  */
-export default class ApiClient {
+export class ApiClient {
   /**
    * {@link BaseUrl}
    */

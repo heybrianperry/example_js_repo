@@ -1,6 +1,6 @@
-import JsonApiClient from "../src/JsonApiClient";
 import { Sha256 } from "@aws-crypto/sha256-js";
 import { toHex } from "@smithy/util-hex-encoding";
+import { JsonApiClient } from "../src/JsonApiClient";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const apiPrefix = "customprefix";
@@ -40,12 +40,12 @@ describe("getCacheKey", () => {
 
     const expectedKey = `en-US--${entityTypeId}--${bundleId}--${hashResultHex}`;
 
-    const result = await JsonApiClient.getCacheKey(
+    const result = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
       localeSegment,
       queryString,
-    );
+    });
 
     expect(result).toEqual(expectedKey);
   });
@@ -56,7 +56,10 @@ describe("getCacheKey", () => {
 
     const expectedKey = `${entityTypeId}--${bundleId}`;
 
-    const result = await JsonApiClient.getCacheKey(entityTypeId, bundleId);
+    const result = await JsonApiClient.createCacheKey({
+      entityTypeId,
+      bundleId,
+    });
 
     expect(result).toEqual(expectedKey);
   });
@@ -68,11 +71,11 @@ describe("getCacheKey", () => {
 
     const expectedKey = `en-US--${entityTypeId}--${bundleId}`;
 
-    const result = await JsonApiClient.getCacheKey(
+    const result = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
       localeSegment,
-    );
+    });
 
     expect(result).toEqual(expectedKey);
   });
@@ -89,12 +92,27 @@ describe("getCacheKey", () => {
 
     const expectedKey = `${entityTypeId}--${bundleId}--${hashResultHex}`;
 
-    const result = await JsonApiClient.getCacheKey(
+    const result = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
-      undefined,
       queryString,
-    );
+    });
+
+    expect(result).toEqual(expectedKey);
+  });
+
+  it("should generate the cache key with resourceId", async () => {
+    const entityTypeId = "entityType";
+    const bundleId = "bundleId";
+    const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
+
+    const expectedKey = `${entityTypeId}--${bundleId}--${resourceId}`;
+
+    const result = await JsonApiClient.createCacheKey({
+      entityTypeId,
+      bundleId,
+      resourceId,
+    });
 
     expect(result).toEqual(expectedKey);
   });
@@ -112,13 +130,38 @@ describe("getCacheKey", () => {
 
     const expectedKey = `en-US--${entityTypeId}--${bundleId}--${hashResultHex}`;
 
-    const result = await JsonApiClient.getCacheKey(
+    const result = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
       localeSegment,
       queryString,
-    );
+    });
 
     expect(result).toEqual(expectedKey);
   });
+});
+
+it("should generate the cache key with localeSegment, resourceId and queryString", async () => {
+  const entityTypeId = "entityType";
+  const bundleId = "bundleId";
+  const localeSegment = "en-US";
+  const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
+  const queryString = "param1=value1&param2=value2";
+
+  const hash = new Sha256();
+  hash.update(queryString);
+  const hashResult = await hash.digest();
+  const hashResultHex = toHex(hashResult);
+
+  const expectedKey = `en-US--${entityTypeId}--${bundleId}--${resourceId}--${hashResultHex}`;
+
+  const result = await JsonApiClient.createCacheKey({
+    entityTypeId,
+    bundleId,
+    localeSegment,
+    resourceId,
+    queryString,
+  });
+
+  expect(result).toEqual(expectedKey);
 });

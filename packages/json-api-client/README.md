@@ -4,7 +4,7 @@ This package contains the `JsonApiClient` class which extends the base `ApiClien
 
 ## Installation
 
-```
+```shell
 npm i @drupal-api-client/json-api-client
 ```
 
@@ -57,4 +57,10 @@ const client = new JsonApiClient(myDrupalUrl, {
   // the optional serializer will be used to serialize and deserialize data.
   serializer: new Jsona(),
 });
+
+// fetch a single resource
+const article = await client.getResource("node--article", "1234");
+
+// fetch a collection of nodes
+const articles = await client.getCollection("node--article");
 ```
