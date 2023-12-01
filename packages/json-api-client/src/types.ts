@@ -28,6 +28,11 @@ export interface GetOptions {
    * ```
    */
   queryString?: string;
+
+  /**
+   * Whether or not to disable the cache for the request.
+   */
+  disableCache?: boolean;
 }
 
 /**

@@ -57,9 +57,11 @@ export class JsonApiClient extends ApiClient {
       queryString,
     });
 
-    const cachedResponse = await this.getCachedResponse<T>(cacheKey);
-    if (cachedResponse) {
-      return cachedResponse;
+    if (!options?.disableCache) {
+      const cachedResponse = await this.getCachedResponse<T>(cacheKey);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
     }
 
     const apiUrl = this.createURL({
@@ -77,7 +79,7 @@ export class JsonApiClient extends ApiClient {
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
-    if (this.cache) {
+    if (this.cache && !options?.disableCache) {
       await this.cache?.set(cacheKey, json);
     }
     return json;
@@ -116,10 +118,11 @@ export class JsonApiClient extends ApiClient {
       localeSegment,
       queryString,
     });
-
-    const cachedResponse = await this.getCachedResponse<T>(cacheKey);
-    if (cachedResponse) {
-      return cachedResponse;
+    if (!options?.disableCache) {
+      const cachedResponse = await this.getCachedResponse<T>(cacheKey);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
     }
 
     const apiUrl = this.createURL({
@@ -138,7 +141,7 @@ export class JsonApiClient extends ApiClient {
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
-    if (this.cache) {
+    if (this.cache && !options?.disableCache) {
       await this.cache?.set(cacheKey, json);
     }
     return json;

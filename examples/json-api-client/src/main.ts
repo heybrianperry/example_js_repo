@@ -128,6 +128,16 @@ async function main() {
     "JSON:API Single resource overriding default locale",
     singleResourceSpanish,
   );
+
+  const singleResourceSpanishWithCacheDisabled =
+    await jsonApiClient.getResource("node--recipe", resourceId, {
+      locale: "es",
+      disableCache: true,
+    });
+  console.log(
+    "JSON:API Single resource overriding default locale and disabling cache",
+    singleResourceSpanishWithCacheDisabled,
+  );
 }
 
 main();

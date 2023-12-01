@@ -57,6 +57,7 @@ describe("Cache", () => {
     expect(fetchSpy).toHaveBeenCalledOnce();
     expect(cacheSpy.get).toHaveReturnedWith(client.cache?.get("node--recipe"));
   });
+
   it<CacheTestContext>("should be able to set a resource value", async ({
     client,
     cacheSpy,
@@ -90,5 +91,30 @@ describe("Cache", () => {
     expect(cacheSpy.get).toHaveReturnedWith(
       client.cache?.get(`node--recipe--${resourceId}`),
     );
+  });
+
+  it<CacheTestContext>("should bypass cache when retrieving a value and do not set the value in the cache", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+  }) => {
+    await client.getCollection("node--recipe", { disableCache: true });
+    expect(cacheSpy.get).not.toHaveBeenCalled();
+    expect(cacheSpy.set).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+
+  it<CacheTestContext>("should bypass cache when retrieving a value and do not set the value in the cache", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+    resourceId,
+  }) => {
+    await client.getResource("node--recipe", resourceId, {
+      disableCache: true,
+    });
+    expect(cacheSpy.get).not.toHaveBeenCalled();
+    expect(cacheSpy.set).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
   });
 });
