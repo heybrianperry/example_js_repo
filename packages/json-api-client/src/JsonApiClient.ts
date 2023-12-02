@@ -43,10 +43,8 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async getCollection<T>(type: EntityTypeWithBundle, options?: GetOptions) {
-    const [entityTypeId, bundleId] = type.split("--");
-    if (!entityTypeId || !bundleId) {
-      throw new TypeError(`type must be in the format "entityType--bundle"`);
-    }
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
     const rawResponse = options?.rawResponse || false;
@@ -110,10 +108,8 @@ export class JsonApiClient extends ApiClient {
     resourceId: string,
     options?: GetOptions,
   ) {
-    const [entityTypeId, bundleId] = type.split("--");
-    if (!entityTypeId || !bundleId) {
-      throw new TypeError(`type must be in the format "entityType--bundle"`);
-    }
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
     const rawResponse = options?.rawResponse || false;
@@ -181,6 +177,58 @@ export class JsonApiClient extends ApiClient {
   }
 
   /**
+   * Deletes a resource of the specified type using the provided resource ID.
+   *
+   * @param type - The type of the entity with bundle information.
+   * @param resourceId - The ID of the resource to be deleted.
+   * @returns A boolean indicating whether the resource deletion was successful.
+   *
+   * @remarks
+   * This method initiates the deletion of a resource by sending a DELETE request to the API.
+   * If the deletion is successful (HTTP status 204), it returns true; otherwise, it returns false.
+   *
+   * @example
+   * ```typescript
+   * const success = await deleteResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d");
+   * if (success) {
+   *   console.log("Resource deleted successfully.");
+   * } else {
+   *   console.error("Failed to delete resource.");
+   * }
+   * ```
+   */
+  async deleteResource(type: EntityTypeWithBundle, resourceId: string) {
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
+    const apiUrl = this.createURL({
+      entityTypeId,
+      bundleId,
+      resourceId,
+    });
+
+    if (this.debug) {
+      this.log(
+        "verbose",
+        `Initiating deletion of resource. Type: ${type}, ResourceId: ${resourceId}`,
+      );
+    }
+    const response = await this.fetch(apiUrl, { method: "DELETE" });
+
+    if (response?.status === 204) {
+      this.log(
+        "verbose",
+        `Successfully deleted resource. ResourceId: ${resourceId}`,
+      );
+      return true;
+    }
+    this.log(
+      "error",
+      `Failed to delete resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
+    );
+    return false;
+  }
+
+  /**
    * Retrieves a cached response from the cache.
    * @param cacheKey - The cache key to use for retrieving the cached response.
    * @returns A promise wrapping the cached response as a generic type.
@@ -203,6 +251,17 @@ export class JsonApiClient extends ApiClient {
       this.log("verbose", `Found cached response for key ${cacheKey}...`);
     }
     return cachedResponse;
+  }
+
+  static getEntityTypeIdAndBundleId(type: EntityTypeWithBundle): {
+    entityTypeId: string;
+    bundleId: string;
+  } {
+    const [entityTypeId, bundleId] = type.split("--");
+    if (!entityTypeId || !bundleId) {
+      throw new TypeError(`type must be in the format "entityType--bundle"`);
+    }
+    return { entityTypeId, bundleId };
   }
 
   /**
