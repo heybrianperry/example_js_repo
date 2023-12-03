@@ -80,4 +80,22 @@ export default [
         headers: request.headers,
       }),
   ),
+  http.delete(
+    `${baseUrl}/${apiPrefix}/node/page/35f7cd32-2c54-49f2-8740-0b0ec2ba61f6`,
+    ({ request }) =>
+      new Response(null, {
+        status: 204,
+        statusText: "No content",
+        headers: request.headers,
+      }),
+  ),
+  http.delete(
+    `${baseUrl}/${apiPrefix}/node/page/35f7cd32-2c54-49f2-8740-0b0ec2ba61f7`,
+    ({ request }) =>
+      new Response(null, {
+        status: 404,
+        statusText: "Not Found",
+        headers: request.headers,
+      }),
+  ),
 ];

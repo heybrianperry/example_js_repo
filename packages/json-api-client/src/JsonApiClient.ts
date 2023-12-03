@@ -197,7 +197,10 @@ export class JsonApiClient extends ApiClient {
    * }
    * ```
    */
-  async deleteResource(type: EntityTypeWithBundle, resourceId: string) {
+  async deleteResource(
+    type: EntityTypeWithBundle,
+    resourceId: string,
+  ): Promise<boolean> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
