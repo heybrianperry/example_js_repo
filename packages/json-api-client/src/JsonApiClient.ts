@@ -49,6 +49,7 @@ export class JsonApiClient extends ApiClient {
     }
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
+    const rawResponse = options?.rawResponse || false;
 
     const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
@@ -57,7 +58,7 @@ export class JsonApiClient extends ApiClient {
       queryString,
     });
 
-    if (!options?.disableCache) {
+    if (!rawResponse && !options?.disableCache) {
       const cachedResponse = await this.getCachedResponse<T>(cacheKey);
       if (cachedResponse) {
         return cachedResponse;
@@ -75,12 +76,17 @@ export class JsonApiClient extends ApiClient {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
     const response = await this.fetch(apiUrl);
+    const responseClone = response.clone();
+
     let json = await response.json();
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
     if (this.cache && !options?.disableCache) {
       await this.cache?.set(cacheKey, json);
+    }
+    if (rawResponse) {
+      return { response: responseClone, json };
     }
     return json;
   }
@@ -110,6 +116,7 @@ export class JsonApiClient extends ApiClient {
     }
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
+    const rawResponse = options?.rawResponse || false;
 
     const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
@@ -118,7 +125,8 @@ export class JsonApiClient extends ApiClient {
       localeSegment,
       queryString,
     });
-    if (!options?.disableCache) {
+
+    if (!rawResponse && !options?.disableCache) {
       const cachedResponse = await this.getCachedResponse<T>(cacheKey);
       if (cachedResponse) {
         return cachedResponse;
@@ -137,12 +145,17 @@ export class JsonApiClient extends ApiClient {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
     const response = await this.fetch(apiUrl);
+    const responseClone = response.clone();
+
     let json = await response.json();
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
     if (this.cache && !options?.disableCache) {
       await this.cache?.set(cacheKey, json);
+    }
+    if (rawResponse) {
+      return { response: responseClone, json };
     }
     return json;
   }

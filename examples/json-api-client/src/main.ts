@@ -110,6 +110,17 @@ async function main() {
     "JSON:API Collection with filter",
     filterCollectionUsingQueryString,
   );
+  /* Example using a raw response */
+  const recipeCollectionRaw = await jsonApiClient.getCollection(
+    "node--recipe",
+    {
+      rawResponse: true,
+    },
+  );
+  console.log("Object with raw response and json: ", recipeCollectionRaw);
+  console.log("Json provided by object: ", recipeCollectionRaw.json);
+  const rawResponse = recipeCollectionRaw.response;
+  console.log("Json read from raw response stream: ", await rawResponse.json());
 
   /* Example fetching a single resource by ID */
   const singleResource = await jsonApiClient.getResource(
@@ -117,6 +128,24 @@ async function main() {
     resourceId,
   );
   console.log("JSON:API Single resource", singleResource);
+
+  const singleResourceRaw = await jsonApiClient.getResource(
+    "node--recipe",
+    resourceId,
+    {
+      rawResponse: true,
+    },
+  );
+  console.log(
+    "Object with raw response and json (single resource): ",
+    singleResourceRaw,
+  );
+  const rawResourceResponse = singleResourceRaw.response;
+  console.log(
+    "Json read from raw response stream (single resource): ",
+    await rawResourceResponse.json(),
+  );
+
   const singleResourceSpanish = await jsonApiClient.getResource(
     "node--recipe",
     resourceId,

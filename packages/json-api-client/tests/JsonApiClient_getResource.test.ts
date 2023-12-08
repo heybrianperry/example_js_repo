@@ -68,4 +68,32 @@ describe("JsonApiClient.getResource()", () => {
     await client.getResource(type, resourceId);
     expect(logSpy).toHaveBeenCalledOnce();
   });
+
+  test("should fetch raw response", async () => {
+    const client = new JsonApiClient(baseUrl, { debug: true });
+    const type = "node--recipe";
+    const { response, json } = await client.getResource(type, resourceId, {
+      rawResponse: true,
+    });
+
+    // Assert that the json data was fetched correctly
+    expect(json).toEqual(nodeRecipeSingleResource);
+
+    // Check if response is an instance of the Response class
+    expect(response instanceof Response).toBe(true);
+
+    // Check the HTTP status code
+    expect(response.status).toEqual(200);
+
+    // Check the status text
+    expect(response.statusText).toEqual("Ok");
+
+    // Check if headers are present
+    const headers = response.headers;
+    expect(headers).toBeDefined();
+
+    // Confirm json can be read from response stream
+    const rawJson = await response.json();
+    expect(rawJson).toEqual(nodeRecipeSingleResource);
+  });
 });

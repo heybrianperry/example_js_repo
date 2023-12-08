@@ -91,4 +91,32 @@ describe("JsonApiClient.getCollection()", () => {
     const result = await apiClient.getCollection(type, { queryString });
     expect(result).toEqual(nodePageFilter);
   });
+
+  test("should fetch raw response", async () => {
+    const client = new JsonApiClient(baseUrl, { debug: true });
+    const type = "node--page";
+    const { response, json } = await client.getCollection(type, {
+      rawResponse: true,
+    });
+
+    // Assert that the json data was fetched correctly
+    expect(json).toEqual(nodePage);
+
+    // Check if response is an instance of the Response class
+    expect(response instanceof Response).toBe(true);
+
+    // Check the HTTP status code
+    expect(response.status).toEqual(200);
+
+    // Check the status text
+    expect(response.statusText).toEqual("Ok");
+
+    // Check if headers are present
+    const headers = response.headers;
+    expect(headers).toBeDefined();
+
+    // Confirm json can be read from response stream
+    const rawJson = await response.json();
+    expect(rawJson).toEqual(nodePage);
+  });
 });

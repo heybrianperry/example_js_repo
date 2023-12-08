@@ -30,6 +30,12 @@ export interface GetOptions {
   queryString?: string;
 
   /**
+   * Indicates whether the raw HTTP response should be returned.
+   * When set to true, the response will not be parsed or processed, providing the raw, unaltered response from the server.
+   */
+  rawResponse?: boolean;
+
+  /**
    * Whether or not to disable the cache for the request.
    */
   disableCache?: boolean;
