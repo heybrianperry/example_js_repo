@@ -2,7 +2,7 @@ import { Sha256 } from "@aws-crypto/sha256-js";
 import { ApiClient, BaseUrl } from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
-  CreateCacheKeyParams,
+  EndpointUrlSegments,
   EntityTypeWithBundle,
   GetOptions,
   JsonApiClientOptions,
@@ -156,15 +156,19 @@ export class JsonApiClient extends ApiClient {
     return json;
   }
 
+  /**
+   * Generates an endpoint URL based on the provided parameters.
+   *
+   * @params params - The parameters to use for creating the URL. {@link EndpointUrlSegments}
+   * @returns The endpoint URL as a string.
+   */
   createURL({
     localeSegment,
     entityTypeId,
     bundleId,
     resourceId,
     queryString,
-  }: {
-    [key: string]: string | undefined;
-  }) {
+  }: EndpointUrlSegments) {
     const apiUrlObject = new URL(
       `${localeSegment ?? ""}/${this.apiPrefix}/${entityTypeId}/${bundleId}${
         resourceId ? `/${resourceId}` : ""
@@ -270,7 +274,7 @@ export class JsonApiClient extends ApiClient {
   /**
    * Generates a cache key based on the provided parameters.
    *
-   * @params params - The parameters to use for generating the cache key. {@link createCacheKeyParams}
+   * @params params - The parameters to use for generating the cache key. {@link EndpointUrlSegments}
    * @returns A promise wrapping the generated cache key as a string.
    *
    * @example
@@ -289,7 +293,7 @@ export class JsonApiClient extends ApiClient {
     localeSegment,
     resourceId,
     queryString,
-  }: CreateCacheKeyParams): Promise<string> {
+  }: EndpointUrlSegments): Promise<string> {
     const localePart = localeSegment ? `${localeSegment}--` : "";
     let queryStringPart = "";
     const id = resourceId ? `--${resourceId}` : "";

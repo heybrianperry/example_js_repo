@@ -47,27 +47,27 @@ export interface GetOptions {
 export type EntityTypeWithBundle = `${string}--${string}`;
 
 /**
- * Parameters for the JsonApiClient.GetCacheKey method.
+ * Parameters comprising the segments of a JSON:API endpoint URL.
  */
-export interface CreateCacheKeyParams {
+export interface EndpointUrlSegments {
   /**
-   * The entity type identifier for caching.
+   * The entity type identifier.
    */
   entityTypeId: string;
   /**
-   * The bundle identifier for caching.
+   * The bundle identifier.
    */
   bundleId: string;
   /**
-   * Optional. The locale segment used for cache key. Default is an empty string.
+   * Optional. The locale segment. Default is an empty string.
    */
   localeSegment?: string;
   /**
-   * Optional. The ID of the individual resource for caching.
+   * Optional. The ID of the individual resource.
    */
   resourceId?: string;
   /**
-   * Optional. The query string used for cache key. Default is an empty string.
+   * Optional. The query string. Default is an empty string.
    */
   queryString?: string;
 }
