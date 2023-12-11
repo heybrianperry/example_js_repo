@@ -7,12 +7,12 @@ const type = "node--page";
 
 describe("JsonApiClient.getResource()", () => {
   it("should delete resource and return true", async () => {
-    const apiClient = new JsonApiClient(baseUrl);
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.deleteResource(type, resourceId);
     expect(result).toEqual(true);
   });
   it("should give 404 for invalid resource id and return false", async () => {
-    const apiClient = new JsonApiClient(baseUrl);
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.deleteResource(type, invalidResourceId);
     expect(result).toEqual(false);
   });
