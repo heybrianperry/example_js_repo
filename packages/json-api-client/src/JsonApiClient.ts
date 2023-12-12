@@ -2,7 +2,7 @@ import { Sha256 } from "@aws-crypto/sha256-js";
 import { ApiClient, BaseUrl } from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
-  CreateCacheKeyParams,
+  EndpointUrlSegments,
   EntityTypeWithBundle,
   GetOptions,
   JsonApiClientOptions,
@@ -43,10 +43,8 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async getCollection<T>(type: EntityTypeWithBundle, options?: GetOptions) {
-    const [entityTypeId, bundleId] = type.split("--");
-    if (!entityTypeId || !bundleId) {
-      throw new TypeError(`type must be in the format "entityType--bundle"`);
-    }
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
     const rawResponse = options?.rawResponse || false;
@@ -110,10 +108,8 @@ export class JsonApiClient extends ApiClient {
     resourceId: string,
     options?: GetOptions,
   ) {
-    const [entityTypeId, bundleId] = type.split("--");
-    if (!entityTypeId || !bundleId) {
-      throw new TypeError(`type must be in the format "entityType--bundle"`);
-    }
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
     const queryString = options?.queryString;
     const rawResponse = options?.rawResponse || false;
@@ -160,15 +156,19 @@ export class JsonApiClient extends ApiClient {
     return json;
   }
 
+  /**
+   * Generates an endpoint URL based on the provided parameters.
+   *
+   * @params params - The parameters to use for creating the URL. {@link EndpointUrlSegments}
+   * @returns The endpoint URL as a string.
+   */
   createURL({
     localeSegment,
     entityTypeId,
     bundleId,
     resourceId,
     queryString,
-  }: {
-    [key: string]: string | undefined;
-  }) {
+  }: EndpointUrlSegments) {
     const apiUrlObject = new URL(
       `${localeSegment ?? ""}/${this.apiPrefix}/${entityTypeId}/${bundleId}${
         resourceId ? `/${resourceId}` : ""
@@ -178,6 +178,61 @@ export class JsonApiClient extends ApiClient {
     const apiUrl = apiUrlObject.toString();
 
     return apiUrl;
+  }
+
+  /**
+   * Deletes a resource of the specified type using the provided resource ID.
+   *
+   * @param type - The type of the entity with bundle information.
+   * @param resourceId - The ID of the resource to be deleted.
+   * @returns A boolean indicating whether the resource deletion was successful.
+   *
+   * @remarks
+   * This method initiates the deletion of a resource by sending a DELETE request to the API.
+   * If the deletion is successful (HTTP status 204), it returns true; otherwise, it returns false.
+   *
+   * @example
+   * ```typescript
+   * const success = await deleteResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d");
+   * if (success) {
+   *   console.log("Resource deleted successfully.");
+   * } else {
+   *   console.error("Failed to delete resource.");
+   * }
+   * ```
+   */
+  async deleteResource(
+    type: EntityTypeWithBundle,
+    resourceId: string,
+  ): Promise<boolean> {
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
+    const apiUrl = this.createURL({
+      entityTypeId,
+      bundleId,
+      resourceId,
+    });
+
+    if (this.debug) {
+      this.log(
+        "verbose",
+        `Initiating deletion of resource. Type: ${type}, ResourceId: ${resourceId}`,
+      );
+    }
+    const response = await this.fetch(apiUrl, { method: "DELETE" });
+
+    if (response?.status === 204) {
+      this.log(
+        "verbose",
+        `Successfully deleted resource. ResourceId: ${resourceId}`,
+      );
+      return true;
+    }
+    this.log(
+      "error",
+      `Failed to delete resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
+    );
+    return false;
   }
 
   /**
@@ -205,10 +260,21 @@ export class JsonApiClient extends ApiClient {
     return cachedResponse;
   }
 
+  static getEntityTypeIdAndBundleId(type: EntityTypeWithBundle): {
+    entityTypeId: string;
+    bundleId: string;
+  } {
+    const [entityTypeId, bundleId] = type.split("--");
+    if (!entityTypeId || !bundleId) {
+      throw new TypeError(`type must be in the format "entityType--bundle"`);
+    }
+    return { entityTypeId, bundleId };
+  }
+
   /**
    * Generates a cache key based on the provided parameters.
    *
-   * @params params - The parameters to use for generating the cache key. {@link createCacheKeyParams}
+   * @params params - The parameters to use for generating the cache key. {@link EndpointUrlSegments}
    * @returns A promise wrapping the generated cache key as a string.
    *
    * @example
@@ -227,7 +293,7 @@ export class JsonApiClient extends ApiClient {
     localeSegment,
     resourceId,
     queryString,
-  }: CreateCacheKeyParams): Promise<string> {
+  }: EndpointUrlSegments): Promise<string> {
     const localePart = localeSegment ? `${localeSegment}--` : "";
     let queryStringPart = "";
     const id = resourceId ? `--${resourceId}` : "";
