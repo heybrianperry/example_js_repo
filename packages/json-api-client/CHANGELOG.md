@@ -1,5 +1,16 @@
 # @drupal-api-client/json-api-client
 
+## 0.3.0
+
+### Minor Changes
+
+- 8c8571b: Introduce `rawResponse` option which will return an object inlcuding json data along with the raw response
+
+### Patch Changes
+
+- 565d710: Adds method to delete resource in jsonapi client.
+- b4f9059: Adds options to disable cache while retriving data.
+
 ## 0.2.0
 
 ### Minor Changes

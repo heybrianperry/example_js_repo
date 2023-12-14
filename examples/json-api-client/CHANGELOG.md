@@ -1,5 +1,14 @@
 # json-api-client-example
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [565d710]
+- Updated dependencies [8c8571b]
+- Updated dependencies [b4f9059]
+  - @drupal-api-client/json-api-client@0.3.0
+
 ## 0.0.2
 
 ### Patch Changes
