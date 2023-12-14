@@ -1,6 +1,7 @@
 {
   "name": "@drupal-api-client/api-client",
   "version": "0.2.0",
+  "license": "GPL-2.0-or-later",
   "description": "",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",

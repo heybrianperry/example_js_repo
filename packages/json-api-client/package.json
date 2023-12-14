@@ -1,6 +1,7 @@
 {
   "name": "@drupal-api-client/json-api-client",
   "version": "0.3.0",
+  "license": "GPL-2.0-or-later",
   "description": "",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
