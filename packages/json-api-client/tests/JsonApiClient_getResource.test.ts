@@ -89,11 +89,26 @@ describe("JsonApiClient.getResource()", () => {
     expect(response.statusText).toEqual("Ok");
 
     // Check if headers are present
-    const headers = response.headers;
-    expect(headers).toBeDefined();
+    expect(response.headers).toBeDefined();
 
     // Confirm json can be read from response stream
     const rawJson = await response.json();
     expect(rawJson).toEqual(nodeRecipeSingleResource);
+  });
+  it("should throw an error if an error occurred in fetch", async () => {
+    const client = new JsonApiClient(baseUrl, { debug: true });
+    const type = "node--recipe";
+    const logSpy = vi.spyOn(client, "log");
+    const fetchSpy = vi.spyOn(client, "fetch").mockResolvedValueOnce({
+      response: null,
+      error: new Error("Something went wrong"),
+    });
+    try {
+      await client.getResource(type, resourceId);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(logSpy).toHaveBeenCalledTimes(2);
+      expect(fetchSpy).toHaveBeenCalledOnce();
+    }
   });
 });

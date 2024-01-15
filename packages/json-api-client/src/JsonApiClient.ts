@@ -1,27 +1,28 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
-import { ApiClient, BaseUrl } from "@drupal-api-client/api-client";
+import {
+  ApiClient,
+  ApiClientOptions,
+  BaseUrl,
+} from "@drupal-api-client/api-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
   EndpointUrlSegments,
   EntityTypeWithBundle,
   GetOptions,
-  JsonApiClientOptions,
 } from "./types";
 
 /**
  * JSON:API Client class provides functionality specific to JSON:API server.
- * @see {@link JsonApiClientOptions}
+ * @see {@link ApiClientOptions}
  * @see {@link BaseUrl}
  */
 export class JsonApiClient extends ApiClient {
-  debug: JsonApiClientOptions["debug"];
-
   /**
    * Creates a new instance of the JsonApiClient.
    * @param baseUrl - The base URL of the API. {@link BaseUrl}
    * @param options - (Optional) Additional options for configuring the API client. {@link JsonApiClientOptions}
    */
-  constructor(baseUrl: BaseUrl, options?: JsonApiClientOptions) {
+  constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
     super(baseUrl, options);
     const { apiPrefix, cache, debug } = options || {};
     this.apiPrefix = apiPrefix || "jsonapi";
@@ -73,14 +74,23 @@ export class JsonApiClient extends ApiClient {
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
-    const response = await this.fetch(apiUrl);
+    const { response, error } = await this.fetch(apiUrl);
+    if (error) {
+      if (this.debug) {
+        this.log(
+          "error",
+          `Failed to get collection. Type: ${type}, Error: ${error.message}`,
+        );
+      }
+      throw error;
+    }
+    const statusCode = response.status;
     const responseClone = response.clone();
-
     let json = await response.json();
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
-    if (this.cache && !options?.disableCache) {
+    if (this.cache && !options?.disableCache && statusCode < 400) {
       await this.cache?.set(cacheKey, json);
     }
     if (rawResponse) {
@@ -140,14 +150,23 @@ export class JsonApiClient extends ApiClient {
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
-    const response = await this.fetch(apiUrl);
+    const { response, error } = await this.fetch(apiUrl);
+    if (error) {
+      if (this.debug) {
+        this.log(
+          "error",
+          `Failed to get resource. ResourceId: ${resourceId}, Error: ${error.message}`,
+        );
+      }
+      throw error;
+    }
+    const statusCode = response.status;
     const responseClone = response.clone();
-
     let json = await response.json();
     json = this.serializer
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
-    if (this.cache && !options?.disableCache) {
+    if (this.cache && !options?.disableCache && statusCode < 400) {
       await this.cache?.set(cacheKey, json);
     }
     if (rawResponse) {
@@ -219,9 +238,17 @@ export class JsonApiClient extends ApiClient {
         `Initiating deletion of resource. Type: ${type}, ResourceId: ${resourceId}`,
       );
     }
-    const response = await this.fetch(apiUrl, { method: "DELETE" });
-
-    if (response?.status === 204) {
+    const { response, error } = await this.fetch(apiUrl, { method: "DELETE" });
+    if (error) {
+      if (this.debug) {
+        this.log(
+          "error",
+          `Failed to delete resource. ResourceId: ${resourceId}, Error: ${error.message}`,
+        );
+      }
+      throw error;
+    }
+    if (response.status === 204) {
       this.log(
         "verbose",
         `Successfully deleted resource. ResourceId: ${resourceId}`,

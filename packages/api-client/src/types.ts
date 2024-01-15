@@ -61,6 +61,10 @@ export type ApiClientOptions = {
      */
     [key in LogLevels]?: LogMethod;
   };
+  /**
+   * If true, logs debug messages to the console.
+   */
+  debug?: boolean;
 };
 
 /**
@@ -117,3 +121,18 @@ export type LogLevels =
   | "verbose"
   | "debug"
   | "silly";
+
+/**
+ * Represents the return value of the fetch method.
+ * Only one property will be set at a time.
+ */
+export type FetchReturn = Promise<
+  | {
+      response: Response;
+      error: null;
+    }
+  | {
+      response: null;
+      error: Error;
+    }
+>;

@@ -5,7 +5,7 @@ const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
 const invalidResourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f7";
 const type = "node--page";
 
-describe("JsonApiClient.getResource()", () => {
+describe("JsonApiClient.deleteResource()", () => {
   it("should delete resource and return true", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.deleteResource(type, resourceId);
@@ -15,5 +15,22 @@ describe("JsonApiClient.getResource()", () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.deleteResource(type, invalidResourceId);
     expect(result).toEqual(false);
+  });
+  it("should throw an error if one occurs in fetch", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const logSpy = vi.spyOn(apiClient, "log");
+    vi.spyOn(apiClient, "fetch").mockResolvedValueOnce({
+      response: null,
+      error: new Error("Something went wrong"),
+    });
+    try {
+      await apiClient.deleteResource(type, invalidResourceId);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(logSpy).toHaveBeenLastCalledWith(
+        "error",
+        `Failed to delete resource. ResourceId: ${invalidResourceId}, Error: Something went wrong`,
+      );
+    }
   });
 });

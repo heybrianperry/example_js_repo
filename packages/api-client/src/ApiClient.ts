@@ -1,6 +1,12 @@
 import { stringToBase64 } from "uint8array-extras";
-import type { ApiClientOptions, BaseUrl, LogLevels } from "./types";
+import {
+  type ApiClientOptions,
+  type BaseUrl,
+  type FetchReturn,
+  type LogLevels,
+} from "./types";
 import defaultLogger from "./utils/defaultLogger";
+import { errorChecker } from "./utils/errorChecker";
 
 /**
  * Base class providing common functionality for all API clients.
@@ -48,6 +54,11 @@ export class ApiClient {
   logger: ApiClientOptions["logger"];
 
   /**
+   * {@link ApiClientOptions.debug}
+   */
+  debug: ApiClientOptions["debug"];
+
+  /**
    *
    * @param baseUrl - The base URL for all API requests. {@link BaseUrl}
    * @param options - Optional configuration options. {@link ApiClientOptions}
@@ -62,6 +73,7 @@ export class ApiClient {
       customFetch,
       authentication,
       cache,
+      debug,
       defaultLocale,
       serializer,
       logger = defaultLogger,
@@ -74,6 +86,7 @@ export class ApiClient {
     this.defaultLocale = defaultLocale;
     this.serializer = serializer;
     this.logger = logger;
+    this.debug = debug;
   }
 
   /**
@@ -82,12 +95,25 @@ export class ApiClient {
    * @param init - {@link RequestInit}
    * @returns a response wrapped in a promise
    */
-  async fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-    const newInit = this.addAuthorizationHeader(init);
-    if (this.customFetch) {
-      return this.customFetch(input, newInit);
+  async fetch(
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<FetchReturn> {
+    try {
+      let fetchToUse;
+      const newInit = this.addAuthorizationHeader(init);
+      fetchToUse = fetch;
+      if (this.customFetch) {
+        fetchToUse = this.customFetch;
+      }
+      return { response: await fetchToUse(input, newInit), error: null };
+    } catch (e: unknown) {
+      const error = errorChecker(e);
+      if (this.debug) {
+        this.log("error", error.message);
+      }
+      return { response: null, error };
     }
-    return fetch(input, newInit);
   }
 
   /**

@@ -12,4 +12,13 @@ export default [
         headers: request.headers,
       }),
   ),
+  http.get(
+    `${baseUrl}/jsonapi/node/article`,
+    ({ request }) =>
+      new Response(JSON.stringify(null), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      }),
+  ),
 ];

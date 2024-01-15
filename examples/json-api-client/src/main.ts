@@ -66,107 +66,122 @@ async function main() {
 
   const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
 
-  const recipeCollection = await jsonApiClient.getCollection<
-    JSONAPI.CollectionResourceDoc<string, Recipe>
-  >("node--recipe");
+  try {
+    const recipeCollection = await jsonApiClient.getCollection<
+      JSONAPI.CollectionResourceDoc<string, Recipe>
+    >("node--recipe");
 
-  console.log("JSON:API Collection", recipeCollection);
+    console.log("JSON:API Collection", recipeCollection);
 
-  const collection = await jsonApiClient.getCollection("node--recipe", {
-    locale: "es",
-  });
-  console.log("JSON:API Collection", collection);
-
-  document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-  <pre>${JSON.stringify(recipeCollection, null, 2)}</pre>`;
-
-  /* Example using a deserializer */
-  const jsonApiClientJsona = new JsonApiClient(baseUrl, {
-    serializer: new Jsona(),
-    debug: true,
-  });
-  const jsonaCollection = await jsonApiClientJsona.getCollection(
-    "node--recipe",
-  );
-  console.log("JSON:API Collection deserialized via jsona", jsonaCollection);
-
-  /* Example using a default logger */
-  const jsonApiClientDefaultLogger = new JsonApiClient(baseUrl, {
-    debug: true,
-  });
-  const defaultLoggerCollection =
-    await jsonApiClientDefaultLogger.getCollection("node--recipe");
-  console.log(
-    "JSON:API Collection with default logger",
-    defaultLoggerCollection,
-  );
-
-  /* Example using a filter as string */
-  const filterCollectionUsingQueryString = await jsonApiClient.getCollection(
-    "node--recipe",
-    { queryString: "filter[field_cooking_time][value]=60" },
-  );
-  console.log(
-    "JSON:API Collection with filter",
-    filterCollectionUsingQueryString,
-  );
-  /* Example using a raw response */
-  const recipeCollectionRaw = await jsonApiClient.getCollection(
-    "node--recipe",
-    {
-      rawResponse: true,
-    },
-  );
-  console.log("Object with raw response and json: ", recipeCollectionRaw);
-  console.log("Json provided by object: ", recipeCollectionRaw.json);
-  const rawResponse = recipeCollectionRaw.response;
-  console.log("Json read from raw response stream: ", await rawResponse.json());
-
-  /* Example fetching a single resource by ID */
-  const singleResource = await jsonApiClient.getResource(
-    "node--recipe",
-    resourceId,
-  );
-  console.log("JSON:API Single resource", singleResource);
-
-  const singleResourceRaw = await jsonApiClient.getResource(
-    "node--recipe",
-    resourceId,
-    {
-      rawResponse: true,
-    },
-  );
-  console.log(
-    "Object with raw response and json (single resource): ",
-    singleResourceRaw,
-  );
-  const rawResourceResponse = singleResourceRaw.response;
-  console.log(
-    "Json read from raw response stream (single resource): ",
-    await rawResourceResponse.json(),
-  );
-
-  const singleResourceSpanish = await jsonApiClient.getResource(
-    "node--recipe",
-    resourceId,
-    {
+    const collection = await jsonApiClient.getCollection("node--recipe", {
       locale: "es",
-    },
-  );
-  console.log(
-    "JSON:API Single resource overriding default locale",
-    singleResourceSpanish,
-  );
-
-  const singleResourceSpanishWithCacheDisabled =
-    await jsonApiClient.getResource("node--recipe", resourceId, {
-      locale: "es",
-      disableCache: true,
     });
-  console.log(
-    "JSON:API Single resource overriding default locale and disabling cache",
-    singleResourceSpanishWithCacheDisabled,
-  );
+    console.log("JSON:API Collection", collection);
+
+    document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
+    <pre>${JSON.stringify(recipeCollection, null, 2)}</pre>`;
+
+    /* Example using a deserializer */
+    const jsonApiClientJsona = new JsonApiClient(baseUrl, {
+      serializer: new Jsona(),
+      debug: true,
+    });
+    const jsonaCollection = await jsonApiClientJsona.getCollection(
+      "node--recipe",
+    );
+    console.log("JSON:API Collection deserialized via jsona", jsonaCollection);
+
+    /* Example using a default logger */
+    const jsonApiClientDefaultLogger = new JsonApiClient(baseUrl, {
+      debug: true,
+    });
+    const defaultLoggerCollection =
+      await jsonApiClientDefaultLogger.getCollection("node--recipe");
+    console.log(
+      "JSON:API Collection with default logger",
+      defaultLoggerCollection,
+    );
+
+    /* Example using a filter as string */
+    const filterCollectionUsingQueryString = await jsonApiClient.getCollection(
+      "node--recipe",
+      { queryString: "filter[field_cooking_time][value]=60" },
+    );
+    console.log(
+      "JSON:API Collection with filter",
+      filterCollectionUsingQueryString,
+    );
+    /* Example using a raw response */
+    const recipeCollectionRaw = await jsonApiClient.getCollection(
+      "node--recipe",
+      {
+        rawResponse: true,
+      },
+    );
+    console.log("Object with raw response and json: ", recipeCollectionRaw);
+    console.log("Json provided by object: ", recipeCollectionRaw.json);
+    const rawResponse = recipeCollectionRaw.response;
+    console.log(
+      "Json read from raw response stream: ",
+      await rawResponse.json(),
+    );
+
+    /* Example fetching a single resource by ID */
+    const singleResource = await jsonApiClient.getResource(
+      "node--recipe",
+      resourceId,
+    );
+    console.log("JSON:API Single resource", singleResource);
+
+    const singleResourceRaw = await jsonApiClient.getResource(
+      "node--recipe",
+      resourceId,
+      {
+        rawResponse: true,
+      },
+    );
+    console.log(
+      "Object with raw response and json (single resource): ",
+      singleResourceRaw,
+    );
+    const rawResourceResponse = singleResourceRaw.response;
+    console.log(
+      "Json read from raw response stream (single resource): ",
+      await rawResourceResponse.json(),
+    );
+
+    const singleResourceSpanish = await jsonApiClient.getResource(
+      "node--recipe",
+      resourceId,
+      {
+        locale: "es",
+      },
+    );
+    console.log(
+      "JSON:API Single resource overriding default locale",
+      singleResourceSpanish,
+    );
+
+    const singleResourceSpanishWithCacheDisabled =
+      await jsonApiClient.getResource("node--recipe", resourceId, {
+        locale: "es",
+        disableCache: true,
+      });
+    console.log(
+      "JSON:API Single resource overriding default locale and disabling cache",
+      singleResourceSpanishWithCacheDisabled,
+    );
+
+    // trigger an error - check the console to see the error logged from getResource
+    // @ts-expect-error
+    globalThis.fetch = undefined;
+    await jsonApiClient.getResource("node--recipe", "invalid-id");
+  } catch (error) {
+    // Any errors that occur in `fetch` will bubble up to the `get*` methods.
+    // If `debug` is on the error will be logged to the console.
+    // Further handling of the error can be done in this catch block.
+    console.log(error);
+  }
 }
 
 main();

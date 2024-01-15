@@ -1,6 +1,6 @@
 import { ApiClient } from "../src/ApiClient";
 
-const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
+const baseUrl = "https://dev-drupal-api-client.poc";
 const apiPrefix = "customprefix";
 const defaultLocale = "en";
 
@@ -38,4 +38,32 @@ test("ApiClient class can be extended", () => {
 test("Instance without baseUrl throws error", () => {
   // @ts-ignore
   expect(() => new ApiClient()).toThrowError("baseUrl is required");
+});
+
+describe("fetch", async () => {
+  it("returns an error if one occurs", async () => {
+    const client = new ApiClient(baseUrl);
+    const { response, error } = await client.fetch("invalidurl");
+    expect(response).toBeNull();
+    expect(error).toBeInstanceOf(Error);
+    expect(error?.message).toBe("Failed to parse URL from invalidurl");
+  });
+  it("logs to the console if debug is true and an error occurs", async () => {
+    const client = new ApiClient(baseUrl, { debug: true });
+    const logSpy = vi.spyOn(client, "log");
+    const { response, error } = await client.fetch("invalidurl");
+
+    expect(response).toBeNull();
+    expect(error).toBeInstanceOf(Error);
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith("error", error?.message);
+    expect(error?.message).toBe("Failed to parse URL from invalidurl");
+  });
+  it("returns a response if no error occurs", async () => {
+    const client = new ApiClient(baseUrl);
+    const url = new URL("/jsonapi/node/article", baseUrl);
+    const { response, error } = await client.fetch(url);
+    expect(response).toBeDefined();
+    expect(error).toBeNull();
+  });
 });

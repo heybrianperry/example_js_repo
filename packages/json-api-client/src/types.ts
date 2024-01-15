@@ -1,10 +1,4 @@
 import type { Locale } from "@drupal-api-client/api-client";
-import { ApiClientOptions } from "@drupal-api-client/api-client";
-
-/**
- * Options for customizing the JsonApiClient.
- */
-export type JsonApiClientOptions = ApiClientOptions & { debug?: boolean };
 
 /**
  * Options for customizing the get request.

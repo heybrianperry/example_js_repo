@@ -3,6 +3,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+  "root": true,
   "ignorePatterns": ["dist"],
   "rules": {
     "import/prefer-default-export": ["off"]

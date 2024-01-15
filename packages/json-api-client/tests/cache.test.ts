@@ -1,5 +1,6 @@
 import type { SpyInstance } from "vitest";
 import { JsonApiClient } from "../src";
+import notFound from "./mocks/data/404.json";
 
 interface CacheTestContext {
   client: JsonApiClient;
@@ -114,6 +115,46 @@ describe("Cache", () => {
       disableCache: true,
     });
     expect(cacheSpy.get).not.toHaveBeenCalled();
+    expect(cacheSpy.set).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+  it<CacheTestContext>("should not set the item in the cache for a collection if the response status code is greater than 400", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+  }) => {
+    const type = "node--rcipe";
+    const result = await client.getCollection(type);
+    expect(result).toEqual({
+      jsonapi: {
+        version: "1.0",
+        meta: {
+          links: {
+            self: {
+              href: "http://jsonapi.org/format/1.0/",
+            },
+          },
+        },
+      },
+      errors: [
+        {
+          title: "Not Found",
+          status: "404",
+        },
+      ],
+    });
+    expect(cacheSpy.set).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+  it<CacheTestContext>("should not set the item in the cache for a resource if the response status code is greater than 400", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+  }) => {
+    const type = "node--recipe";
+    const resourceId = "invalid-uuid";
+    const result = await client.getResource(type, resourceId);
+    expect(result).toEqual(notFound);
     expect(cacheSpy.set).not.toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledOnce();
   });

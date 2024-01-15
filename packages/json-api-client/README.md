@@ -56,11 +56,20 @@ const client = new JsonApiClient(myDrupalUrl, {
   defaultLocale: "en",
   // the optional serializer will be used to serialize and deserialize data.
   serializer: new Jsona(),
+  // when set to true, verbose logging will be output to the console,
+  // helpful for debugging errors.
+  debug: true,
 });
 
-// fetch a single resource
-const article = await client.getResource("node--article", "1234");
+try {
+  // fetch a single resource
+  const article = await client.getResource("node--article", "1234");
 
-// fetch a collection of nodes
-const articles = await client.getCollection("node--article");
+  // fetch a collection of nodes
+  const articles = await client.getCollection("node--article");
+} catch (error) {
+  // errors will be bubbled up from the `getCollection` and `getResource` methods.
+  // if `debug` is set to true in the options, the error will be logged to the console.
+  // You can handle the error here as you see fit.
+}
 ```
