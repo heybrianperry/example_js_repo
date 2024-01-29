@@ -1,12 +1,14 @@
 import { ApiClient } from "../src/ApiClient";
 
-test('addAuthorizationHeader should add Basic authorization header if authentication type is "basic"', () => {
+test('addAuthorizationHeader should add Basic authorization header if authentication type is "basic"', async () => {
   // Arrange
   const apiClient = new ApiClient("https://example.com", {
     authentication: {
       type: "Basic",
-      username: "testUser",
-      password: "testPassword",
+      credentials: {
+        username: "testUser",
+        password: "testPassword",
+      },
     },
   });
 
@@ -17,7 +19,7 @@ test('addAuthorizationHeader should add Basic authorization header if authentica
   };
 
   // Act
-  const updatedOptions = apiClient.addAuthorizationHeader(inputOptions);
+  const updatedOptions = await apiClient.addAuthorizationHeader(inputOptions);
 
   // Assert
   expect(updatedOptions.headers).toBeInstanceOf(Headers);

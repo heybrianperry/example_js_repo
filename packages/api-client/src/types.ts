@@ -68,22 +68,92 @@ export type ApiClientOptions = {
 };
 
 /**
+ * The response from the OAuth token endpoint
+ */
+export type OAuthTokenResponse = {
+  /**
+   * access_token
+   */
+  accessToken: string;
+  /**
+   * Uses the expires_in value from the /oauth/token endpoint to calculate the validUntil value:
+   * ```ts
+   * Date.now() + expires_in * 1000
+   * ```
+   */
+  validUntil: number;
+  /**
+   * token_type
+   * usually "Bearer"
+   */
+  tokenType: string;
+};
+
+/**
+ * Valid auth types
+ */
+type AuthType = "Basic" | "OAuth";
+
+/**
+ * Internal type for composing Credentials types
+ */
+type Credentials<AT extends AuthType> = AT extends "Basic"
+  ? {
+      /**
+       * The username to use for Basic authentication
+       */
+      username: string;
+      /**
+       * The password to use for Basic authentication
+       */
+      password: string;
+    }
+  : AT extends "OAuth"
+  ? {
+      /**
+       * The OAuth Client ID
+       */
+      clientId: string;
+      /**
+       * The OAuth Client secret
+       */
+      clientSecret: string;
+    }
+  : never;
+
+/**
+ * Internal type for composing Authentication types
+ */
+type Auth<AT extends AuthType> = {
+  /**
+   * The type of authentication to use
+   * @see {@link AuthType}
+   */
+  type: AT;
+  /**
+   * The credentials to use based on the authenticate type
+   * @see {@link Credentials}
+   */
+  credentials: Credentials<AT>;
+};
+
+/**
+ * Basic Authentication uses a base64 encoded username and password
+ * and the Authorization header labeled "Basic"
+ */
+type BasicAuth = Auth<"Basic">;
+
+/**
+ * OAuth uses OAuth2. It requests an access token from Drupal
+ * using a clientId and clientSecret. If they are valid, the token
+ * is returned and used for subsequent responses to Drupal.
+ */
+type OAuth = Auth<"OAuth">;
+
+/**
  * Represents the authentication configuration to use for authenticated API requests.
  */
-export type Authentication = {
-  /**
-   * The type of authentication to use.
-   */
-  type: "Basic";
-  /**
-   * The username to use for Basic authentication.
-   */
-  username?: string;
-  /**
-   * The password to use for Basic authentication.
-   */
-  password?: string;
-};
+type Authentication = BasicAuth | OAuth;
 
 /**
  * The cache used by the ApiClient to store responses.
@@ -136,3 +206,14 @@ export type FetchReturn = Promise<
       error: Error;
     }
 >;
+
+/**
+ * Type predicate for
+ * @param arg
+ * @returns true if the auth type is OAuth
+ */
+export const isOAuth = (arg: unknown): arg is OAuth =>
+  typeof arg === "object" &&
+  arg !== null &&
+  "type" in arg &&
+  arg.type === "OAuth";
