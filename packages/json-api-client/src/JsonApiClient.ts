@@ -334,4 +334,89 @@ export class JsonApiClient extends ApiClient {
 
     return `${localePart}${entityTypeId}--${bundleId}${id}${queryStringPart}`;
   }
+
+  /**
+   * Updates a resource of the specified type using the provided resource ID.
+   *
+   * @param type - The type of the entity with bundle information.
+   * @param resourceId - The ID of the resource to be updated.
+   * @param body - The body of the request.
+   * @returns A boolean indicating whether the resource update was successful or not.
+   *
+   * @remarks
+   * This method initiates the update of a resource by sending a PUT request to the API.
+   * If the update is successful (HTTP status 200), it returns true; otherwise, it returns false.
+   *
+   * @example
+   * ```typescript
+   * const response = await updateResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d", `{
+   *        "data": {
+   *         "type": "node--page",
+   *         "id": "11fc449b-aca0-4b74-bc3b-677da021f1d7",
+   *         "attributes": {
+   *             "drupal_internal__nid": 2,
+   *             "drupal_internal__vid": 3,
+   *             "langcode": "en",
+   *             "revision_log": null,
+   *             "status": true,
+   *             "title": "test 2"
+   *         }
+   *     }
+   * }`);
+   * ```
+   */
+  async updateResource(
+    type: EntityTypeWithBundle,
+    resourceId: string,
+    body: string,
+  ): Promise<Response> {
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
+    const apiUrl = this.createURL({
+      entityTypeId,
+      bundleId,
+      resourceId,
+    });
+
+    if (this.debug) {
+      this.log(
+        "verbose",
+        `Initiating update of resource. Type: ${type}, ResourceId: ${resourceId}`,
+      );
+    }
+
+    // Setting up the required headers for a PATCH request.
+    // Reference: https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/updating-existing-resources-patch#s-headers
+    const headers = new Headers();
+    headers.set("Accept", "application/vnd.api+json");
+    headers.set("Content-Type", "application/vnd.api+json");
+
+    const { response, error } = await this.fetch(apiUrl, {
+      method: "PATCH",
+      body,
+      headers,
+    });
+
+    if (error) {
+      if (this.debug) {
+        this.log(
+          "error",
+          `Failed to update resource. ResourceId: ${resourceId}, Error: ${error.message}`,
+        );
+      }
+      throw error;
+    }
+    if (response?.status === 200) {
+      this.log(
+        "verbose",
+        `Successfully updated resource. ResourceId: ${resourceId}`,
+      );
+      return response;
+    }
+    this.log(
+      "error",
+      `Failed to update resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
+    );
+    return response;
+  }
 }

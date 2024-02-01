@@ -7,7 +7,8 @@ import nodePage from "./data/node-page.json";
 import nodeRecipeSingleResource from "./data/node-recipe-en-single-resource.json";
 import nodeRecipeSingleSpanish from "./data/node-recipe-es-single-resource.json";
 import nodeRecipe from "./data/node-recipe.json";
-
+import nodePageUpdateResource404Response from "./data/node-page-update-resource-404-response.json";
+import nodePageUpdateResource200Response from "./data/node-page-update-resource-200-response.json";
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
 const apiPrefix = "jsonapi";
@@ -111,6 +112,24 @@ export default [
     `${baseUrl}/${apiPrefix}/node/recipe/invalid-uuid`,
     ({ request }) =>
       new Response(JSON.stringify(notFound), {
+        status: 404,
+        statusText: "Not Found",
+        headers: request.headers,
+      }),
+  ),
+  http.patch(
+    `${baseUrl}/${apiPrefix}/node/page/11fc449b-aca0-4b74-bc3b-677da021f1d7`,
+    ({ request }) =>
+      new Response(JSON.stringify(nodePageUpdateResource200Response), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      }),
+  ),
+  http.patch(
+    `${baseUrl}/${apiPrefix}/node/page/66fc449b-aca0-4b74-bc3b-677da021f1d9`,
+    ({ request }) =>
+      new Response(JSON.stringify(nodePageUpdateResource404Response), {
         status: 404,
         statusText: "Not Found",
         headers: request.headers,
