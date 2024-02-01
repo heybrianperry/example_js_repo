@@ -341,11 +341,10 @@ export class JsonApiClient extends ApiClient {
    * @param type - The type of the entity with bundle information.
    * @param resourceId - The ID of the resource to be updated.
    * @param body - The body of the request.
-   * @returns A boolean indicating whether the resource update was successful or not.
+   * @returns A Promise that resolves to a Response object.
    *
    * @remarks
-   * This method initiates the update of a resource by sending a PUT request to the API.
-   * If the update is successful (HTTP status 200), it returns true; otherwise, it returns false.
+   * This method initiates the update of a resource by sending a PATCH request to the API.
    *
    * @example
    * ```typescript
@@ -417,6 +416,73 @@ export class JsonApiClient extends ApiClient {
       "error",
       `Failed to update resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
     );
+    return response;
+  }
+
+  /**
+   * Create a resource of the specified type using the provided body.
+   *
+   * @param type - The type of the entity with bundle information.
+   * @param body - The body of the request.
+   * @returns A Promise that resolves to a Response object.
+   *
+   * @remarks
+   * This method initiates the creation of a resource by sending a POST request to the API.
+   *
+   * @example
+   * ```typescript
+   * const response = await createResource("node--page", `{
+   *   "data": {
+   *     "type": "node--page",
+   *     "attributes": {
+   *       "title": "My custom title",
+   *       "body": {
+   *         "value": "Custom value",
+   *         "format": "plain_text"
+   *       }
+   *     }
+   *   }
+   * }`);
+   * ```
+   */
+  async createResource(
+    type: EntityTypeWithBundle,
+    body: string,
+  ): Promise<Response> {
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(type);
+    const apiUrl = this.createURL({
+      entityTypeId,
+      bundleId,
+    });
+
+    if (this.debug) {
+      this.log("verbose", `Initiating creation of resource. Type: ${type}`);
+    }
+
+    // Setting up the required headers for a POST request.
+    // Reference: https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/creating-new-resources-post#s-headers
+    const headers = new Headers();
+    headers.set("Accept", "application/vnd.api+json");
+    headers.set("Content-Type", "application/vnd.api+json");
+
+    const { response, error } = await this.fetch(apiUrl, {
+      method: "POST",
+      body,
+      headers,
+    });
+
+    if (error) {
+      if (this.debug) {
+        this.log("error", `Failed to create resource. Error: ${error.message}`);
+      }
+      throw error;
+    }
+    if (response?.status === 201) {
+      this.log("verbose", `Successfully created resource of type: ${type}`);
+      return response;
+    }
+    this.log("error", `Failed to create resource. Status: ${response?.status}`);
     return response;
   }
 }
