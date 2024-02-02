@@ -9,7 +9,7 @@ const invalidResourceId = "66fc449b-aca0-4b74-bc3b-677da021f1d9";
 const type = "node--page";
 
 describe("JsonApiClient.updateResource()", () => {
-  it("should update resource and return true", async () => {
+  it("should update resource when passed body with type as string and return response with 200 status", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.updateResource(
       type,
@@ -22,7 +22,20 @@ describe("JsonApiClient.updateResource()", () => {
       JSON.stringify(nodePageUpdateResource200Response),
     );
   });
-  it("should give 404 for invalid resource id and return false", async () => {
+  it("should update resource when passed body with type as object and return response with 200 status", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const result = await apiClient.updateResource(
+      type,
+      resourceId,
+      nodePageUpdateRequest,
+    );
+    expect(result.status).toEqual(200);
+    const resultBody = await result.json();
+    expect(JSON.stringify(resultBody)).toEqual(
+      JSON.stringify(nodePageUpdateResource200Response),
+    );
+  });
+  it("should give 404 for invalid resource id and return response with 404 status", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.updateResource(
       type,

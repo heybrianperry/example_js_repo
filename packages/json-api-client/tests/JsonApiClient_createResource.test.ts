@@ -8,7 +8,7 @@ const type = "node--page";
 const invalidType = "node--invalid-bundle";
 
 describe("JsonApiClient.createResource()", () => {
-  it("should create resource and return true", async () => {
+  it("should create resource when passed body with type as string and return response with 201 status", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.createResource(
       type,
@@ -18,7 +18,16 @@ describe("JsonApiClient.createResource()", () => {
     const resultBody = await result.json();
     expect(JSON.stringify(resultBody)).toEqual(JSON.stringify(nodePageCreate));
   });
-  it("should give 404 for invalid bundle type and return false", async () => {
+
+  it("should create resource when passed body with type as object and return response with 201 status", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const result = await apiClient.createResource(type, nodePageCreateRequest);
+    expect(result.status).toEqual(201);
+    const resultBody = await result.json();
+    expect(JSON.stringify(resultBody)).toEqual(JSON.stringify(nodePageCreate));
+  });
+
+  it("should give 404 for invalid bundle type and return response with 404 status", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const result = await apiClient.createResource(
       invalidType,

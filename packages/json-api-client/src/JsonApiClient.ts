@@ -367,7 +367,7 @@ export class JsonApiClient extends ApiClient {
   async updateResource(
     type: EntityTypeWithBundle,
     resourceId: string,
-    body: string,
+    body: string | object,
   ): Promise<Response> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
@@ -392,7 +392,7 @@ export class JsonApiClient extends ApiClient {
 
     const { response, error } = await this.fetch(apiUrl, {
       method: "PATCH",
-      body,
+      body: typeof body === "object" ? JSON.stringify(body) : body,
       headers,
     });
 
@@ -447,7 +447,7 @@ export class JsonApiClient extends ApiClient {
    */
   async createResource(
     type: EntityTypeWithBundle,
-    body: string,
+    body: string | object,
   ): Promise<Response> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
@@ -468,7 +468,7 @@ export class JsonApiClient extends ApiClient {
 
     const { response, error } = await this.fetch(apiUrl, {
       method: "POST",
-      body,
+      body: typeof body === "object" ? JSON.stringify(body) : body,
       headers,
     });
 
