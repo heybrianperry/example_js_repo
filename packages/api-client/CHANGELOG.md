@@ -1,5 +1,34 @@
 # @drupal-api-client/api-client
 
+## 0.4.0
+
+### Minor Changes
+
+- dbec6a2: Adds OAuth2 as an option for authentication
+
+  To use the new option, set the authentication object with the type "OAuth" and provide the client ID and client secret as credentials:
+
+  ```ts
+  const baseUrl = "https://example.com";
+  const client = new ApiClient(baseUrl, {
+    authentication: {
+      type: "OAuth",
+      credentials: {
+        clientId: "my-client-id",
+        clientSecret: "my-client-secret",
+      },
+    },
+    // ...
+  });
+  ```
+
+- a019046: Refactored the return type of the ApiClient fetch to return an object with the response and an error. This allows for some initial error handling in the methods that use fetch.
+- c1b0c4a: Adds support for custom authorization header
+
+### Patch Changes
+
+- 806cabd: Added GPL-2.0-or-later license
+
 ## 0.2.0
 
 ### Minor Changes

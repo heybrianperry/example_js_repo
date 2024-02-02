@@ -1,5 +1,23 @@
 # @drupal-api-client/json-api-client
 
+## 0.4.0
+
+### Minor Changes
+
+- a019046: Refactored the return type of the ApiClient fetch to return an object with the response and an error. This allows for some initial error handling in the methods that use fetch.
+- 52e9bce: Adds support for creating resource in json api client.
+- 57fd378: Adds support for updating resource in json api client.
+
+### Patch Changes
+
+- 806cabd: Added GPL-2.0-or-later license
+- 78f7274: Adds support object as body param for updateResource() and createResource() method
+- Updated dependencies [806cabd]
+- Updated dependencies [dbec6a2]
+- Updated dependencies [a019046]
+- Updated dependencies [c1b0c4a]
+  - @drupal-api-client/api-client@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes
