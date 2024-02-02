@@ -92,7 +92,7 @@ export type OAuthTokenResponse = {
 /**
  * Valid auth types
  */
-type AuthType = "Basic" | "OAuth";
+type AuthType = "Basic" | "OAuth" | "Custom";
 
 /**
  * Internal type for composing Credentials types
@@ -118,6 +118,13 @@ type Credentials<AT extends AuthType> = AT extends "Basic"
        * The OAuth Client secret
        */
       clientSecret: string;
+    }
+  : AT extends "Custom"
+  ? {
+      /**
+       * The Custom auth value
+       */
+      value: string;
     }
   : never;
 
@@ -151,9 +158,15 @@ type BasicAuth = Auth<"Basic">;
 type OAuth = Auth<"OAuth">;
 
 /**
+ * Custom authentication uses a token that is passed in the Authorization header
+ */
+type CustomAuth = Auth<"Custom">;
+
+/**
  * Represents the authentication configuration to use for authenticated API requests.
  */
-type Authentication = BasicAuth | OAuth;
+
+type Authentication = BasicAuth | OAuth | CustomAuth;
 
 /**
  * The cache used by the ApiClient to store responses.

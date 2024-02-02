@@ -188,6 +188,7 @@ export class ApiClient {
    * If the authentication type is "OAuth", it will fetch a new
    * access token or use the stored access token if it exists
    * and is still valid.
+   * if the authentication type is "Custom", it will use the provided value.
    *
    * @param options - The RequestInit options to which the authorization header should be added.
    * @returns The updated RequestInit options with the authorization header, if applicable.
@@ -238,6 +239,12 @@ export class ApiClient {
         headers.set("Authorization", `${tokenType} ${accessToken}`);
         break;
       }
+      case "Custom":
+        headers.set(
+          "Authorization",
+          `${this.authentication.credentials.value}`,
+        );
+        break;
       default:
         if (this.debug) {
           this.log(
