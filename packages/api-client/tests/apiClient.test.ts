@@ -67,3 +67,35 @@ describe("fetch", async () => {
     expect(error).toBeNull();
   });
 });
+
+describe("getCachedResponse", async () => {
+  it("Returns null if there is no cache", async () => {
+    const client = new ApiClient(baseUrl, { debug: true });
+    const response = await client.getCachedResponse("invalidkey");
+    console.log("debug", client.debug);
+    expect(response).toBeNull();
+  });
+  it("Returns null if there is no cache hit", async () => {
+    const store = new Map();
+    const cache = {
+      get: async (key: string) => store.get(key),
+      set: async <T>(key: string, value: T) => store.set(key, value),
+    };
+    const client = new ApiClient(baseUrl, { cache, debug: true });
+    const response = await client.getCachedResponse("invalidkey");
+
+    expect(response).toBeNull();
+  });
+  it("Returns a value if there is a cache hit", async () => {
+    const store = new Map();
+    const cache = {
+      get: async (key: string) => store.get(key),
+      set: async <T>(key: string, value: T) => store.set(key, value),
+    };
+    const client = new ApiClient(baseUrl, { cache, debug: true });
+    client.cache?.set("validkey", "validvalue");
+    const response = await client.getCachedResponse("validkey");
+
+    expect(response).toBe("validvalue");
+  });
+});

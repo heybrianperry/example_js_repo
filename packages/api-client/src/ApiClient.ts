@@ -274,4 +274,29 @@ export class ApiClient {
       this.logger[level]?.(message);
     }
   }
+
+  /**
+   * Retrieves a cached response from the cache.
+   * @param cacheKey - The cache key to use for retrieving the cached response.
+   * @returns A promise wrapping the cached response as a generic type.
+   */
+  async getCachedResponse<T>(cacheKey: string) {
+    if (!this.cache) {
+      return null;
+    }
+    if (this.debug) {
+      this.log("verbose", `Checking cache for key ${cacheKey}...`);
+    }
+    const cachedResponse = await this.cache.get<T>(cacheKey);
+    if (!cachedResponse) {
+      if (this.debug) {
+        this.log("verbose", `No cached response found for key ${cacheKey}...`);
+      }
+      return null;
+    }
+    if (this.debug) {
+      this.log("verbose", `Found cached response for key ${cacheKey}...`);
+    }
+    return cachedResponse;
+  }
 }

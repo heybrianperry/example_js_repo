@@ -172,6 +172,11 @@ async function main() {
       singleResourceSpanishWithCacheDisabled,
     );
 
+    const routerResponse = await jsonApiClient.getResourceByPath(
+      "/articles/give-it-a-go-and-grow-your-own-herbs",
+    );
+    console.log("JSON:API Router response", routerResponse);
+
     // trigger an error - check the console to see the error logged from getResource
     // @ts-expect-error
     globalThis.fetch = undefined;

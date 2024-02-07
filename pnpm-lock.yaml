@@ -59,6 +59,22 @@ importers:
         specifier: 0.34.6
         version: 0.34.6
 
+  examples/decoupled-router-client:
+    dependencies:
+      '@drupal-api-client/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@drupal-api-client/decoupled-router-client':
+        specifier: workspace:*
+        version: link:../../packages/decoupled-router-client
+    devDependencies:
+      typescript:
+        specifier: ^5.0.2
+        version: 5.2.2
+      vite:
+        specifier: ^5.0.2
+        version: 5.0.2(@types/node@20.10.0)
+
   examples/json-api-client:
     dependencies:
       '@drupal-api-client/api-client':
@@ -115,6 +131,37 @@ importers:
         specifier: ^0.34.6
         version: 0.34.6
 
+  packages/decoupled-router-client:
+    dependencies:
+      '@drupal-api-client/api-client':
+        specifier: workspace:*
+        version: link:../api-client
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.13.1
+        version: 0.13.1
+      '@types/isomorphic-fetch':
+        specifier: ^0.0.39
+        version: 0.0.39
+      '@vitest/coverage-v8':
+        specifier: ^0.34.1
+        version: 0.34.6(vitest@0.34.6)
+      isomorphic-fetch:
+        specifier: ^3.0.0
+        version: 3.0.0
+      msw:
+        specifier: 2.0.8
+        version: 2.0.8(typescript@5.2.2)
+      publint:
+        specifier: ^0.2.0
+        version: 0.2.5
+      tsup:
+        specifier: ^7.3.0
+        version: 7.3.0(typescript@5.2.2)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
+
   packages/json-api-client:
     dependencies:
       '@aws-crypto/sha256-js':
@@ -123,6 +170,9 @@ importers:
       '@drupal-api-client/api-client':
         specifier: workspace:^0.4.0
         version: link:../api-client
+      '@drupal-api-client/decoupled-router-client':
+        specifier: workspace:*
+        version: link:../decoupled-router-client
       '@smithy/util-hex-encoding':
         specifier: ^2.0.0
         version: 2.0.0

@@ -1,8 +1,8 @@
 {
-  "name": "@drupal-api-client/json-api-client",
-  "version": "0.4.0",
+  "name": "@drupal-api-client/decoupled-router-client",
+  "version": "0.1.0",
   "license": "GPL-2.0-or-later",
-  "description": "",
+  "description": "Client to interface with Drupal's Decoupled Router endpoint",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
     "check:types": "pnpm arethetypeswrong && pnpm publint",
@@ -35,25 +35,21 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.13.1",
-    "@types/jsonapi-serializer": "^3.6.8",
+    "@types/isomorphic-fetch": "^0.0.39",
     "@vitest/coverage-v8": "^0.34.1",
-    "jsona": "^1.11.0",
-    "jsonapi-serializer": "^3.6.9",
+    "isomorphic-fetch": "^3.0.0",
     "msw": "2.0.8",
     "publint": "^0.2.0",
     "tsup": "^7.3.0",
     "vitest": "^0.34.6"
-  },
-  "dependencies": {
-    "@aws-crypto/sha256-js": "^5.1.0",
-    "@drupal-api-client/api-client": "workspace:^0.4.0",
-    "@drupal-api-client/decoupled-router-client": "workspace:*",
-    "@smithy/util-hex-encoding": "^2.0.0"
   },
   "typedocOptions": {
     "entryPoints": [
       "src/index.ts"
     ],
     "tsconfig": "./tsconfig.typedoc.json"
+  },
+  "dependencies": {
+    "@drupal-api-client/api-client": "workspace:*"
   }
 }

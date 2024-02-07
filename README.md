@@ -134,3 +134,36 @@ to the repository.
 ### Creating and Publishing New Versions
 
 Versions and releases are currently created manually.
+
+## Adding a new package
+
+Ymmv, but these are the steps I followed when creating a new package that extends api-client. I don't expect us to be doing this frequently, but if that proves wrong we could create a scaffolder for this.
+
+- Create a new subdirectory in 'packages'
+- Copy package.json from api-client into the new package directory.
+- Update name, version and description in package.json. Edit dependencies if necessary.
+- Add `"@drupal-api-client/api-client": "workspace:*"` as a dependency
+- run `pnpm i` at the root of the repository.
+- Create `README.md` in the new package directory.
+- Copy the following files from `api-client` to the new package:
+  - .eslintrc
+  - tsconfig.json
+  - tsconfig.typedoc.json
+  - tsup.config.ts
+  - vite.config.mts
+- Create an `src` subdirectory with:
+  - a typescript file named after your new class.
+  - A types.ts file.
+  - an index.ts file - this should export your newly created class and any types. You can model this after index.ts in the api-client package.
+- It now should be possible to build by running `pnpm build` in the new package directory.
+- Create tests
+  - Add tests directory with at least one test.ts file.
+  - Update the test object in vite.config.mts if tests do not yet use mocks or a setup file.
+- Scaffold example
+  - Create a new subdirectory in /examples
+  - Excluding CHANGELOG.md, /dist, and /node_modules, copy the files from another example.
+  - Remove and add dependencies from package.json as needed.
+  - run `pnpm i` at the root of the repository.
+  - Update README.md.
+  - Add a src/main.ts file with your example.
+  - It now should be possible to running `pnpm dev` and `pnpm build` in the new example directory.

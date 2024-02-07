@@ -7,15 +7,19 @@ import nodePage from "./data/node-page.json";
 import nodeRecipeSingleResource from "./data/node-recipe-en-single-resource.json";
 import nodeRecipeSingleSpanish from "./data/node-recipe-es-single-resource.json";
 import nodeRecipe from "./data/node-recipe.json";
+import resolvedRecipeEs from "./data/resolved-recipe-es.json";
+import resolvedRecipe from "./data/resolved-recipe.json";
+import unresolvedRecipe from "./data/unresolved-recipe.json";
 
-import nodePageUpdateResource404Response from "./data/node-page-update-resource-404-response.json";
 import nodePageUpdateResource200Response from "./data/node-page-update-resource-200-response.json";
+import nodePageUpdateResource404Response from "./data/node-page-update-resource-404-response.json";
 
 import nodePageCreate from "./data/node-page-create-response.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
 const apiPrefix = "jsonapi";
+const routerPrefix = "router/translate-path";
 
 const defaultLocale = "en";
 
@@ -121,6 +125,45 @@ export default [
         headers: request.headers,
       }),
   ),
+  http.get(`${baseUrl}/${routerPrefix}`, ({ request }) => {
+    const url = new URL(request.url);
+    if (
+      url.searchParams &&
+      url.searchParams.get("path") === "/recipes/deep-mediterranean-quiche"
+    ) {
+      return new Response(JSON.stringify(resolvedRecipe), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      });
+    } else {
+      return new Response(JSON.stringify(unresolvedRecipe), {
+        status: 404,
+        statusText: "Not Found",
+        headers: request.headers,
+      });
+    }
+  }),
+  http.get(`${baseUrl}/${overrideLocale}/${routerPrefix}`, ({ request }) => {
+    const url = new URL(request.url);
+    if (
+      url.searchParams &&
+      url.searchParams.get("path") ===
+        "path=/recipes/quiche-mediterráneo-profundo"
+    ) {
+      return new Response(JSON.stringify(resolvedRecipeEs), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      });
+    } else {
+      return new Response(JSON.stringify(unresolvedRecipe), {
+        status: 404,
+        statusText: "Not Found",
+        headers: request.headers,
+      });
+    }
+  }),
   http.patch(
     `${baseUrl}/${apiPrefix}/node/page/11fc449b-aca0-4b74-bc3b-677da021f1d7`,
     ({ request }) =>

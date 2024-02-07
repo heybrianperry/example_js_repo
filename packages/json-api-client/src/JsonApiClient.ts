@@ -4,6 +4,13 @@ import {
   type ApiClientOptions,
   type BaseUrl,
 } from "@drupal-api-client/api-client";
+import {
+  DecoupledRouterClient,
+  isRaw,
+  isResolved,
+  type DecoupledRouterResponse,
+  type RawDecoupledRouterResponse,
+} from "@drupal-api-client/decoupled-router-client";
 import { toHex } from "@smithy/util-hex-encoding";
 import type {
   EndpointUrlSegments,
@@ -18,6 +25,11 @@ import type {
  */
 export class JsonApiClient extends ApiClient {
   /**
+   * link {@link DecoupledRouterClient}
+   */
+  router: DecoupledRouterClient;
+
+  /**
    * Creates a new instance of the JsonApiClient.
    * @param baseUrl - The base URL of the API. {@link BaseUrl}
    * @param options - (Optional) Additional options for configuring the API client. {@link JsonApiClientOptions}
@@ -28,6 +40,7 @@ export class JsonApiClient extends ApiClient {
     this.apiPrefix = apiPrefix || "jsonapi";
     this.cache = cache;
     this.debug = debug || false;
+    this.router = new DecoupledRouterClient(baseUrl, options);
   }
 
   /**
@@ -262,31 +275,6 @@ export class JsonApiClient extends ApiClient {
     return false;
   }
 
-  /**
-   * Retrieves a cached response from the cache.
-   * @param cacheKey - The cache key to use for retrieving the cached response.
-   * @returns A promise wrapping the cached response as a generic type.
-   */
-  async getCachedResponse<T>(cacheKey: string) {
-    if (!this.cache) {
-      return null;
-    }
-    if (this.debug) {
-      this.log("verbose", `Checking cache for key ${cacheKey}...`);
-    }
-    const cachedResponse = await this.cache.get<T>(cacheKey);
-    if (!cachedResponse) {
-      if (this.debug) {
-        this.log("verbose", `No cached response found for key ${cacheKey}...`);
-      }
-      return null;
-    }
-    if (this.debug) {
-      this.log("verbose", `Found cached response for key ${cacheKey}...`);
-    }
-    return cachedResponse;
-  }
-
   static getEntityTypeIdAndBundleId(type: EntityTypeWithBundle): {
     entityTypeId: string;
     bundleId: string;
@@ -333,6 +321,38 @@ export class JsonApiClient extends ApiClient {
     }
 
     return `${localePart}${entityTypeId}--${bundleId}${id}${queryStringPart}`;
+  }
+
+  /**
+   * Attempts to resolve a path to a resource and then fetches the resolved resource.
+   * @param path - The path to resolve and fetch.
+   * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
+   * @returns - A promise that resolves to either the JSON data of the requested resource or an UnResolvedPath if the path could not be resolved.
+   *
+   * @example
+   * const article = await jsonApiClient.getResourceByPath("/articles/give-it-a-go-and-grow-your-own-herbs");
+   */
+  async getResourceByPath(path: string, options?: GetOptions) {
+    const routingResponse:
+      | DecoupledRouterResponse
+      | RawDecoupledRouterResponse = await this.router.translatePath(
+      path,
+      options,
+    );
+
+    // The rawResponse option will flow to translatePath, so we need to handle both cases here
+    const routingData: DecoupledRouterResponse = isRaw(routingResponse)
+      ? routingResponse.json
+      : routingResponse;
+
+    if (isResolved(routingData)) {
+      return this.getResource(
+        routingData.jsonapi.resourceName,
+        routingData.entity.uuid,
+        options,
+      );
+    }
+    return routingData;
   }
 
   /**
