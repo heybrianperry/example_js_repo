@@ -1,6 +1,6 @@
 {
   "name": "@drupal-api-client/decoupled-router-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "GPL-2.0-or-later",
   "description": "Client to interface with Drupal's Decoupled Router endpoint",
   "scripts": {
