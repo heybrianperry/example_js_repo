@@ -12,10 +12,14 @@ import {
   type RawDecoupledRouterResponse,
 } from "@drupal-api-client/decoupled-router-client";
 import { toHex } from "@smithy/util-hex-encoding";
-import type {
+import {
+  CreateOptions,
+  DeleteOptions,
   EndpointUrlSegments,
   EntityTypeWithBundle,
   GetOptions,
+  RawApiResponseWithData,
+  UpdateOptions,
 } from "./types";
 
 /**
@@ -56,7 +60,10 @@ export class JsonApiClient extends ApiClient {
    * const collection = await jsonApiClient.get<JSONAPI.CollectionResourceDoc<string, Recipe>>("node--recipe");
    * ```
    */
-  async getCollection<T>(type: EntityTypeWithBundle, options?: GetOptions) {
+  async getCollection<T>(
+    type: EntityTypeWithBundle,
+    options?: GetOptions,
+  ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
@@ -97,17 +104,13 @@ export class JsonApiClient extends ApiClient {
       }
       throw error;
     }
-    const statusCode = response.status;
-    const responseClone = response.clone();
-    let json = await response.json();
-    json = this.serializer
-      ? (this.serializer.deserialize(json) as T)
-      : (json as T);
-    if (this.cache && !options?.disableCache && statusCode < 400) {
-      await this.cache?.set(cacheKey, json);
-    }
-    if (rawResponse) {
-      return { response: responseClone, json };
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
     }
     return json;
   }
@@ -130,7 +133,7 @@ export class JsonApiClient extends ApiClient {
     type: EntityTypeWithBundle,
     resourceId: string,
     options?: GetOptions,
-  ) {
+  ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const localeSegment = options?.locale || this.defaultLocale;
@@ -173,17 +176,13 @@ export class JsonApiClient extends ApiClient {
       }
       throw error;
     }
-    const statusCode = response.status;
-    const responseClone = response.clone();
-    let json = await response.json();
-    json = this.serializer
-      ? (this.serializer.deserialize(json) as T)
-      : (json as T);
-    if (this.cache && !options?.disableCache && statusCode < 400) {
-      await this.cache?.set(cacheKey, json);
-    }
-    if (rawResponse) {
-      return { response: responseClone, json };
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
     }
     return json;
   }
@@ -217,32 +216,30 @@ export class JsonApiClient extends ApiClient {
    *
    * @param type - The type of the entity with bundle information.
    * @param resourceId - The ID of the resource to be deleted.
-   * @returns A boolean indicating whether the resource deletion was successful.
-   *
-   * @remarks
-   * This method initiates the deletion of a resource by sending a DELETE request to the API.
-   * If the deletion is successful (HTTP status 204), it returns true; otherwise, it returns false.
+   * @param options - (Optional) Additional options for customizing the request. {@link DeleteOptions}
+   * @returns A Promise that resolves to a Response object or RawApiResponseWithData.
    *
    * @example
    * ```typescript
-   * const success = await deleteResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d");
-   * if (success) {
-   *   console.log("Resource deleted successfully.");
-   * } else {
-   *   console.error("Failed to delete resource.");
-   * }
+   * const responseBody = await deleteResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d", { rawResponse: false });
    * ```
    */
-  async deleteResource(
+  async deleteResource<T>(
     type: EntityTypeWithBundle,
     resourceId: string,
-  ): Promise<boolean> {
+    options?: DeleteOptions,
+  ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
+    });
+
+    const cacheKey = await JsonApiClient.createCacheKey({
+      entityTypeId,
+      bundleId,
     });
 
     if (this.debug) {
@@ -266,13 +263,22 @@ export class JsonApiClient extends ApiClient {
         "verbose",
         `Successfully deleted resource. ResourceId: ${resourceId}`,
       );
-      return true;
+    } else {
+      this.log(
+        "error",
+        `Failed to delete resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
+      );
     }
-    this.log(
-      "error",
-      `Failed to delete resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
-    );
-    return false;
+
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
+    }
+    return json;
   }
 
   static getEntityTypeIdAndBundleId(type: EntityTypeWithBundle): {
@@ -361,14 +367,15 @@ export class JsonApiClient extends ApiClient {
    * @param type - The type of the entity with bundle information.
    * @param resourceId - The ID of the resource to be updated.
    * @param body - The body of the request.
-   * @returns A Promise that resolves to a Response object.
+   * @param options - (Optional) Additional options for customizing the request. {@link UpdateOptions}
+   * @returns A Promise that resolves to a Response object or RawApiResponseWithData.
    *
    * @remarks
    * This method initiates the update of a resource by sending a PATCH request to the API.
    *
    * @example
    * ```typescript
-   * const response = await updateResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d", `{
+   * const responseBody = await updateResource("node--page", "7cbb8b73-8bcb-4008-874e-2bd496bd419d", `{
    *        "data": {
    *         "type": "node--page",
    *         "id": "11fc449b-aca0-4b74-bc3b-677da021f1d7",
@@ -381,20 +388,26 @@ export class JsonApiClient extends ApiClient {
    *             "title": "test 2"
    *         }
    *     }
-   * }`);
+   * }`, { rawResponse: false });
    * ```
    */
-  async updateResource(
+  async updateResource<T>(
     type: EntityTypeWithBundle,
     resourceId: string,
     body: string | object,
-  ): Promise<Response> {
+    options?: UpdateOptions,
+  ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
+    });
+
+    const cacheKey = await JsonApiClient.createCacheKey({
+      entityTypeId,
+      bundleId,
     });
 
     if (this.debug) {
@@ -430,13 +443,22 @@ export class JsonApiClient extends ApiClient {
         "verbose",
         `Successfully updated resource. ResourceId: ${resourceId}`,
       );
-      return response;
+    } else {
+      this.log(
+        "error",
+        `Failed to update resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
+      );
     }
-    this.log(
-      "error",
-      `Failed to update resource. ResourceId: ${resourceId}, Status: ${response?.status}`,
-    );
-    return response;
+
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
+    }
+    return json;
   }
 
   /**
@@ -444,14 +466,15 @@ export class JsonApiClient extends ApiClient {
    *
    * @param type - The type of the entity with bundle information.
    * @param body - The body of the request.
-   * @returns A Promise that resolves to a Response object.
+   * @param options - (Optional) Additional options for customizing the request. {@link CreateOptions}
+   * @returns A Promise that resolves to a Response object or RawApiResponseWithData.
    *
    * @remarks
    * This method initiates the creation of a resource by sending a POST request to the API.
    *
    * @example
    * ```typescript
-   * const response = await createResource("node--page", `{
+   * const responseBody = await createResource("node--page", `{
    *   "data": {
    *     "type": "node--page",
    *     "attributes": {
@@ -462,16 +485,22 @@ export class JsonApiClient extends ApiClient {
    *       }
    *     }
    *   }
-   * }`);
+   * }, { rawResponse: false });
    * ```
    */
-  async createResource(
+  async createResource<T>(
     type: EntityTypeWithBundle,
     body: string | object,
-  ): Promise<Response> {
+    options?: CreateOptions,
+  ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
+      entityTypeId,
+      bundleId,
+    });
+
+    const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
     });
@@ -500,9 +529,46 @@ export class JsonApiClient extends ApiClient {
     }
     if (response?.status === 201) {
       this.log("verbose", `Successfully created resource of type: ${type}`);
-      return response;
+    } else {
+      this.log(
+        "error",
+        `Failed to create resource. Status: ${response?.status}`,
+      );
     }
-    this.log("error", `Failed to create resource. Status: ${response?.status}`);
-    return response;
+
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
+    }
+    return json;
+  }
+
+  /**
+   * Processes the API response and returns the JSON data.
+   * @param response - The response object from the API.
+   * @param cacheKey - The cache key to use for caching the response.
+   * @param options  - (Optional) Additional options for customizing the request. {@link GetOptions | UpdateOptions | CreateOptions}
+   */
+  async processApiResponseAndParseBody<T>(
+    response: Response,
+    cacheKey: string,
+    options?: GetOptions | UpdateOptions | CreateOptions,
+  ): Promise<T | string> {
+    const statusCode = response.status;
+    if (statusCode === 204) {
+      return "";
+    }
+    let json = await response.json();
+    json = this.serializer
+      ? (this.serializer.deserialize(json) as T)
+      : (json as T);
+    if (this.cache && !options?.disableCache && statusCode < 400) {
+      await this.cache?.set(cacheKey, json);
+    }
+    return json;
   }
 }

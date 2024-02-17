@@ -2,38 +2,55 @@ import { JsonApiClient } from "../src/JsonApiClient";
 import nodePageCreateRequest from "./mocks/data/node-page-create-request.json";
 import notFoundResponse from "./mocks/data/404.json";
 import nodePageCreate from "./mocks/data/node-page-create-response.json";
+import nodePage1Create from "./mocks/data/node-page1-create-resource-404-response.json";
+import { RawApiResponseWithData } from "../src";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const type = "node--page";
 const invalidType = "node--invalid-bundle";
 
 describe("JsonApiClient.createResource()", () => {
-  it("should create resource when passed body with type as string and return response with 201 status", async () => {
+  it("should create resource when passed body with type as string, rawResponse as true and return raw response  with 201 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.createResource(
+    const { response, json } = (await apiClient.createResource(
       type,
       JSON.stringify(nodePageCreateRequest),
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePageCreate>;
+    expect(response.status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePageCreate));
+  });
+
+  it("should create resource when passed body with type as string, rawResponse as false and return body only", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const json = await apiClient.createResource(
+      type,
+      JSON.stringify(nodePageCreateRequest),
+      { rawResponse: false },
     );
-    expect(result.status).toEqual(201);
-    const resultBody = await result.json();
-    expect(JSON.stringify(resultBody)).toEqual(JSON.stringify(nodePageCreate));
+    expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePageCreate));
   });
 
-  it("should create resource when passed body with type as object and return response with 201 status", async () => {
+  it("should create resource when passed body with type as object, rawResponse as true and return raw response with 201 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.createResource(type, nodePageCreateRequest);
-    expect(result.status).toEqual(201);
-    const resultBody = await result.json();
-    expect(JSON.stringify(resultBody)).toEqual(JSON.stringify(nodePageCreate));
+    const { response, json } = (await apiClient.createResource(
+      type,
+      nodePageCreateRequest,
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePageCreate>;
+    expect(response.status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePageCreate));
   });
 
-  it("should give 404 for invalid bundle type and return response with 404 status", async () => {
+  it("should give 404 for invalid bundle type, when passed rawResponse as true and return response with 404 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.createResource(
+    const { response, json } = (await apiClient.createResource(
       invalidType,
       JSON.stringify(notFoundResponse),
-    );
-    expect(result.status).toEqual(404);
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePage1Create>;
+    expect(response.status).toEqual(404);
+    expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePage1Create));
   });
   it("should throw an error if one occurs in fetch", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });

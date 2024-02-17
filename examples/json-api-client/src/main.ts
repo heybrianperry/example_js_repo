@@ -1,5 +1,8 @@
 import { Cache } from "@drupal-api-client/api-client";
-import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import {
+  JsonApiClient,
+  RawApiResponseWithData,
+} from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 import * as JSONAPI from "jsonapi-typescript";
 import { Logger } from "tslog";
@@ -112,12 +115,13 @@ async function main() {
       filterCollectionUsingQueryString,
     );
     /* Example using a raw response */
-    const recipeCollectionRaw = await jsonApiClient.getCollection(
+    const recipeCollectionRaw = (await jsonApiClient.getCollection(
       "node--recipe",
       {
         rawResponse: true,
       },
-    );
+    )) as RawApiResponseWithData<Recipe>;
+
     console.log("Object with raw response and json: ", recipeCollectionRaw);
     console.log("Json provided by object: ", recipeCollectionRaw.json);
     const rawResponse = recipeCollectionRaw.response;
@@ -133,13 +137,13 @@ async function main() {
     );
     console.log("JSON:API Single resource", singleResource);
 
-    const singleResourceRaw = await jsonApiClient.getResource(
+    const singleResourceRaw = (await jsonApiClient.getResource(
       "node--recipe",
       resourceId,
       {
         rawResponse: true,
       },
-    );
+    )) as RawApiResponseWithData<Recipe>;
     console.log(
       "Object with raw response and json (single resource): ",
       singleResourceRaw,

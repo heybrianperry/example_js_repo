@@ -2,6 +2,7 @@ import { JsonApiClient } from "../src/JsonApiClient";
 import nodePageUpdateRequest from "./mocks/data/node-page-update-request.json";
 import nodePageUpdateResource404Response from "./mocks/data/node-page-update-resource-404-response.json";
 import nodePageUpdateResource200Response from "./mocks/data/node-page-update-resource-200-response.json";
+import { RawApiResponseWithData } from "../src";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const resourceId = "11fc449b-aca0-4b74-bc3b-677da021f1d7";
@@ -9,42 +10,56 @@ const invalidResourceId = "66fc449b-aca0-4b74-bc3b-677da021f1d9";
 const type = "node--page";
 
 describe("JsonApiClient.updateResource()", () => {
-  it("should update resource when passed body with type as string and return response with 200 status", async () => {
+  it("should update resource when passed body with type as string and rawResponse as true and return response with 200 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.updateResource(
+    const { response, json } = (await apiClient.updateResource(
       type,
       resourceId,
       JSON.stringify(nodePageUpdateRequest),
-    );
-    expect(result.status).toEqual(200);
-    const resultBody = await result.json();
-    expect(JSON.stringify(resultBody)).toEqual(
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePageUpdateResource200Response>;
+    expect(response.status).toEqual(200);
+    expect(JSON.stringify(json)).toEqual(
       JSON.stringify(nodePageUpdateResource200Response),
     );
   });
-  it("should update resource when passed body with type as object and return response with 200 status", async () => {
+
+  it("should update resource when passed body with type as string and rawResponse as false and return and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.updateResource(
+    const json = await apiClient.updateResource(
+      type,
+      resourceId,
+      JSON.stringify(nodePageUpdateRequest),
+      { rawResponse: false },
+    );
+    expect(JSON.stringify(json)).toEqual(
+      JSON.stringify(nodePageUpdateResource200Response),
+    );
+  });
+
+  it("should update resource when passed body with type as object, rawResponse as true and return response with 200 status", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const { response, json } = (await apiClient.updateResource(
       type,
       resourceId,
       nodePageUpdateRequest,
-    );
-    expect(result.status).toEqual(200);
-    const resultBody = await result.json();
-    expect(JSON.stringify(resultBody)).toEqual(
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePageUpdateResource200Response>;
+    expect(response.status).toEqual(200);
+    expect(JSON.stringify(json)).toEqual(
       JSON.stringify(nodePageUpdateResource200Response),
     );
   });
-  it("should give 404 for invalid resource id and return response with 404 status", async () => {
+  it("should give 404 for invalid resource id, when passed with rawResponse as true and return response with 404 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
-    const result = await apiClient.updateResource(
+    const { response, json } = (await apiClient.updateResource(
       type,
       invalidResourceId,
       JSON.stringify(nodePageUpdateRequest),
-    );
-    expect(result.status).toEqual(404);
-    const resultBody = await result.json();
-    expect(JSON.stringify(resultBody)).toEqual(
+      { rawResponse: true },
+    )) as RawApiResponseWithData<typeof nodePageUpdateResource404Response>;
+    expect(response.status).toEqual(404);
+    expect(JSON.stringify(json)).toEqual(
       JSON.stringify(nodePageUpdateResource404Response),
     );
   });

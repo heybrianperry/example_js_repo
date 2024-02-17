@@ -7,6 +7,7 @@ import nodePageFilter from "./mocks/data/node-page-filter.json";
 import nodePage from "./mocks/data/node-page.json";
 import nodeRecipeJsona from "./mocks/data/node-recipe-deserialize-jsona.json";
 import nodeRecipeJsonAPISerializer from "./mocks/data/node-recipe-deserialize-jsonapi-serializer.json";
+import { RawApiResponseWithData } from "../src";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -95,9 +96,9 @@ describe("JsonApiClient.getCollection()", () => {
   it("should fetch raw response", async () => {
     const client = new JsonApiClient(baseUrl, { debug: true });
     const type = "node--page";
-    const { response, json } = await client.getCollection(type, {
+    const { response, json } = (await client.getCollection(type, {
       rawResponse: true,
-    });
+    })) as RawApiResponseWithData<typeof nodePage>;
 
     // Assert that the json data was fetched correctly
     expect(json).toEqual(nodePage);

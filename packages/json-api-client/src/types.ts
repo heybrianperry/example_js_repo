@@ -1,9 +1,25 @@
 import type { Locale } from "@drupal-api-client/api-client";
 
 /**
+ * Base options for customizing each request.
+ */
+export interface RequestBaseOptions {
+  /**
+   * Indicates whether the raw HTTP response should be returned.
+   * When set to true, the response will not be parsed or processed, providing the raw, unaltered response from the server.
+   */
+  rawResponse?: boolean;
+
+  /**
+   * Whether to disable the cache for the request.
+   */
+  disableCache?: boolean;
+}
+
+/**
  * Options for customizing the get request.
  */
-export interface GetOptions {
+export interface GetOptions extends RequestBaseOptions {
   /**
    * The locale to use for the request.
    * If not set, the default locale will be used.
@@ -22,17 +38,6 @@ export interface GetOptions {
    * ```
    */
   queryString?: string;
-
-  /**
-   * Indicates whether the raw HTTP response should be returned.
-   * When set to true, the response will not be parsed or processed, providing the raw, unaltered response from the server.
-   */
-  rawResponse?: boolean;
-
-  /**
-   * Whether or not to disable the cache for the request.
-   */
-  disableCache?: boolean;
 }
 
 /**
@@ -64,4 +69,24 @@ export interface EndpointUrlSegments {
    * Optional. The query string. Default is an empty string.
    */
   queryString?: string;
+}
+
+/**
+ * Options for customizing the patch request.
+ */
+export interface UpdateOptions extends RequestBaseOptions {}
+
+/**
+ * Options for customizing the post request.
+ */
+export interface CreateOptions extends RequestBaseOptions {}
+
+/**
+ * Options for customizing the delete request.
+ */
+export interface DeleteOptions extends RequestBaseOptions {}
+
+export interface RawApiResponseWithData<T> {
+  response: Response;
+  json: T;
 }

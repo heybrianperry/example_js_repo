@@ -101,7 +101,7 @@ export default [
   http.delete(
     `${baseUrl}/${apiPrefix}/node/page/35f7cd32-2c54-49f2-8740-0b0ec2ba61f7`,
     ({ request }) =>
-      new Response(null, {
+      new Response(JSON.stringify(notFound), {
         status: 404,
         statusText: "Not Found",
         headers: request.headers,

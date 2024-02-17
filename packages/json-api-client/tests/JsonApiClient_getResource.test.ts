@@ -5,6 +5,7 @@ import nodeRecipeSingleResource from "./mocks/data/node-recipe-en-single-resourc
 import nodeRecipeSingleSpanish from "./mocks/data/node-recipe-es-single-resource.json";
 import nodeRecipeSingleJsona from "./mocks/data/node-recipe-resource-deserialize-jsona.json";
 import nodeRecipeSingleJsonAPISerializer from "./mocks/data/node-recipe-resource-deserialize-jsonapi-serializer.json";
+import { RawApiResponseWithData } from "../src";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
@@ -72,9 +73,9 @@ describe("JsonApiClient.getResource()", () => {
   test("should fetch raw response", async () => {
     const client = new JsonApiClient(baseUrl, { debug: true });
     const type = "node--recipe";
-    const { response, json } = await client.getResource(type, resourceId, {
+    const { response, json } = (await client.getResource(type, resourceId, {
       rawResponse: true,
-    });
+    })) as RawApiResponseWithData<typeof nodeRecipeSingleResource>;
 
     // Assert that the json data was fetched correctly
     expect(json).toEqual(nodeRecipeSingleResource);
