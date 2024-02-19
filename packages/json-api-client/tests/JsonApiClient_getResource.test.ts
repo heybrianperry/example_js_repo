@@ -1,11 +1,12 @@
 import Jsona from "jsona";
 import { Deserializer } from "jsonapi-serializer";
+import { RawApiResponseWithData } from "../src";
 import { JsonApiClient } from "../src/JsonApiClient";
 import nodeRecipeSingleResource from "./mocks/data/node-recipe-en-single-resource.json";
 import nodeRecipeSingleSpanish from "./mocks/data/node-recipe-es-single-resource.json";
 import nodeRecipeSingleJsona from "./mocks/data/node-recipe-resource-deserialize-jsona.json";
 import nodeRecipeSingleJsonAPISerializer from "./mocks/data/node-recipe-resource-deserialize-jsonapi-serializer.json";
-import { RawApiResponseWithData } from "../src";
+import nodeRecipeSingleSerializedJsona from "./mocks/data/node-recipe-resource-reserialize-jsona.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
@@ -48,6 +49,12 @@ describe("JsonApiClient.getResource()", () => {
 
     // Assert that the data was fetched correctly
     expect(result).toEqual(nodeRecipeSingleJsona);
+
+    // And that we can re-serialize the data
+    const serializedData = apiClient.serializer?.serialize
+      ? apiClient.serializer.serialize({ stuff: result })
+      : null;
+    expect(serializedData).toEqual(nodeRecipeSingleSerializedJsona);
   });
 
   it("should fetch resource data for a given type and with custom serializer using SeyZ/jsonapi-serializer", async () => {

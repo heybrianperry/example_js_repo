@@ -181,7 +181,7 @@ export interface Cache {
 export type Locale = string;
 
 /**
- * Represents a serializer interface that defines a method for deserializing data.
+ * Represents a serializer interface that defines methods for serializing and deserializing data.
  */
 export interface Serializer {
   /**
@@ -190,10 +190,17 @@ export interface Serializer {
    * @param options - (Optional) Additional options to be used during deserialization.
    * @returns The deserialized data, which may be of any type.
    */
-  deserialize(
+  deserialize?(
     body: Record<string, unknown>,
     options?: Record<string, unknown>,
   ): unknown;
+
+  /**
+   * Serialize the given data.
+   * @param args - The data to be serialized, represented as a record of string keys and unknown values.
+   * @returns The serialized data, which may be of any type.
+   */
+  serialize?(...args: unknown[]): unknown;
 }
 
 export type LogLevels =

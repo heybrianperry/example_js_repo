@@ -563,7 +563,7 @@ export class JsonApiClient extends ApiClient {
       return "";
     }
     let json = await response.json();
-    json = this.serializer
+    json = this.serializer?.deserialize
       ? (this.serializer.deserialize(json) as T)
       : (json as T);
     if (this.cache && !options?.disableCache && statusCode < 400) {
