@@ -1,5 +1,15 @@
 # @drupal-api-client/api-client
 
+## 0.6.0
+
+### Minor Changes
+
+- adef533: Update ApiClient Serializer Type to Include serialize method
+
+  - Serializer option now accepts a serialize method. This method
+    is not currently used internally, but can be accessed on the
+    client to simplify working with deserialized data.
+
 ## 0.5.0
 
 ### Minor Changes

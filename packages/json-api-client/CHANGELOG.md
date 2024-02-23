@@ -1,5 +1,22 @@
 # @drupal-api-client/json-api-client
 
+## 0.6.0
+
+### Minor Changes
+
+- adef533: Update ApiClient Serializer Type to Include serialize method
+
+  - Serializer option now accepts a serialize method. This method
+    is not currently used internally, but can be accessed on the
+    client to simplify working with deserialized data.
+
+### Patch Changes
+
+- 46a8d8d: createResource, deleteResource and updateResource returns json data by default, but allows raw response support.
+- Updated dependencies [adef533]
+  - @drupal-api-client/api-client@0.6.0
+  - @drupal-api-client/decoupled-router-client@0.2.1
+
 ## 0.5.0
 
 ### Minor Changes
