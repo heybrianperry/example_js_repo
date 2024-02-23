@@ -38,8 +38,13 @@ test:
 
 comment:
   stage: comment
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  # Commenting on merge to canary isn't ideal, but there seems to be a long
+  # standing bug that prevents protected variables from being made available
+  # to MRs even between two protected branches. Hopefully this will give us
+  # a way to cross check changesets while still keeping variables protected.
+  only:
+    - canary
+    - main
   script: pnpm changesets-gitlab comment # comment automatically like https://github.com/changesets/bot
 
 build-docs:
