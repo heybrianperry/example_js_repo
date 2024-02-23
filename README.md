@@ -133,7 +133,10 @@ to the repository.
 
 ### Creating and Publishing New Versions
 
-Versions and releases are currently created manually.
+Releases are automated using the [changesets-gitlab](https://www.npmjs.com/package/changesets-gitlab) package. Changesets-gitlab is currently used in the following contexts:
+
+- The changesets bot will comment on merge requests from canary to main, summarizing changesets if they exist.
+- When code is merged to main, the release job runs which will open a merge request that when merged will publish updated packages to NPM.
 
 ## Adding a new package
 

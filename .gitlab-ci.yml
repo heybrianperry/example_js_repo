@@ -1,6 +1,8 @@
 stages:
   - test
+  - comment
   - build
+  - release
   - deploy
 
 image: node:18
@@ -16,6 +18,13 @@ cache:
   paths:
     - .pnpm-store
 
+include:
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+
+gemnasium-dependency_scanning:
+  variables:
+    DS_INCLUDE_DEV_DEPENDENCIES: "false"
+
 test:
   stage: test
   script:
@@ -27,6 +36,12 @@ test:
     - pnpm check:types
     - pnpm test
 
+comment:
+  stage: comment
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+  script: pnpm changesets-gitlab comment # comment automatically like https://github.com/changesets/bot
+
 build-docs:
   stage: build
   script:
@@ -35,6 +50,13 @@ build-docs:
   artifacts:
     paths:
       - docs
+
+release:
+  only:
+    - main
+  script: pnpm changesets-gitlab
+  variables:
+    INPUT_PUBLISH: pnpm changeset publish
 
 pages:
   stage: deploy

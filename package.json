@@ -52,6 +52,7 @@
     "pnpm": ">=8.x"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.2"
+    "@changesets/cli": "^2.26.2",
+    "changesets-gitlab": "^0.11.5"
   }
 }
