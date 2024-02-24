@@ -45,11 +45,12 @@ build-docs:
       - docs
 
 release:
+  stage: release
   only:
     - main
   script: pnpm changesets-gitlab
   variables:
-    INPUT_VERSION: pnpm changeset version && pnpm i
+    INPUT_VERSION: pnpm version
     INPUT_PUBLISH: pnpm changeset publish
     CREATE_GITLAB_RELEASES: "false"
 

@@ -21,7 +21,8 @@
     "serve:json-api-client-example": "pnpm --filter json-api-client-example preview",
     "tsc": "tsc --noEmit",
     "prepare": "husky install",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "version": "changeset version && pnpm i"
   },
   "keywords": [],
   "author": "",
