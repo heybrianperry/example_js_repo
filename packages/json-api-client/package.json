@@ -1,6 +1,6 @@
 {
   "name": "@drupal-api-client/json-api-client",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "GPL-2.0-or-later",
   "description": "",
   "scripts": {
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.1.0",
-    "@drupal-api-client/api-client": "workspace:^0.6.0",
+    "@drupal-api-client/api-client": "workspace:^0.7.0",
     "@drupal-api-client/decoupled-router-client": "workspace:*",
     "@smithy/util-hex-encoding": "^2.0.0"
   },

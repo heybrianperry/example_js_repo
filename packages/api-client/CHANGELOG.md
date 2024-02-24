@@ -1,5 +1,14 @@
 # @drupal-api-client/api-client
 
+## 0.7.0
+
+### Minor Changes
+
+- 3da2de9: Adds disable authentication option.
+
+  - All methods that make fetch requests now accept a 'disableAuthentication' option.
+    if 'true' no authorization headers will be added for the related fetch request.
+
 ## 0.6.0
 
 ### Minor Changes
