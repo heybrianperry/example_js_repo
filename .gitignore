@@ -5,6 +5,9 @@ dist
 .DS_Store
 coverage
 
+# Gltlab CI
+gl-sbom-npm-pnpm.cdx.json
+
 # Typedoc
 docs
 
