@@ -50,9 +50,8 @@ release:
     - main
   script: pnpm changesets-gitlab
   variables:
-    INPUT_VERSION: pnpm version
-    INPUT_PUBLISH: pnpm changeset publish
-    CREATE_GITLAB_RELEASES: "false"
+    INPUT_VERSION: pnpm run version
+    INPUT_PUBLISH: pnpm run publish
 
 pages:
   stage: deploy

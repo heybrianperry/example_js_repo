@@ -22,7 +22,8 @@
     "tsc": "tsc --noEmit",
     "prepare": "husky install",
     "changeset": "changeset",
-    "version": "changeset version && pnpm i"
+    "version": "changeset version && pnpm i --no-frozen-lockfile",
+    "publish": "pnpm build:packages && pnpm changeset publish"
   },
   "keywords": [],
   "author": "",
