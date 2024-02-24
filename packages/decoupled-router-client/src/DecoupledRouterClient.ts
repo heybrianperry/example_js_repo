@@ -54,7 +54,10 @@ export class DecoupledRouterClient extends ApiClient {
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
-    const { response, error } = await this.fetch(apiUrl);
+    const init: RequestInit = options?.disableAuthentication
+      ? { credentials: "omit" }
+      : {};
+    const { response, error } = await this.fetch(apiUrl, init);
     if (error) {
       if (this.debug) {
         this.log(

@@ -106,9 +106,16 @@ export class ApiClient {
     input: RequestInfo | URL,
     init?: RequestInit,
   ): Promise<FetchReturn> {
+    const disableAuthentication = init?.credentials === "omit";
+    if (this.debug && disableAuthentication) {
+      this.log("verbose", `Disabling authentication for request to ${input}`);
+    }
+
     try {
       let fetchToUse;
-      const newInit = await this.addAuthorizationHeader(init);
+      const newInit = disableAuthentication
+        ? init
+        : await this.addAuthorizationHeader(init);
       fetchToUse = fetch;
       if (this.customFetch) {
         fetchToUse = this.customFetch;

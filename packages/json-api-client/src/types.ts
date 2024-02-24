@@ -14,6 +14,11 @@ export interface RequestBaseOptions {
    * Whether to disable the cache for the request.
    */
   disableCache?: boolean;
+
+  /**
+   * Whether to disable the authentication for the request.
+   */
+  disableAuthentication?: boolean;
 }
 
 /**

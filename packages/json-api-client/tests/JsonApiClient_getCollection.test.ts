@@ -135,4 +135,31 @@ describe("JsonApiClient.getCollection()", () => {
       expect(fetchSpy).toHaveBeenCalledOnce();
     }
   });
+
+  it("should use authentication if provided", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      debug: true,
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const type = "node--page";
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.getCollection(type);
+    expect(addAuthHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should not use authentication if disabled", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      debug: true,
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const type = "node--page";
+    await client.getCollection(type, { disableAuthentication: true });
+    const authSpy = vi.spyOn(client, "addAuthorizationHeader");
+    expect(authSpy).toBeCalledTimes(0);
+  });
 });

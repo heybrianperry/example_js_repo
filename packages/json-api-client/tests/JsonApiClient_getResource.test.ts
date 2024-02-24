@@ -119,4 +119,31 @@ describe("JsonApiClient.getResource()", () => {
       expect(fetchSpy).toHaveBeenCalledOnce();
     }
   });
+
+  it("should use authentication if provided", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      debug: true,
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const type = "node--recipe";
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.getResource(type, resourceId);
+    expect(addAuthHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should not use authentication if disabled", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      debug: true,
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const type = "node--recipe";
+    await client.getResource(type, resourceId, { disableAuthentication: true });
+    const authSpy = vi.spyOn(client, "addAuthorizationHeader");
+    expect(authSpy).toBeCalledTimes(0);
+  });
 });

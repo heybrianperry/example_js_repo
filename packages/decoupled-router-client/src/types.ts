@@ -21,6 +21,11 @@ export interface GetOptions {
    * Whether or not to disable the cache for the request.
    */
   disableCache?: boolean;
+
+  /**
+   * Whether or not to disable the authentication for the request.
+   */
+  disableAuthentication?: boolean;
 }
 
 /**

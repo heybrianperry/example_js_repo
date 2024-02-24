@@ -1,6 +1,6 @@
 import { JsonApiClient } from "../src/JsonApiClient";
-import nodePageCreateRequest from "./mocks/data/node-page-create-request.json";
 import notFoundResponse from "./mocks/data/404.json";
+import nodePageCreateRequest from "./mocks/data/node-page-create-request.json";
 import nodePageCreate from "./mocks/data/node-page-create-response.json";
 import nodePage1Create from "./mocks/data/node-page1-create-resource-404-response.json";
 import { RawApiResponseWithData } from "../src";
@@ -71,5 +71,29 @@ describe("JsonApiClient.createResource()", () => {
         `Failed to create resource. Error: Something went wrong`,
       );
     }
+  });
+  it("should use authentication if provided", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.createResource(type, JSON.stringify(nodePageCreateRequest));
+    expect(addAuthHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should not use authentication if disabled", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.createResource(type, JSON.stringify(nodePageCreateRequest), {
+      disableAuthentication: true,
+    });
+    expect(addAuthHeaderSpy).toBeCalledTimes(0);
   });
 });

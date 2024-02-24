@@ -94,7 +94,11 @@ export class JsonApiClient extends ApiClient {
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
-    const { response, error } = await this.fetch(apiUrl);
+
+    const init: RequestInit = options?.disableAuthentication
+      ? { credentials: "omit" }
+      : {};
+    const { response, error } = await this.fetch(apiUrl, init);
     if (error) {
       if (this.debug) {
         this.log(
@@ -166,7 +170,10 @@ export class JsonApiClient extends ApiClient {
     if (this.debug) {
       this.log("verbose", `Fetching endpoint ${apiUrl}`);
     }
-    const { response, error } = await this.fetch(apiUrl);
+    const init: RequestInit = options?.disableAuthentication
+      ? { credentials: "omit" }
+      : {};
+    const { response, error } = await this.fetch(apiUrl, init);
     if (error) {
       if (this.debug) {
         this.log(
@@ -248,7 +255,10 @@ export class JsonApiClient extends ApiClient {
         `Initiating deletion of resource. Type: ${type}, ResourceId: ${resourceId}`,
       );
     }
-    const { response, error } = await this.fetch(apiUrl, { method: "DELETE" });
+    const init: RequestInit = options?.disableAuthentication
+      ? { credentials: "omit", method: "DELETE" }
+      : { method: "DELETE" };
+    const { response, error } = await this.fetch(apiUrl, init);
     if (error) {
       if (this.debug) {
         this.log(
@@ -426,6 +436,7 @@ export class JsonApiClient extends ApiClient {
     const { response, error } = await this.fetch(apiUrl, {
       method: "PATCH",
       body: typeof body === "object" ? JSON.stringify(body) : body,
+      credentials: options?.disableAuthentication ? "omit" : "same-origin",
       headers,
     });
 
@@ -518,6 +529,7 @@ export class JsonApiClient extends ApiClient {
     const { response, error } = await this.fetch(apiUrl, {
       method: "POST",
       body: typeof body === "object" ? JSON.stringify(body) : body,
+      credentials: options?.disableAuthentication ? "omit" : "same-origin",
       headers,
     });
 

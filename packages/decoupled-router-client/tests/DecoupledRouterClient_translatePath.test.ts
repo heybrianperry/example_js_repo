@@ -97,4 +97,27 @@ describe("DecoupledRouterClient.translatePath()", () => {
     });
     expect(result).toEqual(resolvedArticleEs);
   });
+
+  it("should use authentication if provided", async () => {
+    const client = new DecoupledRouterClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.translatePath(path);
+    expect(addAuthHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should not use authentication if disabled", async () => {
+    const client = new DecoupledRouterClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    await client.translatePath(path, { disableAuthentication: true });
+    const authSpy = vi.spyOn(client, "addAuthorizationHeader");
+    expect(authSpy).toBeCalledTimes(0);
+  });
 });

@@ -1,8 +1,8 @@
 import { JsonApiClient } from "../src/JsonApiClient";
 import nodePageUpdateRequest from "./mocks/data/node-page-update-request.json";
-import nodePageUpdateResource404Response from "./mocks/data/node-page-update-resource-404-response.json";
 import nodePageUpdateResource200Response from "./mocks/data/node-page-update-resource-200-response.json";
 import { RawApiResponseWithData } from "../src";
+import nodePageUpdateResource404Response from "./mocks/data/node-page-update-resource-404-response.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const resourceId = "11fc449b-aca0-4b74-bc3b-677da021f1d7";
@@ -83,5 +83,36 @@ describe("JsonApiClient.updateResource()", () => {
         `Failed to update resource. ResourceId: ${invalidResourceId}, Error: Something went wrong`,
       );
     }
+  });
+  it("should use authentication if provided", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.updateResource(
+      type,
+      resourceId,
+      JSON.stringify(nodePageUpdateRequest),
+    );
+    expect(addAuthHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should not use authentication if disabled", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      authentication: {
+        type: "Basic",
+        credentials: { username: "testUser", password: "testPassword" },
+      },
+    });
+    const addAuthHeaderSpy = vi.spyOn(client, "addAuthorizationHeader");
+    await client.updateResource(
+      type,
+      resourceId,
+      JSON.stringify(nodePageUpdateRequest),
+      { disableAuthentication: true },
+    );
+    expect(addAuthHeaderSpy).toBeCalledTimes(0);
   });
 });

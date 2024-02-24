@@ -66,6 +66,19 @@ describe("fetch", async () => {
     expect(response).toBeDefined();
     expect(error).toBeNull();
   });
+  it("logs to the console if credentials are omitted in debug mode", async () => {
+    const client = new ApiClient(baseUrl, { debug: true });
+    const logSpy = vi.spyOn(client, "log");
+    const url = new URL("/jsonapi/node/article", baseUrl);
+    await client.fetch(url, {
+      credentials: "omit",
+    });
+    expect(logSpy).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith(
+      "verbose",
+      "Disabling authentication for request to https://dev-drupal-api-client.poc/jsonapi/node/article",
+    );
+  });
 });
 
 describe("getCachedResponse", async () => {
