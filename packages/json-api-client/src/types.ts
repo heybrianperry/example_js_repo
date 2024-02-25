@@ -5,6 +5,12 @@ import type { Locale } from "@drupal-api-client/api-client";
  */
 export interface RequestBaseOptions {
   /**
+   * The locale to use for the request.
+   * If not set, the default locale will be used.
+   * If no default locale is set, no locale will be used.
+   */
+  locale?: Locale;
+  /**
    * Indicates whether the raw HTTP response should be returned.
    * When set to true, the response will not be parsed or processed, providing the raw, unaltered response from the server.
    */
@@ -25,12 +31,6 @@ export interface RequestBaseOptions {
  * Options for customizing the get request.
  */
 export interface GetOptions extends RequestBaseOptions {
-  /**
-   * The locale to use for the request.
-   * If not set, the default locale will be used.
-   * If no default locale is set, no locale will be used.
-   */
-  locale?: Locale;
   /**
    * A URL encoded query string to append to the request.
    * See {@link https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/fetching-resources-get} for some examples of valid query strings.

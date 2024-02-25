@@ -1,7 +1,7 @@
+import { RawApiResponseWithData } from "../src";
 import { JsonApiClient } from "../src/JsonApiClient";
 import nodePageUpdateRequest from "./mocks/data/node-page-update-request.json";
 import nodePageUpdateResource200Response from "./mocks/data/node-page-update-resource-200-response.json";
-import { RawApiResponseWithData } from "../src";
 import nodePageUpdateResource404Response from "./mocks/data/node-page-update-resource-404-response.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
@@ -19,6 +19,17 @@ describe("JsonApiClient.updateResource()", () => {
       { rawResponse: true },
     )) as RawApiResponseWithData<typeof nodePageUpdateResource200Response>;
     expect(response.status).toEqual(200);
+    expect(JSON.stringify(json)).toEqual(
+      JSON.stringify(nodePageUpdateResource200Response),
+    );
+  });
+
+  it("should update resource and honor the locale when passed body with type as string and rawResponse as true and return response with 200 status and body", async () => {
+    const locale = "es";
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const json = await apiClient.updateResource<
+      typeof nodePageUpdateResource200Response
+    >(type, resourceId, JSON.stringify(nodePageUpdateRequest), { locale });
     expect(JSON.stringify(json)).toEqual(
       JSON.stringify(nodePageUpdateResource200Response),
     );

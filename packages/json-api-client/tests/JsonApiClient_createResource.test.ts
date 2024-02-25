@@ -42,6 +42,18 @@ describe("JsonApiClient.createResource()", () => {
     expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePageCreate));
   });
 
+  it("should honor the locale option", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const locale = "es";
+    const { response, json } = (await apiClient.createResource(
+      type,
+      nodePageCreateRequest,
+      { rawResponse: true, locale },
+    )) as RawApiResponseWithData<typeof nodePageCreate>;
+    expect(response.status).toEqual(201);
+    expect(JSON.stringify(json)).toEqual(JSON.stringify(nodePageCreate));
+  });
+
   it("should give 404 for invalid bundle type, when passed rawResponse as true and return response with 404 status and body", async () => {
     const apiClient = new JsonApiClient(baseUrl, { debug: true });
     const { response, json } = (await apiClient.createResource(

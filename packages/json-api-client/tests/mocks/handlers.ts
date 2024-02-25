@@ -99,6 +99,15 @@ export default [
       }),
   ),
   http.delete(
+    `${baseUrl}/${overrideLocale}/${apiPrefix}/node/page/35f7cd32-2c54-49f2-8740-0b0ec2ba61f6`,
+    ({ request }) =>
+      new Response(null, {
+        status: 204,
+        statusText: "No content",
+        headers: request.headers,
+      }),
+  ),
+  http.delete(
     `${baseUrl}/${apiPrefix}/node/page/35f7cd32-2c54-49f2-8740-0b0ec2ba61f7`,
     ({ request }) =>
       new Response(JSON.stringify(notFound), {
@@ -136,13 +145,12 @@ export default [
         statusText: "Ok",
         headers: request.headers,
       });
-    } else {
-      return new Response(JSON.stringify(unresolvedRecipe), {
-        status: 404,
-        statusText: "Not Found",
-        headers: request.headers,
-      });
     }
+    return new Response(JSON.stringify(unresolvedRecipe), {
+      status: 404,
+      statusText: "Not Found",
+      headers: request.headers,
+    });
   }),
   http.get(`${baseUrl}/${overrideLocale}/${routerPrefix}`, ({ request }) => {
     const url = new URL(request.url);
@@ -156,14 +164,22 @@ export default [
         statusText: "Ok",
         headers: request.headers,
       });
-    } else {
-      return new Response(JSON.stringify(unresolvedRecipe), {
-        status: 404,
-        statusText: "Not Found",
-        headers: request.headers,
-      });
     }
+    return new Response(JSON.stringify(unresolvedRecipe), {
+      status: 404,
+      statusText: "Not Found",
+      headers: request.headers,
+    });
   }),
+  http.patch(
+    `${baseUrl}/${overrideLocale}/${apiPrefix}/node/page/11fc449b-aca0-4b74-bc3b-677da021f1d7`,
+    ({ request }) =>
+      new Response(JSON.stringify(nodePageUpdateResource200Response), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      }),
+  ),
   http.patch(
     `${baseUrl}/${apiPrefix}/node/page/11fc449b-aca0-4b74-bc3b-677da021f1d7`,
     ({ request }) =>
@@ -185,6 +201,15 @@ export default [
 
   http.post(
     `${baseUrl}/${apiPrefix}/node/page`,
+    ({ request }) =>
+      new Response(JSON.stringify(nodePageCreate), {
+        status: 201,
+        statusText: "Created",
+        headers: request.headers,
+      }),
+  ),
+  http.post(
+    `${baseUrl}/${overrideLocale}/${apiPrefix}/node/page`,
     ({ request }) =>
       new Response(JSON.stringify(nodePageCreate), {
         status: 201,

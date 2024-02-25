@@ -236,12 +236,14 @@ export class JsonApiClient extends ApiClient {
     resourceId: string,
     options?: DeleteOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
+    const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
+      localeSegment,
     });
 
     const cacheKey = await JsonApiClient.createCacheKey({
@@ -407,12 +409,14 @@ export class JsonApiClient extends ApiClient {
     body: string | object,
     options?: UpdateOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
+    const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
+      localeSegment,
     });
 
     const cacheKey = await JsonApiClient.createCacheKey({
@@ -504,11 +508,13 @@ export class JsonApiClient extends ApiClient {
     body: string | object,
     options?: CreateOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
+    const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
     const apiUrl = this.createURL({
       entityTypeId,
       bundleId,
+      localeSegment,
     });
 
     const cacheKey = await JsonApiClient.createCacheKey({

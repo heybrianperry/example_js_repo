@@ -1,11 +1,12 @@
-import { JsonApiClient } from "../src/JsonApiClient";
 import { RawApiResponseWithData } from "../src";
+import { JsonApiClient } from "../src/JsonApiClient";
 import notFoundResponse from "./mocks/data/404.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 const resourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6";
 const invalidResourceId = "35f7cd32-2c54-49f2-8740-0b0ec2ba61f7";
 const type = "node--page";
+const locale = "es";
 
 describe("JsonApiClient.deleteResource()", () => {
   it("should delete resource when passed rawResponse as true and return raw response  with 204 status and body", async () => {
@@ -16,6 +17,12 @@ describe("JsonApiClient.deleteResource()", () => {
       { rawResponse: true },
     )) as RawApiResponseWithData<string>;
     expect(response.status).toEqual(204);
+    expect(json).toEqual("");
+  });
+
+  it("should delete resource and honor locale when passed in via the options", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { debug: true });
+    const json = await apiClient.deleteResource(type, resourceId, { locale });
     expect(json).toEqual("");
   });
 
