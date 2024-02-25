@@ -1,5 +1,11 @@
 # @drupal-api-client/json-api-client
 
+## 0.7.1
+
+### Patch Changes
+
+- f602272: All CRUD methods now support the `locale` option
+
 ## 0.7.0
 
 ### Minor Changes
