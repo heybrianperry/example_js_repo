@@ -156,7 +156,7 @@ The example projects included in `/examples` use a hosted Drupal environment by 
 
 From the root of the repository, run:
 
-`./scripts/init-drupal.sh`
+`pnpm ddev:init`
 
 This will create a new Drupal instance in `/drupal`, build your DDEV instance, install Drupal with Umami demo data, and configure features used by the API Client. The `/drupal` directory is ignored by version control.
 
@@ -175,7 +175,7 @@ You will be able to interact with your DDEV instance [using the `ddev` command](
 
 From the root of the repository, run:
 
-`./scripts/destroy-drupal.sh`
+`pnpm ddev:destroy`
 
 This will delete your DDEV instance and remove your Drupal codebase.
 
