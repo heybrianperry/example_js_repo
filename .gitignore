@@ -4,6 +4,7 @@ dist
 .pnpm-store
 .DS_Store
 coverage
+.idea
 
 # Gltlab CI
 gl-sbom-npm-pnpm.cdx.json
@@ -11,4 +12,5 @@ gl-sbom-npm-pnpm.cdx.json
 # Typedoc
 docs
 
-.idea
+# Local Drupal instance
+drupal

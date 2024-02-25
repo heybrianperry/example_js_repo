@@ -7,7 +7,9 @@ import { Jsona } from "jsona";
 import * as JSONAPI from "jsonapi-typescript";
 import { Logger } from "tslog";
 
-const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
+const baseUrl = import.meta.env.VITE_BASE_URL
+  ? import.meta.env.VITE_BASE_URL
+  : "https://dev-drupal-api-client-poc.pantheonsite.io";
 
 const customFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   console.log("Using custom fetch");
@@ -130,7 +132,11 @@ async function main() {
       await rawResponse.json(),
     );
 
-    /* Example fetching a single resource by ID */
+    /* 
+    Example fetching a single resource by ID
+    Note: resource examples below will 404 if you're using
+    a non-default environment since the UUID will be different 
+    */
     const singleResource = await jsonApiClient.getResource(
       "node--recipe",
       resourceId,
@@ -154,32 +160,35 @@ async function main() {
       await rawResourceResponse.json(),
     );
 
-    const singleResourceSpanish = await jsonApiClient.getResource(
-      "node--recipe",
-      resourceId,
-      {
-        locale: "es",
-      },
-    );
-    console.log(
-      "JSON:API Single resource overriding default locale",
-      singleResourceSpanish,
-    );
-
-    const singleResourceSpanishWithCacheDisabled =
-      await jsonApiClient.getResource("node--recipe", resourceId, {
-        locale: "es",
-        disableCache: true,
-      });
-    console.log(
-      "JSON:API Single resource overriding default locale and disabling cache",
-      singleResourceSpanishWithCacheDisabled,
-    );
-
     const routerResponse = await jsonApiClient.getResourceByPath(
       "/articles/give-it-a-go-and-grow-your-own-herbs",
     );
     console.log("JSON:API Router response", routerResponse);
+
+    // Example demonstrating creating a resource
+    // const basicAuthClient = new JsonApiClient(baseUrl, {
+    //   authentication: {
+    //     type: "Basic",
+    //     credentials: {
+    //       username: "admin",
+    //       password: "admin",
+    //     },
+    //   },
+    //   debug: true,
+    // });
+
+    // const createResource = await basicAuthClient.createResource("node--page", {
+    //   data: {
+    //     type: "node--page",
+    //     attributes: {
+    //       title: "My custom title",
+    //       body: {
+    //         value: "Custom value",
+    //         format: "plain_text",
+    //       },
+    //     },
+    //   },
+    // });
 
     // trigger an error - check the console to see the error logged from getResource
     // @ts-expect-error

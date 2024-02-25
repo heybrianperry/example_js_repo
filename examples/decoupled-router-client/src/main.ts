@@ -1,7 +1,9 @@
 import { Cache } from "@drupal-api-client/api-client";
 import { DecoupledRouterClient } from "@drupal-api-client/decoupled-router-client";
 
-const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
+const baseUrl = import.meta.env.VITE_BASE_URL
+  ? import.meta.env.VITE_BASE_URL
+  : "https://dev-drupal-api-client-poc.pantheonsite.io";
 
 // use sessionStorage for the cache.
 const cache = {

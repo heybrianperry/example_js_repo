@@ -39,6 +39,8 @@ The `json-api-client` package includes the `JsonApiClient` class which extends t
 
 Examples show how the packages can be used in a variety of ways.
 
+To configure examples to use a local Drupal environment (or override other environment variables) copy `.env.local.example` as `.env.local` in any of the example directories.
+
 #### json-api-client-example
 
 The json-api-client-example utilizes the JsonApiClient class to demonstrate how various configuration options can be employed for retrieving data.
@@ -137,6 +139,43 @@ Releases are automated using the [changesets-gitlab](https://www.npmjs.com/packa
 
 - The changesets bot will comment on merge requests from canary to main, summarizing changesets if they exist.
 - When code is merged to main, the release job runs which will open a merge request that when merged will publish updated packages to NPM.
+
+## Developing with a Local Drupal Instance
+
+The example projects included in `/examples` use a hosted Drupal environment by default. In cases where you need to modify data or the CMS install itself, using a local Drupal environment can be helpful.
+
+### Prerequisites
+
+- [Install a Docker provider](https://ddev.readthedocs.io/en/stable/users/install/docker-installation/)
+- [Install DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/)
+- [Stop other conflicting Docker applications](https://ddev.readthedocs.io/en/stable/users/usage/troubleshooting/#method-1-stop-the-conflicting-application)
+
+### Installing Drupal
+
+From the root of the repository, run:
+
+`./scripts/init-drupal.sh`
+
+This will create a new Drupal instance in `/drupal`, build your DDEV instance, install Drupal with Umami demo data, and configure features used by the API Client. The `/drupal` directory is ignored by version control.
+
+Drupal will be available at:
+
+`https://drupal.ddev.site`
+
+and the following API endpoints will be active:
+
+`https://drupal.ddev.site/jsonapi`
+`https://drupal.ddev.site/router/translate-path`
+
+You will be able to interact with your DDEV instance [using the `ddev` command](https://ddev.readthedocs.io/en/stable/users/usage/cli/) inside of the `/drupal` directory. Drush will also be installed and available via `ddev drush`.
+
+### Removing Drupal
+
+From the root of the repository, run:
+
+`./scripts/destroy-drupal.sh`
+
+This will delete your DDEV instance and remove your Drupal codebase.
 
 ## Adding a new package
 
