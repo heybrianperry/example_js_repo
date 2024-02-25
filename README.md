@@ -135,10 +135,12 @@ to the repository.
 
 ### Creating and Publishing New Versions
 
-Releases are automated using the [changesets-gitlab](https://www.npmjs.com/package/changesets-gitlab) package. Changesets-gitlab is currently used in the following contexts:
+Releases are automated using the [changesets-gitlab](https://www.npmjs.com/package/changesets-gitlab) package. To publish a new release:
 
-- The changesets bot will comment on merge requests from canary to main, summarizing changesets if they exist.
-- When code is merged to main, the release job runs which will open a merge request that when merged will publish updated packages to NPM.
+- Create a merge request of `canary` against `main`. Do not squash commits to main as this will cause later conflicts.
+- Merge the MR. When code is merged to main and changesets are detected, the release job will run. This will create a new 'Version Packages' merge request.
+- Review the 'Version Packages' MR. Merge if this contains the expected package versions and changes. When merged this will publish any updated packages to NPM.
+- Create a new MR of `main` against `canary`. Merge this to bring `canary` up to date with the latest package versions and changesets.
 
 ## Developing with a Local Drupal Instance
 

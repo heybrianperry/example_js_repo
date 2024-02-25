@@ -1,8 +1,8 @@
 stages:
   - test
   - build
-  - release
   - deploy
+  - release
 
 image: node:18
 before_script:
@@ -52,7 +52,7 @@ release:
   variables:
     INPUT_VERSION: pnpm run version
     INPUT_PUBLISH: pnpm run publish
-    CREATE_GITLAB_RELEASES: "false"
+    INPUT_CREATE_GITLAB_RELEASES: "false"
 
 pages:
   stage: deploy
