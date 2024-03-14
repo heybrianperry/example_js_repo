@@ -12,4 +12,5 @@ export default defineConfig({
   external: [...Object.keys(pkgJson.devDependencies)],
   minify: true,
   platform: "neutral",
+  target: "es2020",
 });
