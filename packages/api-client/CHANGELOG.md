@@ -1,5 +1,11 @@
 # @drupal-api-client/api-client
 
+## 0.7.2
+
+### Patch Changes
+
+- e8bcdaf: Target es2020 for bundles.
+
 ## 0.7.0
 
 ### Minor Changes

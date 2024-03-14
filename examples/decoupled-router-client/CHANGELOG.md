@@ -1,5 +1,13 @@
 # decoupled-router-client-example
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [e8bcdaf]
+  - @drupal-api-client/decoupled-router-client@0.3.1
+  - @drupal-api-client/api-client@0.7.2
+
 ## 0.0.4
 
 ### Patch Changes

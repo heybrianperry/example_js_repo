@@ -1,5 +1,13 @@
 # @drupal-api-client/decoupled-router-client
 
+## 0.3.1
+
+### Patch Changes
+
+- e8bcdaf: Target es2020 for bundles.
+- Updated dependencies [e8bcdaf]
+  - @drupal-api-client/api-client@0.7.2
+
 ## 0.3.0
 
 ### Minor Changes
