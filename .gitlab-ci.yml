@@ -42,7 +42,7 @@ build-docs:
     - pnpm build:docs
   artifacts:
     paths:
-      - docs
+      - docs/dist
 
 release:
   stage: release
@@ -57,7 +57,7 @@ release:
 pages:
   stage: deploy
   script:
-    - mv docs public
+    - mv docs/dist public
   artifacts:
     paths:
       - public

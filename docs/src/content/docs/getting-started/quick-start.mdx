@@ -1,0 +1,188 @@
+---
+title: Quick Start
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import JsonView from "react18-json-view";
+
+import "react18-json-view/src/style.css";
+
+To get started we'll show you how to:
+
+- Install the `@drupal-api-client/json-api-client` package.
+- Create an instance of the client.
+- Source a collection of nodes from your Drupal site.
+- Render data for a single node in a component.
+
+## Install using a package manager
+
+You can install `@drupal-api-client/json-api-client` using the package manager of your choice.
+
+<Tabs>
+  <TabItem label="npm">
+    <Code code="npm install @drupal-api-client/json-api-client" lang="bash" />
+  </TabItem>
+  <TabItem label="pnpm">
+    <Code code="pnpm add @drupal-api-client/json-api-client" lang="bash" />
+  </TabItem>
+  <TabItem label="Yarn">
+    <Code code="yarn add @drupal-api-client/json-api-client" lang="bash" />
+  </TabItem>
+</Tabs>
+
+## Install using a CDN import
+
+`@drupal-api-client/json-api-client` can also be imported from a CDN like [jsDelivr](https://www.jsdelivr.com/?docs=esm) that supports bundling ES Modules.
+
+```html
+<script type="module">
+  import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+</script>
+```
+
+The example above imports the latest version of the package. In production you'll likely want to specify a version.
+
+```html
+<script type="module">
+  import { JsonApiClient } from "hhttps://esm.run/@drupal-api-client/json-api-client@0.7.1";
+</script>
+```
+
+## Drupal Requirements
+
+- The JSON:API module provided by Drupal core must be enabled on your Drupal site.
+- Optionally, you can install the [Decoupled Router module](https://www.drupal.org/project/decoupled_router) to make use the `getResourceByPath` method.
+
+## Retrieve a collection of articles
+
+First, create an instance of the client.
+
+```js
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+```
+
+This creates a client using the specified baseUrl, but otherwise all default settings. It is also possible to pass in an [options object](/api/drupal-api-client/api-client/type-aliases/apiclientoptions) to customize the client.
+
+Next, use the client to get a collection of articles from Drupal.
+
+```js ins={7}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+
+const articles = await client.getCollection("node--article");
+```
+
+Below, you can explore the shape of the `articles` object sourced from a Drupal site with the Umami demo data installed.
+
+export const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+export const articles = await client.getCollection("node--article");
+
+<JsonView client:only collapsed={2} src={articles} />
+
+## Retrieve a single resource
+
+Looking at the result of our articles collection, we can see that the first article has an id of `3347c400-302d-4f6c-8fcb-3e74beb002c8`. For the sake of example, let's retrieve this single article and display some results in a component.
+
+To start, the code is very similar, but we'll be using the `getResource` method and providing a second parameter of the id of the resource we want to retrieve.
+
+(Use the tabs below to swap between the JavaScript code and the resulting `article` object.)
+
+export const article = await client.getResource(
+  "node--article",
+  "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+);
+
+<Tabs>
+  <TabItem label="JS">
+    ```astro
+    ---
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+
+    const article = await client.getResource(
+      "node--article",
+      "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+    );
+    ---
+
+    ```
+
+  </TabItem>
+  <TabItem label="Result">
+    <JsonView client:only collapsed={2} src={article} />
+  </TabItem>
+</Tabs>
+
+Now we can render data from our `article` object within a component.
+
+```astro live ins={12-15} layout="../../../components/LiveCodeScrollLayout.astro"
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const article = await client.getResource(
+  "node--article",
+  "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+);
+---
+<h2>{article.data.attributes.title}</h2>
+<div set:html={article.data.attributes.body.processed} />
+```
+
+<Aside type="tip">
+  The template above uses [Astro's set:html
+  directive](https://docs.astro.build/en/reference/directives-reference/#sethtml),
+  which is similar to setting el.innerHTML. This value is not automatically
+  escaped, so ensure that you are only using it with fields that are being
+  escaped and processed by Drupal.
+</Aside>
+
+## Retrieve a single resource by path
+
+As we saw above, using `getResource` requires us to know the id of the resource we intend to retrieve. There will likely be cases where your front end application knows the requested path, but doesn't know the id of the resource in Drupal that it should resolve to. In these cases the `getResourceByPath` method allows you to retrieve a single resource by providing the path instead of the id.
+
+<Aside>
+  `getResourceByPath` requires that the [Decoupled Router
+  module](https://www.drupal.org/project/decoupled_router) is installed and
+  configured on your Drupal site.
+</Aside>
+
+Let's adapt our example of rendering an example article to use `getResourceByPath`.
+
+```astro live {7-9} layout="../../../components/LiveCodeScrollLayout.astro"
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const article = await client.getResourceByPath(
+  "/articles/give-it-a-go-and-grow-your-own-herbs",
+);
+---
+<h2>{article.data.attributes.title}</h2>
+<div set:html={article.data.attributes.body.processed} />
+```
+
+With a few lines of code, you've sourced data from your Drupal site and displayed it within your front end component. This is just the beginning of what is possible with the JSON:API Client. Continue on to experiment in an interactive playground, or jump to the next section for an in-depth tutorial.
+
+## Additional Resources
+
+- [jsDelivr ESM Delivery](https://www.jsdelivr.com/?docs=esm)
+- [Decoupled Router module](https://www.drupal.org/project/decoupled_router)
+- [Astro Components](https://docs.astro.build/en/basics/astro-components/)

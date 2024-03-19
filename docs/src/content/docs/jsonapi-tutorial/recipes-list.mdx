@@ -1,0 +1,140 @@
+---
+title: Creating a List of Recipes
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import JsonView from "react18-json-view";
+
+import "react18-json-view/src/style.css";
+
+export const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+
+export const recipes = await client.getCollection("node--recipe");
+export const recipe = recipes.data[0];
+
+Using the Umami Demo profile, our Drupal site comes with a number of recipes. As a first step, let's retrieve a collection of our recipes and display a list of their titles in a component.
+
+<Aside>
+  If you haven't completed the Quick Start, be sure to first [install the
+  JSON:API
+  Client](http://localhost:4321/getting-started/quick-start/#install-using-a-package-manager)
+  prior to starting this tutorial.
+</Aside>
+
+## Listing Recipes
+
+<Tabs>
+  <TabItem label="Component">
+    ```astro live
+    ---
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    const recipes = await client.getCollection("node--recipe");
+    ---
+      <h2>Umami Recipes</h2>
+      <ul>
+        {recipes.data.map((recipe) => (
+          <li key={recipe.id}>{recipe.attributes.title}</li>
+        ))}
+      </ul>
+
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={2} src={recipes} />
+  </TabItem>
+</Tabs>
+
+## Adding Grid Styling
+
+Rather than a default list, let's add styling to display our titles in a grid of what will become cards.
+
+```astro live ins={9-21} {25, 27}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const recipes = await client.getCollection("node--recipe");
+---
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+
+  .card-grid .card {
+    border: 2px solid var(--sl-color-text-accent);
+    margin-top: 0;
+    padding: 0.5rem;
+  }
+</style>
+
+<div>
+  <h2>Umami Recipes</h2>
+  <div class="card-grid">
+    {recipes.data.map((recipe) => (
+      <div class="card" key={recipe.id}><h4>{recipe.attributes.title}</h4></div>
+    ))}
+  </div>
+</div>
+```
+
+## Adding Fields
+
+That grid is looking pretty bare. It would be nice to display some of the other fields from our recipes like recipe difficulty, image, and a link to the detailed content.
+
+Adding difficulty and a link based on the content's path alias is pretty straightforward.
+
+```astro live ins={29-30}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const recipes = await client.getCollection("node--recipe");
+---
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+
+  .card-grid .card {
+    border: 2px solid var(--sl-color-text-accent);
+    margin-top: 0;
+    padding: 0.5rem;
+  }
+</style>
+
+<div>
+  <h2>Umami Recipes</h2>
+  <div class="card-grid">
+    {recipes.data.map((recipe) => (
+      <div class="card" key={recipe.id}>
+        <h4>{recipe.attributes.title}</h4>
+        <p>Difficulty: {recipe.attributes.field_difficulty}</p>
+        <a href={recipe.attributes.path.alias}>View Recipe</a>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+Moving on to the image, we'll see `field_media_image` within the `relationships` property of the object, but the associated data essentially only includes an `id` which is not referenced elsewhere in the object.
+This is because field_media_image references another entity in Drupal.
+
+<JsonView client:only collapsed={2} src={recipe} />
+
+To ensure the image data we need is also included in this API response, we'll need to pass additional query string parameters as part of our fetch request. In the next section, we'll see how the JSON:API Client can make this easy.

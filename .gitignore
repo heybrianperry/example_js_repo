@@ -9,8 +9,8 @@ coverage
 # Gltlab CI
 gl-sbom-npm-pnpm.cdx.json
 
-# Typedoc
-docs
-
 # Local Drupal instance
 drupal
+
+# deployed docs
+public

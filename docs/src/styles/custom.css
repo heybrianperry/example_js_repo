@@ -1,0 +1,16 @@
+/* Display code before rendered component */
+.live-code-layout {
+  flex-direction: column-reverse !important;
+}
+
+/* JSON view style overrides */
+.sl-markdown-content .json-view {
+  margin-top: 1rem;
+}
+
+.sl-markdown-content
+  .json-view
+  :not(a, strong, em, del, span, input, code)
+  + :not(a, strong, em, del, span, input, code, :where(.not-content *)) {
+  margin-top: 0;
+}

@@ -1,0 +1,212 @@
+---
+title: Using JSON:API Parameters
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { DrupalJsonApiParams } from "drupal-jsonapi-params";
+import JsonView from "react18-json-view";
+
+import "react18-json-view/src/style.css";
+
+export const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+
+export const recipesMedia = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image",
+});
+export const recipesThumbnail = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image.thumbnail",
+});
+
+export const apiParams = new DrupalJsonApiParams();
+
+export const queryString = apiParams
+  .addInclude(["field_media_image.thumbnail"])
+  .addFilter("title", "chocolate", "CONTAINS")
+  .getQueryString();
+export const recipesFilter = await client.getCollection("node--recipe", {
+  queryString,
+});
+
+Previously, we saw that our recipe did not include all of the data for our image field, only an ID for the referenced entity.
+
+JSON:API accepts a number of query string parameters to modify the response, for things like filtering, sorting, pagination, including related data, and restricting the fields that are returned. This makes it possible for us to include the desired image data in the response.
+
+Let's look at how we can add the necessary parameters to requests made by the JSON:API Client.
+
+## The queryString Option
+
+Revisiting our call to `getCollection`, we can add an options object as the second argument to the method. This object can include a `queryString` property, which will be added to the resulting fetch request.
+
+To include the `field_media_image` field, we could use the following query string: `include=field_media_image`
+
+<Tabs>
+  <TabItem label="JS">
+    ```js ins={6-8}
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    const recipes = await client.getCollection("node--recipe", {
+      queryString: "include=field_media_image",
+    });
+
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={2} src={recipesMedia} />
+  </TabItem>
+</Tabs>
+
+If we examine the resulting recipes object, we'll now see an `included` property which contains the data referenced by the `field_media_image` field. However, the image data is still incomplete because this media entity references file entities and we need to include that data as well. For our grid, we specifically want the thumbnail image file.
+
+Thankfully, the include parameter allows us to follow these relationship paths with a value like: `include=field_media_image.thumbnail`
+
+<Tabs>
+  <TabItem label="JS">
+    ```js {7}
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    const recipes = await client.getCollection("node--recipe", {
+      queryString: "include=field_media_image.thumbnail",
+    });
+
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={2} src={recipesThumbnail} />
+  </TabItem>
+</Tabs>
+
+Looking at the data returned, you'll now see that the referenced thumbnail files are also part of the `included` array.
+
+## Generating query strings with drupal-jsonapi-params
+
+The [drupal-jsonapi-params](https://www.npmjs.com/package/drupal-jsonapi-params) package provides a convenient way to generate query strings for more complicated JSON:API requests. The example below demonstrates how to use this package to generate the `include` query string we used earlier, and also adds a filter for titles containing 'chocolate' to the request.
+
+<Tabs>
+  <TabItem label="JS">
+    ```js {2, 8-13, 16}
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+    import { DrupalJsonApiParams } from "drupal-jsonapi-params";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+
+    const apiParams = new DrupalJsonApiParams();
+
+    const queryString = apiParams
+      .addInclude(["field_media_image.thumbnail"])
+      .addFilter("title", "chocolate", "CONTAINS")
+      .getQueryString();
+
+    const recipes = await client.getCollection("node--recipe", {
+      queryString,
+    });
+
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={2} src={recipesFilter} />
+  </TabItem>
+</Tabs>
+
+## Adding images to recipe cards
+
+Now that we have retrieved all of the data we need, we can update our recipe grid to include images.
+
+```astro live {7-9, 31, 40, 52-53} ins={19-21, 32-38, 45-48}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const recipes = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image.thumbnail",
+});
+---
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+
+  .card-grid .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid var(--sl-color-text-accent);
+    margin-top: 0;
+    padding: 0.5rem;
+  }
+</style>
+
+<div>
+  <h2>Umami Recipes</h2>
+  <div class="card-grid">
+    {recipes.data.map((recipe) => {
+      // Get field_media_image referenced on the recipe
+      const mediaId = recipe.relationships.field_media_image.data.id;
+      const mediaEntity = recipes.included.find((obj) => obj.id === mediaId);
+      // Get the thumbnail file entity referenced on field_media_image
+      const fileId = mediaEntity.relationships.thumbnail.data.id;
+      const alt = mediaEntity.relationships.thumbnail.data.meta.alt;
+      const fileEntity = recipes.included.find((obj) => obj.id === fileId);
+
+      return (
+        <div class="card" key={recipe.id}>
+          <h4>{recipe.attributes.title}</h4>
+          <div>
+          <p>Difficulty: {recipe.attributes.field_difficulty}</p>
+          <img
+            src=`${client.baseUrl}${fileEntity.attributes.uri.url}`
+            alt={alt}
+          />
+          <a href={recipe.attributes.path.alias}>View Recipe</a>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+```
+
+<Aside type="tip">
+  The image markup in the above example is intentionally simplified. If you're
+  using a meta-framework like Next.js, Nuxt, or Astro, you may want to use the
+  image component provided by the framework to process responsive versions of
+  images. Alternatively, you could consider a framework-agnostic image toolkit
+  like [Unpic](https://unpic.pics/).
+</Aside>
+
+You may have noticed that traversing entity relationships to determine the image path in the above example required a number of steps.
+
+```js
+// Get field_media_image referenced on the recipe
+const mediaId = recipe.relationships.field_media_image.data.id;
+const mediaEntity = recipes.included.find((obj) => obj.id === mediaId);
+// Get the thumbnail file entity referenced on field_media_image
+const fileId = mediaEntity.relationships.thumbnail.data.id;
+const alt = mediaEntity.relationships.thumbnail.data.meta.alt;
+const fileEntity = recipes.included.find((obj) => obj.id === fileId);
+```
+
+The JSON:API Client can help with this as well. Next, we'll adapt this example to deserialize the response in order to simplify the process of working with JSON:API relationships.
+
+## Additional Resources
+
+- [JSON:API Includes](https://www.drupal.org/docs/core-modules-and-themes/core-modules/jsonapi-module/includes)
+- [drupal-jsonapi-params](https://www.npmjs.com/package/drupal-jsonapi-params)
+- [Unpic](https://unpic.pics/)

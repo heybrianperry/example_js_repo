@@ -21,13 +21,5 @@
       "@drupal-api-client/api-client/*": ["./api-client/*"]
     }
   },
-  "typedocOptions": {
-    "name": "Drupal API Client",
-    "entryPointStrategy": "packages",
-    "entryPoints": ["packages/*"],
-    "plugin": ["typedoc-plugin-mdn-links"],
-    "navigationLinks": {
-      "Project Page": "https://www.drupal.org/project/api_client"
-    }
-  }
+  "exclude": ["docs"]
 }

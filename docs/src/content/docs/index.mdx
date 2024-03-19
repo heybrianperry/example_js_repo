@@ -1,0 +1,81 @@
+---
+title: Drupal API Client
+description: An introduction to the Drupal API Client
+---
+
+import { Aside, Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+Welcome to the Drupal API Client documentation!
+
+## What is the Drupal API Client?
+
+[The Drupal API Client](https://www.drupal.org/project/api_client) is a set of JavaScript packages that simplify the process of interacting with common Drupal APIs. Most commonly, developers will use our [JSON:API client](https://www.npmjs.com/package/@drupal-api-client/json-api-client) to interface with Drupal's JSON:API endpoints, but we also publish a [base API Client package](https://www.npmjs.com/package/@drupal-api-client/api-client) that can be extended, a [client for Decoupled Router](https://www.npmjs.com/package/@drupal-api-client/decoupled-router-client), and may support other Drupal APIs in the future.
+
+The Drupal API Client takes great care to be framework-agnostic and universal. It can be used:
+
+- with your JavaScript framework of choice, vanilla JavaScript, or even in Drupal itself.
+- with or without TypeScript.
+- on the server, or on the client.
+- with a bundler, or as a script import from a CDN.
+
+## Hello Umami!
+
+Below is a simple example that uses [@drupal-api-client/json-api-client](https://www.npmjs.com/package/@drupal-api-client/json-api-client) to list the titles of all articles in Drupal's Umami Demo Profile. What you see below is a live example sourcing data from a Drupal instance at build time.
+
+<Aside>
+  By default, our live examples are rendered using [Astro
+  components](https://docs.astro.build/en/basics/astro-components/) as the
+  syntax ends up being very framework agnostic. JavaScript code is fenced within
+  `---`, with markup included below. For guidance on using your framework of
+  choice, be sure to see the ['Using with
+  Frameworks'](/with-frameworks/overview/) section of this documentation.
+</Aside>
+
+```astro live
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const articles = await client.getCollection("node--article");
+---
+<h2>Umami Articles</h2>
+<ul>
+  {articles.data.map((article) => (
+    <li key={article.id}>{article.attributes.title}</li>
+  ))}
+</ul>
+```
+
+Continue on to dig deeper in to what is possible with the client.
+
+## Explore the Drupal API Client
+
+<CardGrid>
+  <LinkCard
+    title="Quick start"
+    description="Install the client and source data from a Drupal instance in minutes."
+    href="/getting-started/quick-start"
+  />
+  <LinkCard
+    title="Interactive playground"
+    description="Experiment with the client using a live development environment."
+    href="/getting-started/interactive-playground"
+  />
+  <LinkCard
+    title="JSON:API Client tutorial"
+    description="An in-depth tutorial introducing all of the features of the JSON:API client."
+    href="/jsonapi-tutorial/about"
+  />
+  <LinkCard
+    title="Using with frameworks"
+    description="Use the Drupal API Client with your framework of choice."
+    href="/with-frameworks/overview"
+  />
+  <LinkCard
+    title="API Reference"
+    description="Complete API reference for all of our packages."
+    href="/api/drupal-api-client/api-client/classes/apiclient/"
+  />
+</CardGrid>

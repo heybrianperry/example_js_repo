@@ -1,0 +1,20 @@
+---
+title: Interactive Playground
+description: "An interactive playground for experimenting with the Drupal API Client"
+---
+
+import PlaygroundEmbed from "../../../components/PlaygroundEmbed.astro";
+
+Use the interactive playground below to experiment with the Drupal API Client. Toggle between preview and editor tabs to make updates and see the changes in real-time. Or fork on StackBlitz to work on your own copy in a new tab.
+
+## React Playground
+
+<PlaygroundEmbed />
+
+## Things to try
+
+Try making the following changes in App.jsx in the editor.
+
+- When creating the `JsonApiClient` instance, change the `baseUrl` to point to your own Drupal site
+- When calling `getCollection` provide a different resource type, e.g. `node--page`
+- Use [JSON:API Parameters](/jsonapi-tutorial/parameters/) to modify the response for the collection.

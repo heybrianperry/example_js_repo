@@ -1,0 +1,177 @@
+---
+title: Deserializing Data
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+import JsonView from "react18-json-view";
+
+import "react18-json-view/src/style.css";
+
+export const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    serializer: new Jsona(),
+  },
+);
+
+export const recipes = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image.thumbnail",
+});
+
+export const fileUrl = recipes[0].field_media_image.thumbnail.uri.url;
+
+When adding images to our recipes grid, we had to do quite a bit of traversing to get the data we needed due to the structure of relationships and included data in JSON:API responses.
+
+```js
+// Get field_media_image referenced on the recipe
+const mediaId = recipe.relationships.field_media_image.data.id;
+const mediaEntity = recipes.included.find((obj) => obj.id === mediaId);
+// Get the thumbnail file entity referenced on field_media_image
+const fileId = mediaEntity.relationships.thumbnail.data.id;
+const alt = mediaEntity.relationships.thumbnail.data.meta.alt;
+const fileEntity = recipes.included.find((obj) => obj.id === fileId);
+```
+
+We can simplify this by using the `serializer` option when creating our client instance, along with a library like [Jsona](https://www.npmjs.com/package/jsona). This will provide a simplified and flattened response when data is returned from the server.
+
+## The serializer Option
+
+Revisiting the creation of our JsonApiClient instance, we can add an options object as the second argument. This object can include a serializer property, which can be used to transform the data provided by JSON:API.The provided serializer object can have two methods: `deserializer` and `serializer`. An instance of [Jsona](https://www.npmjs.com/package/jsona) fits that signature.
+
+Let's update our client instance to use the `Jsona` serializer.
+
+```js
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    serializer: new Jsona(),
+  },
+);
+```
+
+## Deserializing Data
+
+Now that we have provided a compatible serializer, all data sourced from Drupal will be deserialized automatically.
+
+<Tabs>
+  <TabItem label="JS">
+    ```js ins={8-10}
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io", {
+        serializer: new Jsona(),
+      },
+    );
+    const recipes = await client.getCollection("node--recipe", {
+      queryString: "include=field_media_image.thumbnail",
+    });
+
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={1} src={recipes} />
+  </TabItem>
+</Tabs>
+
+Taking a look at the `recipes` object, you'll see that the data is now flatter and easier to access. For example, field_media_image is now a direct property of the recipe data, and the thumbnail file is directly accessible from this media entity. We could get the thumbnail url for the first recipe result like this:
+
+```js
+const thumbnailUrl = recipe[0].field_media_image.thumbnail.uri.url;
+```
+
+## Refactoring the Recipe Grid
+
+Let's see the impact that working with deserialized data has on our recipe grid. We can refactor the grid to use this new flattened data structure.
+
+```astro live {6, 34, 36, 38, 40-41, 43, 46} ins={7-8}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+    serializer: new Jsona(),
+  },
+);
+const recipes = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image.thumbnail",
+});
+---
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+
+  .card-grid .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid var(--sl-color-text-accent);
+    margin-top: 0;
+    padding: 0.5rem;
+  }
+</style>
+
+<div>
+  <h2>Umami Recipes</h2>
+  <div class="card-grid">
+    {recipes.map((recipe) => (
+      <div class="card" key={recipe.id}>
+        <h4>{recipe.title}</h4>
+        <div>
+        <p>Difficulty: {recipe.field_difficulty}</p>
+        <img
+          src=`${client.baseUrl}${recipe.field_media_image.thumbnail.uri.url}`
+          alt={recipe.field_media_image.thumbnail.resourceIdObjMeta.alt}
+        />
+        <a href={recipe.path.alias}>View Recipe</a>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+The end result is the same, so choose the option that is best for your team. Use the client default to work with the JSON:API response as is, or use the `serializer` option to work with a simplified object.
+
+## Serializing Data
+
+In cases where you need serialize or re-serialize the data before sending it to the server, you will have access to the `serializer` method on the client instance. Below is an example of using Jsona's serializer.
+
+```js
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    serializer: new Jsona(),
+  },
+);
+
+// This recipe will be deserialized automatically
+const recipe = await getResource(
+  "node--recipe",
+  "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6",
+);
+
+// If we later need to re-serialize the recipe we can do so like this
+const serializedRecipe = client.serializer.serialize({ stuff: recipe });
+```
+
+Since the signature of these serializer methods tend to vary, the JSON:API client doesn't currently serialize data automatically, but it will be available for use if provided.
+
+## Additional Resources
+
+- [Jsona](https://www.npmjs.com/package/jsona)
+- [jsonapi-serializer](https://www.npmjs.com/package/jsonapi-serializer)
+- [jsonapi-fractal](https://github.com/andersondanilo/jsonapi-fractal)

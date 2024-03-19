@@ -1,0 +1,94 @@
+---
+title: Handling Translated Content
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+
+The JSON:API Client offers a number of features to make it easy to work with localized content provided by Drupal. Let's adapt our grid of recipes to make use of content translated in both English and Spanish from the Umami Demo profile.
+
+## The defaultLocale Option
+
+In our previous examples we have not specified a locale, which means that the default locale was used. If you want to work with content in a different locale by default, you can specify the `defaultLocale` option when creating an instance of the client.
+
+```astro live ins={8}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+    serializer: new Jsona(),
+    defaultLocale: "es",
+  },
+);
+const recipes = await client.getCollection("node--recipe", {
+  queryString: "include=field_media_image.thumbnail",
+});
+---
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+  }
+
+  .card-grid .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid var(--sl-color-text-accent);
+    margin-top: 0;
+    padding: 0.5rem;
+  }
+</style>
+
+<div>
+  <h2>Umami Recetas</h2>
+  <div class="card-grid">
+    {recipes.map((recipe) => (
+      <div class="card" key={recipe.id}>
+        <h4>{recipe.title}</h4>
+        <div>
+        <p>Dificultad: {recipe.field_difficulty}</p>
+        <img
+          src=`${client.baseUrl}${recipe.field_media_image.thumbnail.uri.url}`
+          alt={recipe.field_media_image.thumbnail.resourceIdObjMeta.alt}
+        />
+        <a href={recipe.path.alias}>Ver Receta</a>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+By providing the `defaultLocale` option, we can now work with content in Spanish by default. As we'll see next, it is still possible to specify a different locale when when making individual requests.
+
+## The locale Option
+
+Using our client defaulted to Spanish, we can still request content in English when necessary. Let's request an individual recipe in english by specifying the `locale` option with `getResource`.
+
+```astro live {14-16}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+    serializer: new Jsona(),
+    defaultLocale: "es",
+  },
+);
+const recipe = await client.getResource(
+  "node--recipe",
+  "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6",
+  {
+    locale: "en",
+  },
+);
+---
+<h2>{recipe.title}</h2>
+<div set:html={recipe.field_recipe_instruction.processed} />
+```
+
+All of our examples thus far have dealt with collections of multiple resources. Let's next see the ways we can use the client to retrieve only a single resource.

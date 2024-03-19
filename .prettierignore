@@ -2,4 +2,8 @@ pnpm-workspace.yaml
 pnpm-lock.yaml
 coverage
 dist
+
+# Astro and Auto-generated API Docs
+docs/.astro
+docs/src/content/docs/api/
 public

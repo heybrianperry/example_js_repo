@@ -1,0 +1,28 @@
+---
+title: "Working With an Individual Recipe"
+---
+
+In our examples thus far we have been working with JSON:API collections, which include multiple resources of a specific type. Next we'll look at methods provided by the client that allow you to work with individual resources.
+
+## Getting a recipe using getResource
+
+If you know the id of the recipe you are looking for, you can use the `getResource` method to retrieve it. For example, if you used getCollection elsewhere in your application to get a list of all recipes, you likely already know the id of any individual recipe you want to retrieve.
+
+Below we use `getResource` to display the recipe instructions for a recipe with the id '35f7cd32-2c54-49f2-8740-0b0ec2ba61f6'.
+
+```astro live
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io"
+);
+const recipe = await client.getResource(
+  "node--recipe",
+  "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6",
+);
+---
+<h2>{recipe.data.attributes.title}</h2>
+<div set:html={recipe.data.attributes.field_recipe_instruction.processed} />
+```

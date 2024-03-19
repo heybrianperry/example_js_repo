@@ -4,5 +4,7 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "cSpell.enableFiletypes": ["mdx"]
 }
