@@ -20,15 +20,15 @@ describe("JsonApiClient.getResource()", () => {
     const result = await apiClient.getResource(type, resourceId);
     expect(result).toEqual(nodeRecipeSingleResource);
   });
-  it("should throw an error if the type is not `entityType--bundle`", async () => {
-    const apiClient = new JsonApiClient(baseUrl);
-    const type = "nodePage";
-    try {
-      // @ts-expect-error
-      await apiClient.getResource(type, resourceId);
-    } catch (error) {
-      expect(error).toBeInstanceOf(TypeError);
-    }
+
+  it("should fetch data for an individual resource using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      indexLookup: true,
+      debug: true,
+    });
+    const type = "node--recipe";
+    const result = await apiClient.getResource(type, resourceId);
+    expect(result).toEqual(nodeRecipeSingleResource);
   });
 
   it("should fetch resource data for a given type with overridden locale", async () => {
@@ -39,6 +39,30 @@ describe("JsonApiClient.getResource()", () => {
     });
 
     // Assert that the data was fetched correctly
+    expect(result).toEqual(nodeRecipeSingleSpanish);
+  });
+
+  it("should fetch resource data for a given type with overridden locale using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      defaultLocale,
+      indexLookup: true,
+    });
+    const type = "node--recipe";
+    const result = await apiClient.getResource(type, resourceId, {
+      locale: overrideLocale,
+    });
+
+    expect(result).toEqual(nodeRecipeSingleSpanish);
+  });
+
+  it("should fetch resource data for a given type with default locale using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      defaultLocale: overrideLocale,
+      indexLookup: true,
+    });
+    const type = "node--recipe";
+    const result = await apiClient.getResource(type, resourceId);
+
     expect(result).toEqual(nodeRecipeSingleSpanish);
   });
 
@@ -105,6 +129,26 @@ describe("JsonApiClient.getResource()", () => {
   });
   it("should throw an error if an error occurred in fetch", async () => {
     const client = new JsonApiClient(baseUrl, { debug: true });
+    const type = "node--recipe";
+    const logSpy = vi.spyOn(client, "log");
+    const fetchSpy = vi.spyOn(client, "fetch").mockResolvedValueOnce({
+      response: null,
+      error: new Error("Something went wrong"),
+    });
+    try {
+      await client.getResource(type, resourceId);
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(logSpy).toHaveBeenCalledTimes(2);
+      expect(fetchSpy).toHaveBeenCalledOnce();
+    }
+  });
+
+  it("should throw an error if fatch fails during index lookup", async () => {
+    const client = new JsonApiClient(baseUrl, {
+      indexLookup: true,
+      debug: true,
+    });
     const type = "node--recipe";
     const logSpy = vi.spyOn(client, "log");
     const fetchSpy = vi.spyOn(client, "fetch").mockResolvedValueOnce({

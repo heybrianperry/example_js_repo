@@ -1,13 +1,13 @@
 import Jsona from "jsona";
 import { Deserializer } from "jsonapi-serializer";
+import { RawApiResponseWithData } from "../src";
 import { JsonApiClient } from "../src/JsonApiClient";
 import nodePageEnglish from "./mocks/data/node-page-en.json";
 import nodePageSpanish from "./mocks/data/node-page-es.json";
-import nodePageFilter from "./mocks/data/node-page-filter.json";
 import nodePage from "./mocks/data/node-page.json";
 import nodeRecipeJsona from "./mocks/data/node-recipe-deserialize-jsona.json";
 import nodeRecipeJsonAPISerializer from "./mocks/data/node-recipe-deserialize-jsonapi-serializer.json";
-import { RawApiResponseWithData } from "../src";
+import nodeRecipeFilter from "./mocks/data/node-recipe-filter.json";
 
 const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
 
@@ -25,15 +25,16 @@ describe("JsonApiClient.getCollection()", () => {
     expect(result).toEqual(nodePage);
   });
 
-  it("should throw an error if the type is not `entityType--bundle`", async () => {
-    const apiClient = new JsonApiClient(baseUrl);
-    const type = "nodePage";
-    try {
-      // @ts-expect-error
-      await apiClient.getCollection(type);
-    } catch (error) {
-      expect(error).toBeInstanceOf(TypeError);
-    }
+  it("should fetch data for an individual resource using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      indexLookup: true,
+      debug: true,
+    });
+    const type = "custompage";
+    const result = await apiClient.getCollection(type);
+
+    // Assert that the data was fetched correctly
+    expect(result).toEqual(nodePageEnglish);
   });
 
   it("should fetch collection data for a given type with default locale", async () => {
@@ -47,6 +48,20 @@ describe("JsonApiClient.getCollection()", () => {
 
   it("should fetch collection data for a given type with overridden locale", async () => {
     const apiClient = new JsonApiClient(baseUrl, { defaultLocale });
+    const type = "node--page";
+    const result = await apiClient.getCollection(type, {
+      locale: overrideLocale,
+    });
+
+    // Assert that the data was fetched correctly
+    expect(result).toEqual(nodePageSpanish);
+  });
+
+  it("should fetch collection data for a given type with overridden locale using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      defaultLocale,
+      indexLookup: true,
+    });
     const type = "node--page";
     const result = await apiClient.getCollection(type, {
       locale: overrideLocale,
@@ -87,10 +102,18 @@ describe("JsonApiClient.getCollection()", () => {
 
   it("should fetch data for a given type and filter", async () => {
     const apiClient = new JsonApiClient(baseUrl);
-    const type = "node--page";
+    const type = "node--recipe";
     const queryString = "filter[field_cooking_time][value]=30";
     const result = await apiClient.getCollection(type, { queryString });
-    expect(result).toEqual(nodePageFilter);
+    expect(result).toEqual(nodeRecipeFilter);
+  });
+
+  it("should fetch data for a given type and filter using the index", async () => {
+    const apiClient = new JsonApiClient(baseUrl, { indexLookup: true });
+    const type = "node--recipe";
+    const queryString = "filter[field_cooking_time][value]=30";
+    const result = await apiClient.getCollection(type, { queryString });
+    expect(result).toEqual(nodeRecipeFilter);
   });
 
   it("should fetch raw response", async () => {

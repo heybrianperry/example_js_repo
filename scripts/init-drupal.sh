@@ -19,11 +19,11 @@ cp web/sites/example.settings.local.php web/sites/default/settings.local.php
 cp ../scripts/config/development.services.yml web/sites/development.services.yml
 
 # Add useful composer dependencies
-ddev composer require drush/drush drupal/decoupled_router
+ddev composer require drush/drush drupal/decoupled_router drupal/jsonapi_extras
 
 # Install Drupal
 ddev drush site:install demo_umami --account-name=admin --account-pass=admin -y
-ddev drush en jsonapi decoupled_router basic_auth -y
+ddev drush en jsonapi decoupled_router basic_authn jsonapi_extras -y
 
 # Configure JSON:API to allow CRUD operations
 ddev drush config:set jsonapi.settings read_only 0 -y

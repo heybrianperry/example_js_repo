@@ -1,9 +1,5 @@
 import { Sha256 } from "@aws-crypto/sha256-js";
-import {
-  ApiClient,
-  type ApiClientOptions,
-  type BaseUrl,
-} from "@drupal-api-client/api-client";
+import { ApiClient, type BaseUrl } from "@drupal-api-client/api-client";
 import {
   DecoupledRouterClient,
   isRaw,
@@ -12,19 +8,20 @@ import {
   type RawDecoupledRouterResponse,
 } from "@drupal-api-client/decoupled-router-client";
 import { toHex } from "@smithy/util-hex-encoding";
-import {
+import type {
   CreateOptions,
   DeleteOptions,
   EndpointUrlSegments,
-  EntityTypeWithBundle,
   GetOptions,
+  JsonApiClientOptions,
+  JsonApiIndex,
   RawApiResponseWithData,
   UpdateOptions,
 } from "./types";
 
 /**
  * JSON:API Client class provides functionality specific to JSON:API server.
- * @see {@link ApiClientOptions}
+ * @see {@link JsonApiClientOptions}
  * @see {@link BaseUrl}
  */
 export class JsonApiClient extends ApiClient {
@@ -34,17 +31,23 @@ export class JsonApiClient extends ApiClient {
   router: DecoupledRouterClient;
 
   /**
+   * @see {@link JsonApiClientOptions.indexLookup}
+   */
+  indexLookup: JsonApiClientOptions["indexLookup"];
+
+  /**
    * Creates a new instance of the JsonApiClient.
    * @param baseUrl - The base URL of the API. {@link BaseUrl}
    * @param options - (Optional) Additional options for configuring the API client. {@link JsonApiClientOptions}
    */
-  constructor(baseUrl: BaseUrl, options?: ApiClientOptions) {
+  constructor(baseUrl: BaseUrl, options?: JsonApiClientOptions) {
     super(baseUrl, options);
-    const { apiPrefix, cache, debug } = options || {};
+    const { apiPrefix, cache, debug, indexLookup } = options || {};
     this.apiPrefix = apiPrefix || "jsonapi";
     this.cache = cache;
     this.debug = debug || false;
     this.router = new DecoupledRouterClient(baseUrl, options);
+    this.indexLookup = indexLookup || false;
   }
 
   /**
@@ -61,7 +64,7 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async getCollection<T>(
-    type: EntityTypeWithBundle,
+    type: string,
     options?: GetOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
     const { entityTypeId, bundleId } =
@@ -84,7 +87,7 @@ export class JsonApiClient extends ApiClient {
       }
     }
 
-    const apiUrl = this.createURL({
+    const apiUrl = await this.createURL({
       localeSegment,
       entityTypeId,
       bundleId,
@@ -121,8 +124,7 @@ export class JsonApiClient extends ApiClient {
 
   /**
    * Retrieves data for a resource by ID of a specific entity type and bundle from the JSON:API.
-   * @param type - The type of resource to retrieve, in the format "entityType--bundle".
-   * For example, "node--page". {@link EntityTypeWithBundle}
+   * @param type - The type of resource to retrieve, often in the format "entityType--bundle", but may be rewritten as a single string.
    * @param resourceId - The ID of the individual resource to retrieve.
    * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
    * @returns A Promise that resolves to the JSON data of the requested resource.
@@ -134,7 +136,7 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async getResource<T>(
-    type: EntityTypeWithBundle,
+    type: string,
     resourceId: string,
     options?: GetOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
@@ -159,7 +161,7 @@ export class JsonApiClient extends ApiClient {
       }
     }
 
-    const apiUrl = this.createURL({
+    const apiUrl = await this.createURL({
       localeSegment,
       entityTypeId,
       bundleId,
@@ -200,13 +202,60 @@ export class JsonApiClient extends ApiClient {
    * @params params - The parameters to use for creating the URL. {@link EndpointUrlSegments}
    * @returns The endpoint URL as a string.
    */
-  createURL({
+  async createURL({
     localeSegment,
     entityTypeId,
     bundleId,
     resourceId,
     queryString,
   }: EndpointUrlSegments) {
+    // If indexLookup is enabled, fetch the index and use the links to get the resource URL
+    if (this.indexLookup) {
+      const apiUrlObject = new URL(
+        `${localeSegment ?? ""}/${this.apiPrefix}`,
+        this.baseUrl,
+      );
+      const apiUrl = apiUrlObject.toString();
+      const cacheKey = `${localeSegment ? `${localeSegment}/` : ""}${
+        this.apiPrefix
+      }`;
+      let index: JsonApiIndex;
+
+      // Try getting the index from the cache first.
+      const cachedIndex = (await this.getCachedResponse(
+        cacheKey,
+      )) as JsonApiIndex;
+      if (cachedIndex) {
+        index = cachedIndex;
+      } else {
+        // Fetch from the index if it isn't in the cache
+        if (this.debug) {
+          this.log("verbose", `Fetching index at ${apiUrl}`);
+        }
+        const { response, error } = await this.fetch(apiUrl);
+        if (error) {
+          if (this.debug) {
+            this.log("error", `Failed to get index. Error: ${error.message}`);
+          }
+          throw error;
+        }
+        index = await response.json();
+        // Cache the index if we can
+        if (this.cache && response.status < 400) {
+          await this.cache?.set(cacheKey, index);
+        }
+      }
+
+      const resourceType = `${entityTypeId}${bundleId ? `--${bundleId}` : ""}`;
+      const collectionUrl = index?.links?.[resourceType]?.href;
+      // If we match a resource URL, use that. Otherwise fall back to the standard URL creation
+      if (collectionUrl) {
+        return `${collectionUrl}${resourceId ? `/${resourceId}` : ""}${
+          queryString ? `?${queryString}` : ""
+        }`;
+      }
+    }
+
     const apiUrlObject = new URL(
       `${localeSegment ?? ""}/${this.apiPrefix}/${entityTypeId}/${bundleId}${
         resourceId ? `/${resourceId}` : ""
@@ -232,14 +281,14 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async deleteResource<T>(
-    type: EntityTypeWithBundle,
+    type: string,
     resourceId: string,
     options?: DeleteOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
     const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
-    const apiUrl = this.createURL({
+    const apiUrl = await this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
@@ -293,13 +342,13 @@ export class JsonApiClient extends ApiClient {
     return json;
   }
 
-  static getEntityTypeIdAndBundleId(type: EntityTypeWithBundle): {
+  static getEntityTypeIdAndBundleId(type: string): {
     entityTypeId: string;
     bundleId: string;
   } {
     const [entityTypeId, bundleId] = type.split("--");
-    if (!entityTypeId || !bundleId) {
-      throw new TypeError(`type must be in the format "entityType--bundle"`);
+    if (!bundleId) {
+      return { entityTypeId, bundleId: "" };
     }
     return { entityTypeId, bundleId };
   }
@@ -338,7 +387,9 @@ export class JsonApiClient extends ApiClient {
       queryStringPart = `--${hashResultHex}`;
     }
 
-    return `${localePart}${entityTypeId}--${bundleId}${id}${queryStringPart}`;
+    return `${localePart}${entityTypeId}${
+      bundleId ? `--${bundleId}` : ""
+    }${id}${queryStringPart}`;
   }
 
   /**
@@ -404,7 +455,7 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async updateResource<T>(
-    type: EntityTypeWithBundle,
+    type: string,
     resourceId: string,
     body: string | object,
     options?: UpdateOptions,
@@ -412,7 +463,7 @@ export class JsonApiClient extends ApiClient {
     const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
-    const apiUrl = this.createURL({
+    const apiUrl = await this.createURL({
       entityTypeId,
       bundleId,
       resourceId,
@@ -504,14 +555,14 @@ export class JsonApiClient extends ApiClient {
    * ```
    */
   async createResource<T>(
-    type: EntityTypeWithBundle,
+    type: string,
     body: string | object,
     options?: CreateOptions,
   ): Promise<T | RawApiResponseWithData<T>> {
     const localeSegment = options?.locale || this.defaultLocale;
     const { entityTypeId, bundleId } =
       JsonApiClient.getEntityTypeIdAndBundleId(type);
-    const apiUrl = this.createURL({
+    const apiUrl = await this.createURL({
       entityTypeId,
       bundleId,
       localeSegment,

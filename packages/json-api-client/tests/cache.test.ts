@@ -1,14 +1,17 @@
 import type { SpyInstance } from "vitest";
 import { JsonApiClient } from "../src";
 import notFound from "./mocks/data/404.json";
+import index from "./mocks/data/index.json";
 
 interface CacheTestContext {
   client: JsonApiClient;
+  indexClient: JsonApiClient;
   cacheSpy: {
     get: SpyInstance;
     set: SpyInstance;
   };
   fetchSpy?: SpyInstance;
+  indexFetchSpy?: SpyInstance;
   resourceId: string;
 }
 
@@ -21,7 +24,13 @@ describe("Cache", () => {
       set: async <T>(key: string, value: T) => store.set(key, value),
     };
     context.client = new JsonApiClient(baseUrl, { cache, debug: true });
+    context.indexClient = new JsonApiClient(baseUrl, {
+      cache,
+      debug: true,
+      indexLookup: true,
+    });
     context.fetchSpy = vi.spyOn(context.client, "fetch");
+    context.indexFetchSpy = vi.spyOn(context.indexClient, "fetch");
     context.cacheSpy = {
       get: vi.spyOn(cache, "get"),
       set: vi.spyOn(cache, "set"),
@@ -42,6 +51,18 @@ describe("Cache", () => {
     expect(cacheSpy.set).toHaveBeenCalled();
     expect(cacheSpy.set).toHaveBeenCalledWith("node--recipe", result);
   });
+
+  it<CacheTestContext>("should be able to set a collection value using the index", async ({
+    indexClient,
+    cacheSpy,
+  }) => {
+    const result = await indexClient.getCollection("node--recipe");
+
+    expect(cacheSpy.set).toHaveBeenCalledTimes(2);
+    expect(cacheSpy.set).toHaveBeenNthCalledWith(1, "jsonapi", index);
+    expect(cacheSpy.set).toHaveBeenNthCalledWith(2, "node--recipe", result);
+  });
+
   it<CacheTestContext>("should be able to get a collection value", async ({
     client,
     cacheSpy,
@@ -57,6 +78,32 @@ describe("Cache", () => {
     await client.getCollection("node--recipe");
     expect(fetchSpy).toHaveBeenCalledOnce();
     expect(cacheSpy.get).toHaveReturnedWith(client.cache?.get("node--recipe"));
+  });
+
+  it<CacheTestContext>("should be able to get a collection value using a cached index", async ({
+    indexClient,
+    cacheSpy,
+    indexFetchSpy,
+  }) => {
+    await indexClient.getCollection("node--recipe");
+    // Check the cache for both the collection and the index
+    expect(cacheSpy.get).toHaveBeenCalledTimes(2);
+    expect(cacheSpy.get).toHaveBeenNthCalledWith(1, "node--recipe");
+    expect(cacheSpy.get).toHaveBeenNthCalledWith(2, "jsonapi");
+    // Fetch the index and the collection
+    expect(indexFetchSpy).toHaveBeenCalledTimes(2);
+    // Confirm the index was set in the cache
+    expect(cacheSpy.set).toHaveBeenNthCalledWith(1, "jsonapi", index);
+
+    // Call a different collection to ensure we're using the cached index
+    await indexClient.getCollection("custompage");
+    // Check the cache for both the collection and the index
+    expect(cacheSpy.get).toHaveBeenNthCalledWith(3, "custompage");
+    expect(cacheSpy.get).toHaveBeenNthCalledWith(4, "jsonapi");
+    // Only fetch the collection since the index was a cache hit
+    expect(indexFetchSpy).toHaveBeenCalledTimes(3);
+    // Confirm the cache has the correct index value
+    expect(await indexClient.cache?.get("jsonapi")).toEqual(index);
   });
 
   it<CacheTestContext>("should be able to set a resource value", async ({

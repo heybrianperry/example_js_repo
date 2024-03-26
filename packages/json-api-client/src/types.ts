@@ -1,4 +1,11 @@
-import type { Locale } from "@drupal-api-client/api-client";
+import type { ApiClientOptions, Locale } from "@drupal-api-client/api-client";
+
+/**
+ * Extends ApiClientOptions to add JSON:API Specific options.
+ */
+export interface JsonApiClientOptions extends ApiClientOptions {
+  indexLookup?: boolean;
+}
 
 /**
  * Base options for customizing each request.
@@ -61,7 +68,7 @@ export interface EndpointUrlSegments {
   /**
    * The bundle identifier.
    */
-  bundleId: string;
+  bundleId?: string;
   /**
    * Optional. The locale segment. Default is an empty string.
    */
@@ -91,7 +98,31 @@ export interface CreateOptions extends RequestBaseOptions {}
  */
 export interface DeleteOptions extends RequestBaseOptions {}
 
+/**
+ * A clone of the response object with the JSON parsed.
+ */
 export interface RawApiResponseWithData<T> {
   response: Response;
   json: T;
+}
+
+/**
+ * Shape of a JSON:API index response.
+ */
+export interface JsonApiIndex {
+  jsonapi: {
+    version: string;
+    meta: {
+      [metaProperty: string]: string | object;
+    };
+  };
+  data: [];
+  meta: {
+    [metaProperty: string]: string | object;
+  };
+  links: {
+    [resourceType: string]: {
+      href: string;
+    };
+  };
 }

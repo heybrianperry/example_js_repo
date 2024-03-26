@@ -26,6 +26,28 @@ test("Instance without baseUrl throws error", () => {
   expect(() => new JsonApiClient()).toThrowError("baseUrl is required");
 });
 
+describe("getEntityTypeAndBundleId", () => {
+  it("should correctly split a standard resource type", async () => {
+    const resourceType = "node--page";
+
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(resourceType);
+
+    expect(entityTypeId).toEqual("node");
+    expect(bundleId).toEqual("page");
+  });
+
+  it("should correctly split a resource type that does not have a bundleId", async () => {
+    const resourceType = "customresourcetype";
+
+    const { entityTypeId, bundleId } =
+      JsonApiClient.getEntityTypeIdAndBundleId(resourceType);
+
+    expect(entityTypeId).toEqual("customresourcetype");
+    expect(bundleId).toEqual("");
+  });
+});
+
 describe("getCacheKey", () => {
   it("should generate the cache key correctly with all optional parameters", async () => {
     const entityTypeId = "entityType";
@@ -51,6 +73,16 @@ describe("getCacheKey", () => {
   });
 
   it("should generate the cache key correctly without optional parameters", async () => {
+    const entityTypeId = "entityType";
+
+    const result = await JsonApiClient.createCacheKey({
+      entityTypeId,
+    });
+
+    expect(result).toEqual(entityTypeId);
+  });
+
+  it("should generate the cache key correctly with entityType and bundleId", async () => {
     const entityTypeId = "entityType";
     const bundleId = "bundleId";
 
