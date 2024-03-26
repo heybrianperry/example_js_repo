@@ -2,13 +2,15 @@
 title: "Working With an Individual Recipe"
 ---
 
+import { Aside } from "@astrojs/starlight/components";
+
 In our examples thus far we have been working with JSON:API collections, which include multiple resources of a specific type. Next we'll look at methods provided by the client that allow you to work with individual resources.
 
 ## Getting a recipe using getResource
 
 If you know the id of the recipe you are looking for, you can use the `getResource` method to retrieve it. For example, if you used getCollection elsewhere in your application to get a list of all recipes, you likely already know the id of any individual recipe you want to retrieve.
 
-Below we use `getResource` to display the recipe instructions for a recipe with the id '35f7cd32-2c54-49f2-8740-0b0ec2ba61f6'.
+Below we'll use `getResource` to display the instructions for a recipe with the id '35f7cd32-2c54-49f2-8740-0b0ec2ba61f6'.
 
 ```astro live
 ---
@@ -26,3 +28,35 @@ const recipe = await client.getResource(
 <h2>{recipe.data.attributes.title}</h2>
 <div set:html={recipe.data.attributes.field_recipe_instruction.processed} />
 ```
+
+## Getting a recipe using getResourceByPath
+
+As we saw above, using `getResource` requires us to know the id of the resource we intend to retrieve. There will likely be cases where your front end application knows the requested path, but doesn't know the id of the resource in Drupal that it should resolve to. In these cases the `getResourceByPath` method allows you to retrieve a single resource by providing the path instead of the id.
+
+<Aside>
+  `getResourceByPath` requires that the [Decoupled Router
+  module](https://www.drupal.org/project/decoupled_router) is installed and
+  configured on your Drupal site.
+</Aside>
+
+Let's adapt our example of rendering an example article to use `getResourceByPath`.
+
+```astro live ins={9}
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io"
+);
+const recipe = await client.getResourceByPath(
+  "/recipes/deep-mediterranean-quiche"
+);
+---
+<h2>{recipe.data.attributes.title}</h2>
+<div set:html={recipe.data.attributes.field_recipe_instruction.processed} />
+```
+
+## Additional Resources
+
+- [Decoupled Router](https://www.drupal.org/project/decoupled_router)

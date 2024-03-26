@@ -16,6 +16,10 @@ export default defineConfig({
           entryPoints: ["../packages/*"],
           output: "api",
           tsconfig: "../tsconfig.json",
+          sidebar: {
+            label: "API Reference",
+            collapsed: true,
+          },
           typeDoc: {
             entryPointStrategy: "packages",
             plugin: ["typedoc-plugin-mdn-links"],
@@ -53,6 +57,7 @@ export default defineConfig({
         },
         {
           label: "JSON:API Client Tutorial",
+          collapsed: true,
           items: [
             {
               label: "About this Tutorial",
@@ -82,6 +87,7 @@ export default defineConfig({
         },
         {
           label: "Using With Frameworks",
+          collapsed: true,
           autogenerate: {
             directory: "with-frameworks",
           },
