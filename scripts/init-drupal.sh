@@ -6,7 +6,7 @@ set -e
 # Create DDEV project
 mkdir drupal
 cd drupal
-ddev config --project-type=drupal10 --docroot=web --create-docroot
+ddev config --project-name=drupal-client --project-type=drupal10 --docroot=web --create-docroot
 ddev start
 ddev composer create drupal/recommended-project
 
@@ -23,7 +23,7 @@ ddev composer require drush/drush drupal/decoupled_router drupal/jsonapi_extras
 
 # Install Drupal
 ddev drush site:install demo_umami --account-name=admin --account-pass=admin -y
-ddev drush en jsonapi decoupled_router basic_authn jsonapi_extras -y
+ddev drush en jsonapi decoupled_router basic_auth jsonapi_extras -y
 
 # Configure JSON:API to allow CRUD operations
 ddev drush config:set jsonapi.settings read_only 0 -y

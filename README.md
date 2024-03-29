@@ -162,12 +162,12 @@ This will create a new Drupal instance in `/drupal`, build your DDEV instance, i
 
 Drupal will be available at:
 
-`https://drupal.ddev.site`
+`https://drupal-client.ddev.site`
 
 and the following API endpoints will be active:
 
-`https://drupal.ddev.site/jsonapi`
-`https://drupal.ddev.site/router/translate-path`
+`https://drupal-client.ddev.site/jsonapi`
+`https://drupal-client.ddev.site/router/translate-path`
 
 You will be able to interact with your DDEV instance [using the `ddev` command](https://ddev.readthedocs.io/en/stable/users/usage/cli/) inside of the `/drupal` directory. Drush will also be installed and available via `ddev drush`.
 
