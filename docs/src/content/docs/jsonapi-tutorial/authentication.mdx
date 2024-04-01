@@ -1,0 +1,196 @@
+---
+title: Using Authentication
+---
+
+import { Aside, Code, TabItem, Tabs } from "@astrojs/starlight/components";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import JsonView from "react18-json-view";
+
+import "react18-json-view/src/style.css";
+
+In all of the examples so far, we've been making anonymous requests to our JSON:API endpoints. In many cases this is the path of least resistance, but your site may have resources that are only available to users with certain permissions. Rather than only reading data, you may also want to modify specific data within Drupal. Either of these cases will require authentication. The Drupal API client provides a number of options that make using common Drupal authentication methods trivial.
+
+Within our demo data set, accessing the 'actions' resource requires a user with the 'administer actions' permission. Let's see what the response looks like if we try to access this resource anonymously.
+
+export const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+
+export const actions = await client.getCollection("action--action");
+
+<Tabs>
+  <TabItem label="JS">
+    ```js
+    import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+
+    const actions = await client.getCollection("action--action");
+    ```
+
+  </TabItem>
+  <TabItem label="Data">
+    <JsonView client:only collapsed={3} src={actions} />
+  </TabItem>
+</Tabs>
+
+Looking at the response object, the data array is empty. Under the 'meta' property, we'll also see the message 'Some resources have been omitted because of insufficient authorization.' Let's adapt this example to use a variety of authentication methods supported by the client.
+
+## Basic Authentication
+
+While many decoupled projects chose alternative authentication methods, the client does support basic authentication provided by Drupal Core.
+
+<Aside>
+  To use basic authentication, you'll need to enable the 'HTTP Basic
+  Authentication' module in Drupal. This module is included in Drupal Core, but
+  is disabled by default.
+</Aside>
+
+To use basic authentication, we'll need to make the following changes when creating an instance of the `JsonApiClient` class:
+
+```js ins={5-13}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    authentication: {
+      type: "Basic",
+      credentials: {
+        username: process.env.MY_USERNAME,
+        password: process.env.MY_PASSWORD,
+      },
+    },
+  },
+);
+
+const actions = await client.getCollection("action--action");
+```
+
+<Aside type="caution">
+  As shown above, it is recommended to store sensitive information in
+  environment variables that are not checked in to version control.
+</Aside>
+
+After making that change, the necessary headers for basic authentication will be added to all requests made by the client.
+
+## OAuth Authentication
+
+A popular choice for handling authentication on Decoupled Drupal projects is the [Simple OAuth module](https://www.drupal.org/project/simple_oauth).
+
+To use Simple OAuth, make the following changes when creating an instance of the `JsonApiClient` class:
+
+```js ins={5-13}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    authentication: {
+      type: "OAuth",
+      credentials: {
+        clientId: process.env.MY_CLIENT_ID,
+        clientSecret: process.env.MY_CLIENT_SECRET,
+      },
+    },
+  },
+);
+
+const actions = await client.getCollection("action--action");
+```
+
+<Aside>
+  When using the Simple OAuth module, the client ID and client secret are
+  specified when creating a consumer entity.
+</Aside>
+
+After making that change, the necessary authentication headers will be added to all requests made by the client. The client will also automatically handle negotiating your access token, including refreshing the access token when it expires.
+
+## Custom Authentication
+
+While the client may formally support additional authentication methods in the future, we also provide an option to specify a custom authorization header.
+
+```js ins={5-13}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    authentication: {
+      type: "Custom",
+      credentials: {
+        value: `${authScheme} ${authorizationParameters}`,
+      },
+    },
+  },
+);
+
+const actions = await client.getCollection("action--action");
+```
+
+The specified value will be added to the `Authorization` header for all requests made by the client.
+
+```http
+Authorization: providedvaluestring
+```
+
+## Disabling authentication for a request
+
+It is also possible to disable authentication for a specific request by setting the `disableAuthentication` option to `true` when calling individual client methods.
+
+```js {16, 18} ins={17}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    authentication: {
+      type: "OAuth",
+      credentials: {
+        clientId: process.env.MY_CLIENT_ID,
+        clientSecret: process.env.MY_CLIENT_SECRET,
+      },
+    },
+  },
+);
+
+const actions = await client.getCollection("action--action", {
+  disableAuthentication: true,
+});
+```
+
+Even though the client instance is configured to use authentication, the request to get the actions collection will be made anonymously.
+
+## Cookie authentication
+
+The client does not include any features specific to cookie-based authentication due to cross-domain and [client side limitations](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie). However, when used inside of your Drupal site (aka, progressive decoupling), the client will inherit the current user session by automatically including any cookies that are set by Drupal when making requests.
+
+Given the following JavaScript:
+
+```js
+// api-client-example.js
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(window.location.origin);
+const actions = await client.getCollection("action--action");
+console.log("This request requires authentication", actions);
+```
+
+which is loaded as a module within a Drupal library:
+
+```yml
+# api_client_examples.libraries.yml
+api_client_examples:
+  js:
+    js/api-client-examples.js: { attributes: { type: module } }
+```
+
+In a browser window logged in as a user with the 'administer actions' permission, you will see results for the 'action' collection. As an unauthenticated in an incognito window you will see no results.
+
+## Additional Resources
+
+- [HTTP Basic Authentication Module](https://www.drupal.org/docs/8/core/modules/basic_auth)
+- [Simple OAuth Module](https://www.drupal.org/project/simple_oauth)
+- [Authorization Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)

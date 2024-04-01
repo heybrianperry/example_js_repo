@@ -1,0 +1,5 @@
+name: 'Api Client Examples'
+type: module
+description: 'Examples using the API client within a Drupal site'
+package: Custom
+core_version_requirement: ^10 || ^11

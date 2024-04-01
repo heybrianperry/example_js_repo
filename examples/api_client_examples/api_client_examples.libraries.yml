@@ -1,0 +1,3 @@
+api_client_examples:
+  js:
+    js/api-client-example.js: { attributes: { type: module } }

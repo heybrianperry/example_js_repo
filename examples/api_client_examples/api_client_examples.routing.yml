@@ -1,0 +1,7 @@
+api_client_examples.example:
+  path: '/api-client-examples/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\api_client_examples\Controller\ApiClientExamplesController'
+  requirements:
+    _permission: 'access content'

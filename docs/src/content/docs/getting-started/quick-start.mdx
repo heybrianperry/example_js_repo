@@ -87,7 +87,7 @@ export const client = new JsonApiClient(
 );
 export const articles = await client.getCollection("node--article");
 
-<JsonView client:only collapsed={2} src={articles} />
+<JsonView client:only src={articles} />
 
 ## Retrieve a single resource
 

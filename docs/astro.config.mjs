@@ -83,14 +83,29 @@ export default defineConfig({
               label: "Working With an Individual Recipe",
               link: "/jsonapi-tutorial/individual-recipe/",
             },
+            {
+              label: "Using Authentication",
+              link: "/jsonapi-tutorial/authentication/",
+            },
           ],
         },
         {
           label: "Using With Frameworks",
           collapsed: true,
-          autogenerate: {
-            directory: "with-frameworks",
-          },
+          items: [
+            {
+              label: "Overview",
+              link: "/with-frameworks/overview/",
+            },
+            {
+              label: "React",
+              link: "/with-frameworks/react/",
+            },
+            {
+              label: "Drupal",
+              link: "/with-frameworks/drupal/",
+            },
+          ],
         },
         typeDocSidebarGroup,
       ],

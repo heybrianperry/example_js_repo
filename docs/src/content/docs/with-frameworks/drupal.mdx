@@ -1,0 +1,57 @@
+---
+title: Drupal
+---
+
+The Drupal API Client can be used within a Drupal site (often called progressive decoupling).
+
+## Loading your JavaScript as a module
+
+Given the following JavaScript that loads the JSON:API Client from a CDN:
+
+```js
+// api-client-examples.js
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(window.location.origin);
+const actions = await client.getCollection("node--article");
+```
+
+You will need to load this JavaScript as a module in your Drupal site by adding the following to a `libraries.yml` file in your module or theme:
+
+```yml
+# api_client_examples.libraries.yml
+api_client_examples:
+  js:
+    js/api-client-examples.js: { attributes: { type: module } }
+```
+
+## Using a dynamic baseUrl
+
+In the previous example, you'll note that the `baseUrl` argument is being set to `window.location.origin`.
+
+```js {4}
+// api-client-examples.js
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(window.location.origin);
+const actions = await client.getCollection("node--article");
+```
+
+In a progressively decoupled Drupal site, this will allow the client to make requests to the same domain as the Drupal site without having to specify different values on non-production environments.
+
+## Inheriting authentication
+
+When used inside of your Drupal site, the client will inherit the current user session by automatically including any cookies that are set by Drupal when making requests.
+
+Given the following JavaScript:
+
+```js
+// api-client-example.js
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(window.location.origin);
+const actions = await client.getCollection("action--action");
+console.log("This request requires authentication", actions);
+```
+
+In a browser window logged in as a user with the 'administer actions' permission, you will see results for the 'action' collection. As an unauthenticated in an incognito window you will see no results.

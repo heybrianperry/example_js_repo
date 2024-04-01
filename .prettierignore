@@ -7,3 +7,6 @@ dist
 docs/.astro
 docs/src/content/docs/api/
 public
+
+# Ignore Drupal module for now...
+examples/api_client_examples
