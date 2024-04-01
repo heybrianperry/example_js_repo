@@ -1,5 +1,14 @@
 # docs
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [714b7dd]
+  - @drupal-api-client/decoupled-router-client@1.0.0
+  - @drupal-api-client/json-api-client@1.0.0
+  - @drupal-api-client/api-client@1.0.0
+
 ## 0.0.3
 
 ### Patch Changes

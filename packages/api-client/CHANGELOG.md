@@ -1,5 +1,11 @@
 # @drupal-api-client/api-client
 
+## 1.0.0
+
+### Major Changes
+
+- 714b7dd: 1.0 release of api-client, decoupled-router-client, and json-api-client
+
 ## 0.7.2
 
 ### Patch Changes
