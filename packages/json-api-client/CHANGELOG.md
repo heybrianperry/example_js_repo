@@ -1,5 +1,11 @@
 # @drupal-api-client/json-api-client
 
+## 0.9.0
+
+### Minor Changes
+
+- 97f8811: Add decoupledRouterApiPrefix option that can be used when creating an instance of JsonApiClient
+
 ## 0.8.0
 
 ### Minor Changes
