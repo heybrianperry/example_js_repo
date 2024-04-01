@@ -20,6 +20,13 @@ describe("JsonApiClient.getResourceByPath()", () => {
     const result = await apiClient.getResourceByPath(path);
     expect(result).toEqual(nodeRecipeSingleResource);
   });
+  it("should fetch data for an individual resource when a router api prefix is provided", async () => {
+    const apiClient = new JsonApiClient(baseUrl, {
+      decoupledRouterApiPrefix: "router/translate-path",
+    });
+    const result = await apiClient.getResourceByPath(path);
+    expect(result).toEqual(nodeRecipeSingleResource);
+  });
   // Should throw an error if the path is invalid
   it("should throw an error if path can not be resolved", async () => {
     const apiClient = new JsonApiClient(baseUrl);

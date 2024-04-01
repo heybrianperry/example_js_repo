@@ -4,7 +4,14 @@ import type { ApiClientOptions, Locale } from "@drupal-api-client/api-client";
  * Extends ApiClientOptions to add JSON:API Specific options.
  */
 export interface JsonApiClientOptions extends ApiClientOptions {
+  /**
+   * If true, the client will use the JSON:API index endpoint to discover the available resources.
+   */
   indexLookup?: boolean;
+  /**
+   * The api prefix to use for decoupled router
+   */
+  decoupledRouterApiPrefix?: string;
 }
 
 /**

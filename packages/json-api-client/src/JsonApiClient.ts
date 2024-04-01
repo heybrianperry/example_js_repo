@@ -36,17 +36,34 @@ export class JsonApiClient extends ApiClient {
   indexLookup: JsonApiClientOptions["indexLookup"];
 
   /**
+   * @see {@link JsonApiClientOptions.decoupledRouterApiPrefix}
+   */
+  decoupledRouterApiPrefix: JsonApiClientOptions["decoupledRouterApiPrefix"];
+
+  /**
    * Creates a new instance of the JsonApiClient.
    * @param baseUrl - The base URL of the API. {@link BaseUrl}
    * @param options - (Optional) Additional options for configuring the API client. {@link JsonApiClientOptions}
    */
   constructor(baseUrl: BaseUrl, options?: JsonApiClientOptions) {
     super(baseUrl, options);
-    const { apiPrefix, cache, debug, indexLookup } = options || {};
+    const { apiPrefix, cache, debug, indexLookup, decoupledRouterApiPrefix } =
+      options || {};
     this.apiPrefix = apiPrefix || "jsonapi";
+    this.decoupledRouterApiPrefix = decoupledRouterApiPrefix;
     this.cache = cache;
     this.debug = debug || false;
-    this.router = new DecoupledRouterClient(baseUrl, options);
+
+    const routerOptions = {
+      ...options,
+    };
+    if (this.decoupledRouterApiPrefix) {
+      routerOptions.apiPrefix = this.decoupledRouterApiPrefix;
+    } else {
+      delete routerOptions.apiPrefix;
+    }
+    this.router = new DecoupledRouterClient(baseUrl, routerOptions);
+
     this.indexLookup = indexLookup || false;
   }
 
