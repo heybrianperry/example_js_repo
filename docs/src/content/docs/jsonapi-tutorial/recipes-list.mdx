@@ -20,7 +20,7 @@ Using the Umami Demo profile, our Drupal site comes with a number of recipes. As
 <Aside>
   If you haven't completed the Quick Start, be sure to first [install the
   JSON:API
-  Client](http://localhost:4321/getting-started/quick-start/#install-using-a-package-manager)
+  Client](/api_client/getting-started/quick-start/#install-using-a-package-manager)
   prior to starting this tutorial.
 </Aside>
 
@@ -48,7 +48,7 @@ Using the Umami Demo profile, our Drupal site comes with a number of recipes. As
 
   </TabItem>
   <TabItem label="Data">
-    <JsonView client:only collapsed={2} src={recipes} />
+    <JsonView client:only="react" collapsed={2} src={recipes} />
   </TabItem>
 </Tabs>
 
@@ -135,6 +135,6 @@ const recipes = await client.getCollection("node--recipe");
 Moving on to the image, we'll see `field_media_image` within the `relationships` property of the object, but the associated data essentially only includes an `id` which is not referenced elsewhere in the object.
 This is because field_media_image references another entity in Drupal.
 
-<JsonView client:only collapsed={2} src={recipe} />
+<JsonView client:only="react" collapsed={2} src={recipe} />
 
 To ensure the image data we need is also included in this API response, we'll need to pass additional query string parameters as part of our fetch request. In the next section, we'll see how the JSON:API Client can make this easy.

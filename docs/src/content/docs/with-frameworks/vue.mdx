@@ -1,0 +1,40 @@
+---
+title: Vue
+---
+
+> [Vue](https://vuejs.org/) (pronounced /vjuː/, like view) is a JavaScript framework for building user interfaces. It builds on top of standard HTML, CSS, and JavaScript and provides a declarative, component-based programming model that helps you efficiently develop user interfaces of any complexity.
+
+## Fetching data in a lifecycle hook
+
+In a standalone Vue component, data fetching often happens within a [lifecycle hook](https://vuejs.org/guide/essentials/lifecycle.html). In the example below, we fetch data from Drupal within the `onMounted` hook, and update the value of the `articles` ref with the response. The data will then be available for rendering in the template.
+
+```vue live props={{ "client:load": true }}
+<script setup>
+import { ref, onMounted } from "vue";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const articles = ref({});
+
+onMounted(async () => {
+  const client = new JsonApiClient(
+    "https://dev-drupal-api-client-poc.pantheonsite.io",
+  );
+  articles.value = await client.getCollection("node--article");
+});
+</script>
+
+<template>
+  <h1>Umami Articles</h1>
+  <ul v-if="articles.data">
+    <li v-for="article in articles.data">
+      {{ article.attributes.title }}
+    </li>
+  </ul>
+  <div v-else>Loading...</div>
+</template>
+```
+
+## Additional Resources
+
+- [Vue.js](https://vuejs.org/)
+- [Lifecycle Hooks](https://vuejs.org/guide/essentials/lifecycle.html)

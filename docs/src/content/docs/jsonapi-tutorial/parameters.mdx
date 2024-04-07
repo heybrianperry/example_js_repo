@@ -58,7 +58,7 @@ To include the `field_media_image` field, we could use the following query strin
 
   </TabItem>
   <TabItem label="Data">
-    <JsonView client:only collapsed={2} src={recipesMedia} />
+    <JsonView client:only="react" collapsed={2} src={recipesMedia} />
   </TabItem>
 </Tabs>
 
@@ -82,7 +82,7 @@ Thankfully, the include parameter allows us to follow these relationship paths w
 
   </TabItem>
   <TabItem label="Data">
-    <JsonView client:only collapsed={2} src={recipesThumbnail} />
+    <JsonView client:only="react" collapsed={2} src={recipesThumbnail} />
   </TabItem>
 </Tabs>
 
@@ -117,7 +117,7 @@ The [drupal-jsonapi-params](https://www.npmjs.com/package/drupal-jsonapi-params)
 
   </TabItem>
   <TabItem label="Data">
-    <JsonView client:only collapsed={2} src={recipesFilter} />
+    <JsonView client:only="react" collapsed={2} src={recipesFilter} />
   </TabItem>
 </Tabs>
 

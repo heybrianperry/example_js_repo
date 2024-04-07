@@ -2,8 +2,9 @@ import starlight from "@astrojs/starlight";
 import liveCode from "astro-live-code";
 import { defineConfig } from "astro/config";
 import starlightTypeDoc, { typeDocSidebarGroup } from "starlight-typedoc";
-
 import react from "@astrojs/react";
+
+import vue from "@astrojs/vue";
 
 // https://astro.build/config
 export default defineConfig({
@@ -102,6 +103,10 @@ export default defineConfig({
               link: "/with-frameworks/react/",
             },
             {
+              label: "Vue",
+              link: "/with-frameworks/vue/",
+            },
+            {
               label: "Drupal",
               link: "/with-frameworks/drupal/",
             },
@@ -115,5 +120,6 @@ export default defineConfig({
       ],
     }),
     react(),
+    vue(),
   ],
 });
