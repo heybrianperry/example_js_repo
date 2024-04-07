@@ -1,0 +1,78 @@
+---
+title: Astro
+---
+
+[Astro](https://astro.build/) is a versatile meta-framework focused on content-driven sites. It is especially notable for the ability to use a variety of framework components rather than being tied to a single framework.
+
+This documentation site is built with Astro including all live code examples, so you've already seen the client and Astro in action.
+
+## Using a component script
+
+Similar to markdown frontmatter, Astro uses a code fence (---) to identify the script in your Astro component. You can use the component script to write any JavaScript code that you need to render your template, including fetching data using this client.
+
+```astro live
+---
+// recipes-list.astro
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+);
+const recipes = await client.getCollection("node--recipe");
+---
+<h2>Umami Recipes</h2>
+<ul>
+  {recipes.data.map((recipe) => (
+    <li key={recipe.id}>{recipe.attributes.title}</li>
+  ))}
+</ul>
+
+```
+
+## Using getStaticPaths
+
+Within a page that defines [dynamic routes](https://docs.astro.build/en/guides/routing/#dynamic-routes), the [getStaticPaths()](https://docs.astro.build/en/reference/api-reference/#getstaticpaths) function can be used to determine paths that will be pre-rendered by Astro. You can use the client to fetch data from Drupal within this function.
+
+```astro
+// pages/[...slug].astro
+---
+import Article from "../layouts/Article.astro";
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+export async function getStaticPaths() {
+  const client = new JsonApiClient(import.meta.env.DRUPAL_BASE_URL);
+  const articles = await client.getCollection("node--article");
+
+  return articles.data.map((article) => ({
+    params: { slug: article.attributes.path.alias },
+    props: article,
+  }));
+}
+
+const article = Astro.props;
+---
+
+<Article
+  title={article.attributes.title}
+  pubDate={new Date(article.attributes.created)}
+>
+  <div set:html={article.attributes.body.processed} />
+</Article>
+```
+
+This will result in pages being pre-rendered for the paths `/articles/give-it-a-go-and-grow-your-own-herbs`, `/articles/dairy-free-and-delicious-milk-chocolate` and so on.
+
+## The set:html directive
+
+In the template in the previous example we used Astro's [set:html directive](https://docs.astro.build/en/reference/directives-reference/#sethtml) to render the body of the article.
+
+```astro
+<Article
+  title={article.attributes.title}
+  pubDate={new Date(article.attributes.created)}
+>
+  <div set:html={article.attributes.body.processed} />
+</Article>
+```
+
+Using the set:html directive is similar to setting el.innerHTML. This value is not automatically escaped, so ensure that you are only using it with fields that are being escaped and processed by Drupal.

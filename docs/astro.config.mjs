@@ -105,6 +105,10 @@ export default defineConfig({
               label: "Drupal",
               link: "/with-frameworks/drupal/",
             },
+            {
+              label: "Astro",
+              link: "/with-frameworks/astro/",
+            },
           ],
         },
         typeDocSidebarGroup,
