@@ -1,0 +1,42 @@
+---
+title: Svelte
+---
+
+> [Svelte](https://svelte.dev/) is a tool for building web applications. Like other user interface frameworks, it allows you to build your app declaratively out of components that combine markup, styles and behaviours.
+> These components are compiled into small, efficient JavaScript modules that eliminate overhead traditionally associated with UI frameworks.
+
+## Fetching data in a lifecycle hook
+
+In a client-side Svelte component, data fetching often happens within a [lifecycle hook](https://svelte.dev/docs/svelte). In the example below, we fetch data from Drupal within the `onMount` hook, and update the value of the `articles` variable with the response. The data will then be available for rendering in the template.
+
+```svelte live props={{ "client:visible": true }}
+<script>
+  import { onMount } from 'svelte';
+  import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+  let articles;
+
+  onMount(async () => {
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    articles = await client.getCollection("node--article");
+  });
+</script>
+
+<h1>Umami Articles</h1>
+{#if articles}
+  <ul>
+    {#each articles.data as article}
+      <li>{article.attributes.title}</li>
+    {/each}
+  </ul>
+{:else}
+  <p>Loading...</p>
+{/if}
+```
+
+## Additional Resources
+
+- [Svelte.dev](https://svelte.dev/)
+- [Svelte Lifecycle Hooks](https://svelte.dev/docs/svelte)

@@ -6,9 +6,9 @@ title: Vue
 
 ## Fetching data in a lifecycle hook
 
-In a standalone Vue component, data fetching often happens within a [lifecycle hook](https://vuejs.org/guide/essentials/lifecycle.html). In the example below, we fetch data from Drupal within the `onMounted` hook, and update the value of the `articles` ref with the response. The data will then be available for rendering in the template.
+In a client-side Vue component, data fetching often happens within a [lifecycle hook](https://vuejs.org/guide/essentials/lifecycle.html). In the example below, we fetch data from Drupal within the `onMounted` hook, and update the value of the `articles` ref with the response. The data will then be available for rendering in the template.
 
-```vue live props={{ "client:load": true }}
+```vue live props={{ "client:visible": true }}
 <script setup>
 import { ref, onMounted } from "vue";
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
