@@ -112,6 +112,10 @@ export default defineConfig({
               link: "/with-frameworks/svelte/",
             },
             {
+              label: "Web Components",
+              link: "/with-frameworks/web-components/",
+            },
+            {
               label: "Drupal",
               link: "/with-frameworks/drupal/",
             },
@@ -122,6 +126,15 @@ export default defineConfig({
           ],
         },
         typeDocSidebarGroup,
+      ],
+      head: [
+        {
+          tag: "script",
+          attrs: {
+            src: "/api_client/UmamiArticles.js",
+            type: "module",
+          },
+        },
       ],
     }),
     react(),

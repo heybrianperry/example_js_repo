@@ -1,0 +1,108 @@
+---
+title: Web Components
+---
+
+> Web components are a set of web platform APIs that allow you to create new custom, reusable, encapsulated HTML tags to use in web pages and web apps. Custom components and widgets build on the Web Component standards, will work across modern browsers, and can be used with any JavaScript library or framework that works with HTML.
+
+## Fetching data in connectedCallback
+
+If you wanted to fetch data using the client within a web component, you could do so in the `connectedCallback` lifecycle method. This method is called when the element is inserted into the DOM. So that you can `await` the data returned from Drupal, you must make the `connectedCallback` method `async`.
+
+```js
+// UmamiArticles.js
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+class UmamiArticles extends HTMLElement {
+  async connectedCallback() {
+    const template = `
+      <h1>Umami Articles</h1>
+      <ul>Loading...</ul>
+    `;
+    const elem = document.createElement("template");
+    elem.innerHTML = template;
+
+    // Render initial loading state
+    this.attachShadow({ mode: "open" }).appendChild(
+      elem.content.cloneNode(true),
+    );
+
+    // Retrieve data from Drupal
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    const articles = await client.getCollection("node--article");
+
+    // Remove loading indicator
+    this.shadowRoot.querySelector("ul").innerHTML = "";
+    // Render list of articles
+    articles.data.forEach((element) => {
+      const listItem = document.createElement("li");
+      listItem.innerHTML = element.attributes.title;
+      this.shadowRoot.querySelector("ul").appendChild(listItem);
+    });
+  }
+}
+
+if (!customElements.get("umami-articles")) {
+  customElements.define("umami-articles", UmamiArticles);
+}
+```
+
+```html live
+<umami-articles></umami-articles>
+```
+
+## Using Lit
+
+Using a library like [Lit](https://lit.dev/docs/data/task/) can reduce the boilerplate code required to create web components. The approach to fetching data will be similar. In the example below we are still using the client within the `connectedCallback` lifecycle method.
+
+```js
+import {
+  LitElement,
+  html,
+} from "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js";
+import { JsonApiClient } from "https://esm.run/@drupal-api-client/json-api-client";
+
+class LitUmamiArticles extends LitElement {
+  // Define articles property so that changes can be observed
+  static properties = {
+    articles: [],
+  };
+
+  // Retrieve data from Drupal in connectedCallback lifecycle method
+  async connectedCallback() {
+    super.connectedCallback();
+
+    const client = new JsonApiClient(
+      "https://dev-drupal-api-client-poc.pantheonsite.io",
+    );
+    this.articles = await client.getCollection("node--article");
+  }
+
+  render() {
+    if (!this.articles) {
+      return html`<h1>Umami Articles</h1>
+        <p>Loading...</p>`;
+    } else {
+      return html`<h1>Umami Articles</h1>
+        <ul>
+          ${this.articles.data.map(
+            (article) => html`<li>${article.attributes.title}</li>`,
+          )}
+        </ul>`;
+    }
+  }
+}
+```
+
+```html live
+<lit-umami-articles></lit-umami-articles>
+```
+
+Lit also provides the [@lit/task](https://lit.dev/docs/data/task/) package which can help manage your https://lit.dev/docs/data/task/async data workflow.
+
+## Additional Resources
+
+- [Web Components on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_components)
+- [Lit](https://lit.dev/)
+- [@lit/task](https://lit.dev/docs/data/task/)

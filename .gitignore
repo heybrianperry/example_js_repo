@@ -14,3 +14,4 @@ drupal
 
 # deployed docs
 public
+!docs/public
