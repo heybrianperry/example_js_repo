@@ -84,6 +84,9 @@ importers:
       '@drupal-api-client/json-api-client':
         specifier: workspace:*
         version: link:../packages/json-api-client
+      '@drupal-api-client/utils':
+        specifier: workspace:*
+        version: link:../packages/utils
       '@types/react':
         specifier: ^18.2.60
         version: 18.2.60
@@ -160,6 +163,9 @@ importers:
       '@drupal-api-client/json-api-client':
         specifier: workspace:*
         version: link:../../packages/json-api-client
+      '@drupal-api-client/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       jsona:
         specifier: ^1.11.0
         version: 1.12.1
@@ -179,6 +185,9 @@ importers:
 
   packages/api-client:
     dependencies:
+      nanostores:
+        specifier: ^0.10.2
+        version: 0.10.2
       uint8array-extras:
         specifier: ^0.5.0
         version: 0.5.1
@@ -250,6 +259,9 @@ importers:
       '@drupal-api-client/decoupled-router-client':
         specifier: workspace:*
         version: link:../decoupled-router-client
+      '@drupal-api-client/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@smithy/util-hex-encoding':
         specifier: ^2.0.0
         version: 2.0.0
@@ -272,6 +284,31 @@ importers:
       msw:
         specifier: 2.0.8
         version: 2.0.8(typescript@5.3.3)
+      publint:
+        specifier: ^0.2.0
+        version: 0.2.5
+      tsup:
+        specifier: ^7.3.0
+        version: 7.3.0(typescript@5.3.3)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
+
+  packages/utils:
+    dependencies:
+      nanostores:
+        specifier: ^0.10.2
+        version: 0.10.2
+    devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.13.1
+        version: 0.13.1
+      '@drupal-api-client/api-client':
+        specifier: workspace:*
+        version: link:../api-client
+      '@vitest/coverage-v8':
+        specifier: ^0.34.1
+        version: 0.34.6(vitest@0.34.6)
       publint:
         specifier: ^0.2.0
         version: 0.2.5
@@ -6448,6 +6485,11 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /nanostores@0.10.2:
+    resolution: {integrity: sha512-Z/nqsDGQvjYTXZcVge06IS8OAJ8Lzb1jLUSAbDDomDBtlSXh88M4toUKW3iKwN+BfblEXhft0KlwJ+bgGi/Ysw==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    dev: false
 
   /napi-build-utils@1.0.2:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}

@@ -1,0 +1,62 @@
+---
+title: Optimizing Performance
+---
+
+There are many approaches to optimize performance when interacting with Drupal's JSON:API endpoints. This guide will cover some of the most common strategies.
+
+## Caching data
+
+When creating an instance of the client, it is possible to provide a cache to store data returned from JSON:API. This can have a big impact on performance, especially in cases when the same data is requested multiple times.
+
+### Using the default cache
+
+For a simple way to cache responses, the API Client provides a default cache based on the [Nanostores](https://github.com/nanostores/nanostores) library. To use it, create an instance of the cache using the `createCache` function and pass it to the client when creating an instance.
+
+```astro live
+---
+import { JsonApiClient, createCache } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+    cache: createCache(),
+  }
+);
+const recipes = await client.getCollection("node--recipe");
+---
+<h2>Umami Recipes</h2>
+<ul>
+  {recipes.data.map((recipe) => (
+    <li key={recipe.id}>{recipe.attributes.title}</li>
+  ))}
+</ul>
+
+```
+
+The first call to `getCollection` will fetch the data from the server and store it in the cache. Subsequent calls to `getCollection` for `node--recipe` will return the data from the cache, which can significantly reduce the number of requests made to the server.
+
+### Using a custom cache
+
+In addition to the default cache, an alternative cache can be used. The provided cache needs to be compatible with the ApiClient `cache` interface. This interface expects the cache to have `get` and `set` methods.
+
+As an example, let's look at how we could use the [node-cache](https://www.npmjs.com/package/node-cache) package.
+
+```astro
+---
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import NodeCache from "node-cache";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+    cache: new NodeCache(),
+  }
+);
+const recipes = await client.getCollection("node--recipe");
+---
+<h2>Umami Recipes</h2>
+<ul>
+  {recipes.data.map((recipe) => (
+    <li key={recipe.id}>{recipe.attributes.title}</li>
+  ))}
+</ul>
+
+```

@@ -35,6 +35,10 @@ The `api-client` package includes the base `ApiClient` class which is meant to b
 
 The `json-api-client` package includes the `JsonApiClient` class which extends the `ApiClient`, and makes it easy to fetch data from Drupal's JSON:API without deep knowledge of it.
 
+#### utils
+
+The `utils` package includes optional utilities that may be useful for working with the base class, but are not included in the base package.
+
 ### Examples
 
 Examples show how the packages can be used in a variety of ways.

@@ -50,6 +50,7 @@
     "tsconfig": "./tsconfig.typedoc.json"
   },
   "dependencies": {
+    "nanostores": "^0.10.2",
     "uint8array-extras": "^0.5.0"
   }
 }

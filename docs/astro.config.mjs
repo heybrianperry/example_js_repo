@@ -89,6 +89,10 @@ export default defineConfig({
               label: "Using Authentication",
               link: "/jsonapi-tutorial/authentication/",
             },
+            {
+              label: "Optimizing Performance",
+              link: "/jsonapi-tutorial/performance/",
+            },
           ],
         },
         {

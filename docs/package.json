@@ -19,6 +19,7 @@
     "@drupal-api-client/api-client": "workspace:*",
     "@drupal-api-client/decoupled-router-client": "workspace:*",
     "@drupal-api-client/json-api-client": "workspace:*",
+    "@drupal-api-client/utils": "workspace:*",
     "@types/react": "^18.2.60",
     "@types/react-dom": "^18.2.19",
     "astro": "^4.3.5",

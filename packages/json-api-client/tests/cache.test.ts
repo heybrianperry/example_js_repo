@@ -1,5 +1,5 @@
 import type { SpyInstance } from "vitest";
-import { JsonApiClient } from "../src";
+import { JsonApiClient, createCache } from "../src";
 import notFound from "./mocks/data/404.json";
 import index from "./mocks/data/index.json";
 
@@ -18,12 +18,11 @@ interface CacheTestContext {
 describe("Cache", () => {
   beforeEach<CacheTestContext>((context) => {
     const baseUrl = "https://dev-drupal-api-client-poc.pantheonsite.io";
-    const store = new Map();
-    const cache = {
-      get: async (key: string) => store.get(key),
-      set: async <T>(key: string, value: T) => store.set(key, value),
-    };
-    context.client = new JsonApiClient(baseUrl, { cache, debug: true });
+    const cache = createCache();
+    context.client = new JsonApiClient(baseUrl, {
+      cache,
+      debug: true,
+    });
     context.indexClient = new JsonApiClient(baseUrl, {
       cache,
       debug: true,

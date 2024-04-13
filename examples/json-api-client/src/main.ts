@@ -1,8 +1,8 @@
-import { Cache } from "@drupal-api-client/api-client";
 import {
   JsonApiClient,
   RawApiResponseWithData,
 } from "@drupal-api-client/json-api-client";
+import { createCache } from "@drupal-api-client/utils";
 import { Jsona } from "jsona";
 import * as JSONAPI from "jsonapi-typescript";
 import { Logger } from "tslog";
@@ -42,23 +42,10 @@ type Recipe = {
   };
 };
 
-// use sessionStorage for the cache.
-const cache = {
-  get: async <T>(key: string, _ttl: number) => {
-    //                        ^define arbitrary arguments as needed
-    console.log(`Checking cache for ${key}...`);
-    // parse the JSON here so when we stringify it later it is not double stringified
-    return JSON.parse(sessionStorage.getItem(key) as string) as T;
-  },
-  set: async <T>(key: string, value: T) => {
-    console.log(`Setting ${key} in cache...`);
-    sessionStorage.setItem(key, JSON.stringify(value));
-    return;
-  },
-} satisfies Cache;
-
 // Example of using a custom logging library, in this case tslog.
 const customLogger = new Logger({ name: "JsonApiClient" });
+
+const cache = createCache();
 
 async function main() {
   const jsonApiClient = new JsonApiClient(baseUrl, {
@@ -132,10 +119,10 @@ async function main() {
       await rawResponse.json(),
     );
 
-    /* 
+    /*
     Example fetching a single resource by ID
     Note: resource examples below will 404 if you're using
-    a non-default environment since the UUID will be different 
+    a non-default environment since the UUID will be different
     */
     const singleResource = await jsonApiClient.getResource(
       "node--recipe",

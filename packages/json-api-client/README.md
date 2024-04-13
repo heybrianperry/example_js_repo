@@ -11,8 +11,7 @@ npm i @drupal-api-client/json-api-client
 ## Usage
 
 ```ts
-import JsonApiClient from "@drupal-api-client/json-api-client";
-import NodeCache from "node-cache";
+import { JsonApiClient, createCache } from "@drupal-api-client/json-api-client";
 import Jsona from "jsona";
 
 // the baseUrl to fetch data from
@@ -35,13 +34,9 @@ const client = new JsonApiClient(myDrupalUrl, {
   },
   // the optional cache will cache a request and return the cached data if the request
   // is made again with the same type same data.
-  // The default cache includes an interface that must be implemented.
-  // Here is an example using the node-cache package.
-  // See https://www.npmjs.com/package/node-cache for details on the node-cache package.
-  cache: {
-    get: async <T,>(key: string) => nodeCache.get(key) as T,
-    set: async (key: string, value: unknown) => nodeCache.set(key, value),
-  },
+  // The cache must implement the `Cache` interface.
+  // The `createCache` method provides a default cache that satisfies this interface.
+  cache: createCache(),
   // the optional authentication object will be used to authenticate requests.
   // Currently Basic auth is supported.
   authentication: {
