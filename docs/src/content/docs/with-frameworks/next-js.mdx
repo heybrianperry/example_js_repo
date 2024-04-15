@@ -1,0 +1,101 @@
+---
+title: Next.js
+---
+
+> Used by some of the world's largest companies, Next.js enables you to create high-quality web applications with the power of React components.
+
+## App router
+
+To use the Drupal API Client with the Next.js App Router, you can follow the recommendations in the Next.js docs to [fetch data on the server with third-party libraries](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#fetching-data-on-the-server-with-third-party-libraries).
+
+Using app router server components you can fetch the necessary data within the component itself. For example, the homepage component below fetches articles from Drupal and then displays them in a grid.
+
+```jsx
+// app/page.js
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import styles from "./page.module.css";
+
+export default async function Home() {
+  const client = new JsonApiClient(
+    "https://dev-drupal-api-client-poc.pantheonsite.io",
+  );
+  const articles = await client.getCollection("node--article");
+
+  return (
+    <main className={styles.main}>
+      <h1>Umami Articles</h1>
+      <div className={styles.grid}>
+        {articles.data.map((article) => (
+          <a
+            href={article.attributes.path.alias}
+            className={styles.card}
+            key={article.id}
+          >
+            <h2>{article.attributes.title}</h2>
+            <p>
+              Read more <span>-&gt;</span>
+            </p>
+          </a>
+        ))}
+      </div>
+    </main>
+  );
+}
+```
+
+### Using generatStaticParams
+
+The `generateStaticParams` function can be used in combination with [dynamic route segments](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes) to statically generate routes at build time instead of on-demand at request time.
+
+The example below uses a [catch-all route segment](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes#catch-all-segments) for all dynamic paths on the site. Within getStaticParams we retrieve all articles from Drupal, and then our Page function will generate the page in question.
+
+```jsx
+// app/[...slug]/page.js
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+import { Jsona } from "jsona";
+
+import styles from "../page.module.css";
+
+const client = new JsonApiClient(
+  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  {
+    serializer: new Jsona(),
+  },
+);
+
+export async function generateStaticParams() {
+  const articles = await client.getCollection("node--article");
+
+  return articles.map((article) => ({
+    slug: article.path.alias.split("/").slice(1),
+  }));
+}
+
+export default async function Page({ params }) {
+  const slug = params.slug.join("/");
+  const article = await client.getResourceByPath(slug, {
+    queryString: "include=field_media_image.field_media_image",
+  });
+  const image = `${client.baseUrl}${article.field_media_image.field_media_image.uri.url}`;
+  return (
+    <main className={styles.main}>
+      <h1>{article.title}</h1>
+      <a href="/">Back to home</a>
+      <img src={image} alt={article.title} />
+      <div dangerouslySetInnerHTML={{ __html: article.body.value }} />
+    </main>
+  );
+}
+```
+
+## Next.js for Drupal
+
+If you're using the popular [Next.js for Drupal](https://next-drupal.org/) starter kit, you may not need to use the Drupal API Client. [Next.js for Drupal offers its own client](https://next-drupal.org/docs/client) with comparable functionality.
+
+## Additional Resources
+
+- [Next.js](https://nextjs.org/)
+- [Next.js for Drupal](https://next-drupal.org/)
+- [Fetch data on the server with third-party libraries](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#fetching-data-on-the-server-with-third-party-libraries)
+- [Dynamic route segments](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
+- [Catch-all route segments](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes#catch-all-segments)

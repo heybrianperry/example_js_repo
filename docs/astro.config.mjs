@@ -124,6 +124,10 @@ export default defineConfig({
               link: "/with-frameworks/drupal/",
             },
             {
+              label: "Next.js",
+              link: "/with-frameworks/next-js/",
+            },
+            {
               label: "Astro",
               link: "/with-frameworks/astro/",
             },
