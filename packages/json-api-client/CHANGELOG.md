@@ -1,5 +1,12 @@
 # @drupal-api-client/json-api-client
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [91d5599]
+  - @drupal-api-client/utils@0.2.0
+
 ## 1.0.0
 
 ### Major Changes
