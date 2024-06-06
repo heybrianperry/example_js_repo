@@ -49,6 +49,15 @@ describe("getEntityTypeAndBundleId", () => {
 });
 
 describe("getCacheKey", () => {
+  it("should return the custom cacheKey if it is supplied", async () => {
+    const customCacheKey = "customCacheKey";
+
+    const result = await JsonApiClient.createCacheKey({
+      cacheKey: customCacheKey,
+    });
+
+    expect(result).toEqual(customCacheKey);
+  });
   it("should generate the cache key correctly with all optional parameters", async () => {
     const entityTypeId = "entityType";
     const bundleId = "bundleId";

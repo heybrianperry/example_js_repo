@@ -87,4 +87,32 @@ describe("Cache", () => {
     expect(cacheSpy.set).not.toHaveBeenCalled();
     expect(fetchSpy).toHaveBeenCalledOnce();
   });
+
+  it<CacheTestContext>("should use a custom cache key when provided", async ({
+    client,
+    cacheSpy,
+    fetchSpy,
+    path,
+  }) => {
+    const result = await client.translatePath(path, {
+      cacheKey: "custom-cache-key",
+    });
+
+    expect(cacheSpy.set).toHaveBeenCalledWith("custom-cache-key", result);
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+  it<CacheTestContext>("should throw an error if cacheKey or path are missing", async ({
+    client,
+  }) => {
+    try {
+      await client.translatePath("");
+    } catch (_) {
+      expect(_).toBeInstanceOf(Error);
+      if (_ instanceof Error) {
+        expect(_.message).toBe(
+          "The path or cacheKey option is required to generate a cache key.",
+        );
+      }
+    }
+  });
 });

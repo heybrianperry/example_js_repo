@@ -26,6 +26,11 @@ export interface GetOptions {
    * Whether or not to disable the authentication for the request.
    */
   disableAuthentication?: boolean;
+  /**
+   * The cache key to use for the request.
+   * If not set, the default cache key of `{lang}-{locale}--{entity}--{bundle}--{sha256 hash of query string if exists}` will be used.
+   */
+  cacheKey?: string;
 }
 
 /**

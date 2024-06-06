@@ -39,6 +39,11 @@ export interface RequestBaseOptions {
    * Whether to disable the authentication for the request.
    */
   disableAuthentication?: boolean;
+  /**
+   * The cache key to use for the request.
+   * If not set, the default cache key of `{lang}-{locale}--{entity}--{bundle}--{sha256 hash of query string if exists}` will be used.
+   */
+  cacheKey?: string;
 }
 
 /**
@@ -71,7 +76,7 @@ export interface EndpointUrlSegments {
   /**
    * The entity type identifier.
    */
-  entityTypeId: string;
+  entityTypeId?: string;
   /**
    * The bundle identifier.
    */
@@ -88,6 +93,10 @@ export interface EndpointUrlSegments {
    * Optional. The query string. Default is an empty string.
    */
   queryString?: string;
+  /**
+   * Optional. The custom cacheKey to use for this request.
+   */
+  cacheKey?: string;
 }
 
 /**

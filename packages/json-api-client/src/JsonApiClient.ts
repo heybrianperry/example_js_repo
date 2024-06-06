@@ -95,6 +95,7 @@ export class JsonApiClient extends ApiClient {
       bundleId,
       localeSegment,
       queryString,
+      cacheKey: options?.cacheKey,
     });
 
     if (!rawResponse && !options?.disableCache) {
@@ -315,6 +316,7 @@ export class JsonApiClient extends ApiClient {
     const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
+      cacheKey: options?.cacheKey,
     });
 
     if (this.debug) {
@@ -371,7 +373,7 @@ export class JsonApiClient extends ApiClient {
   }
 
   /**
-   * Generates a cache key based on the provided parameters.
+   * Generates a cache key based on the provided parameters. If the cacheKey parameter is provided, it will be used as the cache key.
    *
    * @params params - The parameters to use for generating the cache key. {@link EndpointUrlSegments}
    * @returns A promise wrapping the generated cache key as a string.
@@ -392,7 +394,11 @@ export class JsonApiClient extends ApiClient {
     localeSegment,
     resourceId,
     queryString,
+    cacheKey,
   }: EndpointUrlSegments): Promise<string> {
+    if (cacheKey) {
+      return cacheKey;
+    }
     const localePart = localeSegment ? `${localeSegment}--` : "";
     let queryStringPart = "";
     const id = resourceId ? `--${resourceId}` : "";
@@ -490,6 +496,7 @@ export class JsonApiClient extends ApiClient {
     const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
+      cacheKey: options?.cacheKey,
     });
 
     if (this.debug) {
@@ -588,6 +595,7 @@ export class JsonApiClient extends ApiClient {
     const cacheKey = await JsonApiClient.createCacheKey({
       entityTypeId,
       bundleId,
+      cacheKey: options?.cacheKey,
     });
 
     if (this.debug) {

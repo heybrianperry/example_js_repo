@@ -41,6 +41,7 @@ export class DecoupledRouterClient extends ApiClient {
     const cacheKey = DecoupledRouterClient.createCacheKey({
       localeSegment,
       path,
+      cacheKey: options?.cacheKey,
     });
 
     if (!rawResponse && !options?.disableCache) {
@@ -109,10 +110,21 @@ export class DecoupledRouterClient extends ApiClient {
   static createCacheKey({
     localeSegment,
     path,
+    cacheKey,
   }: {
     localeSegment?: string;
-    path: string;
+    path?: string;
+    cacheKey?: string;
   }) {
+    if (cacheKey) {
+      return cacheKey;
+    }
+
+    if (!path) {
+      throw new Error(
+        "The path or cacheKey option is required to generate a cache key.",
+      );
+    }
     return localeSegment ? `${localeSegment}--${path}` : path;
   }
 }
