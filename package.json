@@ -35,7 +35,8 @@
       "@drupal-api-client/json-api-client": "workspace:*",
       "esbuild": "0.18.20",
       "undici@<5.28.4": ">=5.28.4",
-      "vite@>=5.1.0 <=5.1.6": ">=5.1.7"
+      "vite@>=5.1.0 <=5.1.6": ">=5.1.7",
+      "braces@<3.0.3": ">=3.0.3"
     }
   },
   "devDependencies": {

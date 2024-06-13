@@ -1,8 +1,15 @@
 {
   "name": "@drupal-api-client/json-api-client",
   "version": "1.0.1",
-  "license": "GPL-2.0-or-later",
-  "description": "",
+  "license": "MIT",
+  "description": "A package to simplify the process of interacting with Drupal's JSON:API endpoints",
+  "bugs": "https://www.drupal.org/project/issues/api_client",
+  "repository": {
+    "type": "git",
+    "url": "https://git.drupalcode.org/project/api_client.git",
+    "directory": "packages/json-api-client"
+  },
+  "homepage": "https://project.pages.drupalcode.org/api_client/",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
     "check:types": "pnpm arethetypeswrong && pnpm publint",
@@ -13,8 +20,10 @@
     "eslint": "eslint --ext .ts src --ignore-path ../../.gitignore",
     "eslint:fix": "eslint --ext .ts src --ignore-path ../../.gitignore --fix"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "drupal",
+    "json:api"
+  ],
   "files": [
     "dist/*"
   ],

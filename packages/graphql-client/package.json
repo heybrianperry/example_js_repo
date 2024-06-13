@@ -2,8 +2,15 @@
   "name": "@drupal-api-client/graphql-client",
   "private": true,
   "version": "0.1.0",
-  "license": "GPL-2.0-or-later",
+  "license": "MIT",
   "description": "Client to simplify interacting with Drupal GraphQL APIs",
+  "bugs": "https://www.drupal.org/project/issues/api_client",
+  "repository": {
+    "type": "git",
+    "url": "https://git.drupalcode.org/project/api_client.git",
+    "directory": "packages/graphql-client"
+  },
+  "homepage": "https://project.pages.drupalcode.org/api_client/",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
     "check:types": "pnpm arethetypeswrong && pnpm publint",
@@ -14,8 +21,10 @@
     "eslint": "eslint --ext .ts src --ignore-path ../../.gitignore",
     "eslint:fix": "eslint --ext .ts src --ignore-path ../../.gitignore --fix"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "drupal",
+    "graphql"
+  ],
   "files": [
     "dist/*"
   ],

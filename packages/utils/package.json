@@ -1,8 +1,15 @@
 {
   "name": "@drupal-api-client/utils",
   "version": "0.2.0",
-  "license": "GPL-2.0-or-later",
-  "description": "",
+  "license": "MIT",
+  "description": "Shared utilities for the Drupal API Client",
+  "bugs": "https://www.drupal.org/project/issues/api_client",
+  "repository": {
+    "type": "git",
+    "url": "https://git.drupalcode.org/project/api_client.git",
+    "directory": "packages/utils"
+  },
+  "homepage": "https://project.pages.drupalcode.org/api_client/",
   "scripts": {
     "arethetypeswrong": "pnpm attw --pack .",
     "check:types": "pnpm arethetypeswrong && pnpm publint",
@@ -13,8 +20,9 @@
     "eslint": "eslint --ext .ts src --ignore-path ../../.gitignore",
     "eslint:fix": "eslint --ext .ts src --ignore-path ../../.gitignore --fix"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "drupal"
+  ],
   "files": [
     "dist/*"
   ],
