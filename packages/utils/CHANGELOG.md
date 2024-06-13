@@ -1,5 +1,11 @@
 # @drupal-api-client/utils
 
+## 0.3.0
+
+### Minor Changes
+
+- 1830ea4: Changed to MIT license.
+
 ## 0.2.0
 
 ### Minor Changes

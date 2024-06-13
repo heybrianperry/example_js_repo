@@ -1,6 +1,6 @@
 {
   "name": "@drupal-api-client/utils",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "description": "Shared utilities for the Drupal API Client",
   "bugs": "https://www.drupal.org/project/issues/api_client",

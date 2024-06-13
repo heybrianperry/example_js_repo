@@ -1,6 +1,6 @@
 {
   "name": "@drupal-api-client/api-client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "description": "This package contains the base class for the Drupal API Client.",
   "bugs": "https://www.drupal.org/project/issues/api_client",

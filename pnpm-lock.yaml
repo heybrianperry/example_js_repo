@@ -296,7 +296,7 @@ importers:
         specifier: ^5.1.0
         version: 5.2.0
       '@drupal-api-client/api-client':
-        specifier: workspace:^1.0.0
+        specifier: workspace:^1.1.0
         version: link:../api-client
       '@drupal-api-client/decoupled-router-client':
         specifier: workspace:*

@@ -1,5 +1,11 @@
 # @drupal-api-client/api-client
 
+## 1.1.0
+
+### Minor Changes
+
+- 1830ea4: Changed to MIT license.
+
 ## 1.0.0
 
 ### Major Changes

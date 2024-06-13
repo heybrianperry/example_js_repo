@@ -1,5 +1,17 @@
 # @drupal-api-client/decoupled-router-client
 
+## 1.1.0
+
+### Minor Changes
+
+- 1830ea4: Changed to MIT license.
+- 4aeef42: Allow a custom cache key to be provided.
+
+### Patch Changes
+
+- Updated dependencies [1830ea4]
+  - @drupal-api-client/api-client@1.1.0
+
 ## 1.0.0
 
 ### Major Changes
