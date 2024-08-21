@@ -16,7 +16,7 @@ Similar to markdown frontmatter, Astro uses a code fence (---) to identify the s
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  "https://drupal-api-demo.party",
 );
 const recipes = await client.getCollection("node--recipe");
 ---

@@ -16,9 +16,7 @@ import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import styles from "./page.module.css";
 
 export default async function Home() {
-  const client = new JsonApiClient(
-    "https://dev-drupal-api-client-poc.pantheonsite.io",
-  );
+  const client = new JsonApiClient("https://drupal-api-demo.party");
   const articles = await client.getCollection("node--article");
 
   return (
@@ -56,12 +54,9 @@ import { Jsona } from "jsona";
 
 import styles from "../page.module.css";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    serializer: new Jsona(),
-  },
-);
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  serializer: new Jsona(),
+});
 
 export async function generateStaticParams() {
   const articles = await client.getCollection("node--article");

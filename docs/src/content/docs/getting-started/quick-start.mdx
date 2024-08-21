@@ -61,9 +61,7 @@ First, create an instance of the client.
 ```js
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-);
+const client = new JsonApiClient("https://drupal-api-demo.party");
 ```
 
 This creates a client using the specified baseUrl, but otherwise all default settings. It is also possible to pass in an [options object](/api_client/api/drupal-api-client/api-client/type-aliases/apiclientoptions) to customize the client.
@@ -73,25 +71,21 @@ Next, use the client to get a collection of articles from Drupal.
 ```js ins={7}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-);
+const client = new JsonApiClient("https://drupal-api-demo.party");
 
 const articles = await client.getCollection("node--article");
 ```
 
 Below, you can explore the shape of the `articles` object sourced from a Drupal site with the Umami demo data installed.
 
-export const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-);
+export const client = new JsonApiClient("https://drupal-api-demo.party");
 export const articles = await client.getCollection("node--article");
 
 <JsonView client:only="react" collapsed={2} src={articles} />
 
 ## Retrieve a single resource
 
-Looking at the result of our articles collection, we can see that the first article has an id of `3347c400-302d-4f6c-8fcb-3e74beb002c8`. For the sake of example, let's retrieve this single article and display some results in a component.
+Looking at the result of our articles collection, we can see that the first article has an id of `d71e5f12-7be5-48d4-a3eb-c37473fc1f8f`. For the sake of example, let's retrieve this single article and display some results in a component.
 
 To start, the code is very similar, but we'll be using the `getResource` method and providing a second parameter of the id of the resource we want to retrieve.
 
@@ -99,7 +93,7 @@ To start, the code is very similar, but we'll be using the `getResource` method 
 
 export const article = await client.getResource(
   "node--article",
-  "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+  "d71e5f12-7be5-48d4-a3eb-c37473fc1f8f",
 );
 
 <Tabs>
@@ -109,12 +103,12 @@ export const article = await client.getResource(
     import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
+      "https://drupal-api-demo.party",
     );
 
     const article = await client.getResource(
       "node--article",
-      "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+      "d71e5f12-7be5-48d4-a3eb-c37473fc1f8f",
     );
     ---
 
@@ -133,11 +127,11 @@ Now we can render data from our `article` object within a component.
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  "https://drupal-api-demo.party",
 );
 const article = await client.getResource(
   "node--article",
-  "3347c400-302d-4f6c-8fcb-3e74beb002c8",
+  "d71e5f12-7be5-48d4-a3eb-c37473fc1f8f",
 );
 ---
 <h2>{article.data.attributes.title}</h2>
@@ -169,7 +163,7 @@ Let's adapt our example of rendering an example article to use `getResourceByPat
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
+  "https://drupal-api-demo.party",
 );
 const article = await client.getResourceByPath(
   "/articles/give-it-a-go-and-grow-your-own-herbs",

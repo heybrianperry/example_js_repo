@@ -6,6 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev:json-api-client": "pnpm build:packages && pnpm --filter json-api-client-example dev",
+    "dev:decoupled-router-client": "pnpm build:packages && pnpm --filter decoupled-router-client-example dev",
+    "dev:graphql-client": "pnpm build:packages && pnpm --filter graphql-client-example dev",
     "dev:docs": "pnpm --filter './docs' dev",
     "check:types": "pnpm --filter './packages/**' check:types",
     "build:packages": "pnpm --filter './packages/**' build",

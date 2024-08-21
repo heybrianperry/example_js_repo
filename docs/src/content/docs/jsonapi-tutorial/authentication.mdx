@@ -12,9 +12,7 @@ In all of the examples so far, we've been making anonymous requests to our JSON:
 
 Within our demo data set, accessing the 'actions' resource requires a user with the 'administer actions' permission. Let's see what the response looks like if we try to access this resource anonymously.
 
-export const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-);
+export const client = new JsonApiClient("https://drupal-api-demo.party");
 
 export const actions = await client.getCollection("action--action");
 
@@ -24,7 +22,7 @@ export const actions = await client.getCollection("action--action");
     import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
+      "https://drupal-api-demo.party",
     );
 
     const actions = await client.getCollection("action--action");
@@ -53,18 +51,15 @@ To use basic authentication, we'll need to make the following changes when creat
 ```js ins={5-13}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    authentication: {
-      type: "Basic",
-      credentials: {
-        username: process.env.MY_USERNAME,
-        password: process.env.MY_PASSWORD,
-      },
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  authentication: {
+    type: "Basic",
+    credentials: {
+      username: process.env.MY_USERNAME,
+      password: process.env.MY_PASSWORD,
     },
   },
-);
+});
 
 const actions = await client.getCollection("action--action");
 ```
@@ -85,18 +80,15 @@ To use Simple OAuth, make the following changes when creating an instance of the
 ```js ins={5-13}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    authentication: {
-      type: "OAuth",
-      credentials: {
-        clientId: process.env.MY_CLIENT_ID,
-        clientSecret: process.env.MY_CLIENT_SECRET,
-      },
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  authentication: {
+    type: "OAuth",
+    credentials: {
+      clientId: process.env.MY_CLIENT_ID,
+      clientSecret: process.env.MY_CLIENT_SECRET,
     },
   },
-);
+});
 
 const actions = await client.getCollection("action--action");
 ```
@@ -115,17 +107,14 @@ While the client may formally support additional authentication methods in the f
 ```js ins={5-13}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    authentication: {
-      type: "Custom",
-      credentials: {
-        value: `${authScheme} ${authorizationParameters}`,
-      },
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  authentication: {
+    type: "Custom",
+    credentials: {
+      value: `${authScheme} ${authorizationParameters}`,
     },
   },
-);
+});
 
 const actions = await client.getCollection("action--action");
 ```
@@ -143,18 +132,15 @@ It is also possible to disable authentication for a specific request by setting 
 ```js {16, 18} ins={17}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    authentication: {
-      type: "OAuth",
-      credentials: {
-        clientId: process.env.MY_CLIENT_ID,
-        clientSecret: process.env.MY_CLIENT_SECRET,
-      },
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  authentication: {
+    type: "OAuth",
+    credentials: {
+      clientId: process.env.MY_CLIENT_ID,
+      clientSecret: process.env.MY_CLIENT_SECRET,
     },
   },
-);
+});
 
 const actions = await client.getCollection("action--action", {
   disableAuthentication: true,

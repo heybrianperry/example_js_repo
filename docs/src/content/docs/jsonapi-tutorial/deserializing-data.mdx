@@ -9,12 +9,9 @@ import JsonView from "react18-json-view";
 
 import "react18-json-view/src/style.css";
 
-export const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    serializer: new Jsona(),
-  },
-);
+export const client = new JsonApiClient("https://drupal-api-demo.party", {
+  serializer: new Jsona(),
+});
 
 export const recipes = await client.getCollection("node--recipe", {
   queryString: "include=field_media_image.thumbnail",
@@ -46,12 +43,9 @@ Let's update our client instance to use the `Jsona` serializer.
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    serializer: new Jsona(),
-  },
-);
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  serializer: new Jsona(),
+});
 ```
 
 ## Deserializing Data
@@ -64,7 +58,7 @@ Now that we have provided a compatible serializer, all data sourced from Drupal 
     import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io", {
+      "https://drupal-api-demo.party", {
         serializer: new Jsona(),
       },
     );
@@ -96,7 +90,7 @@ import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io", {
+  "https://drupal-api-demo.party", {
     serializer: new Jsona(),
   },
 );
@@ -151,12 +145,9 @@ In cases where you need serialize or re-serialize the data before sending it to 
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 
-const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io",
-  {
-    serializer: new Jsona(),
-  },
-);
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  serializer: new Jsona(),
+});
 
 // This recipe will be deserialized automatically
 const recipe = await getResource(

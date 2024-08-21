@@ -27,9 +27,7 @@ class UmamiArticles extends HTMLElement {
     );
 
     // Retrieve data from Drupal
-    const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
-    );
+    const client = new JsonApiClient("https://drupal-api-demo.party");
     const articles = await client.getCollection("node--article");
 
     // Remove loading indicator
@@ -73,9 +71,7 @@ class LitUmamiArticles extends LitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
-    );
+    const client = new JsonApiClient("https://drupal-api-demo.party");
     this.articles = await client.getCollection("node--article");
   }
 

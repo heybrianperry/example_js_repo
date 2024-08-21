@@ -3,7 +3,7 @@ import { DecoupledRouterClient } from "@drupal-api-client/decoupled-router-clien
 
 const baseUrl = import.meta.env.VITE_BASE_URL
   ? import.meta.env.VITE_BASE_URL
-  : "https://dev-drupal-api-client-poc.pantheonsite.io";
+  : "https://drupal-api-demo.party";
 
 // use sessionStorage for the cache.
 const cache = {

@@ -16,9 +16,7 @@ import { JsonApiClient } from "@drupal-api-client/json-api-client";
 const articles = ref({});
 
 onMounted(async () => {
-  const client = new JsonApiClient(
-    "https://dev-drupal-api-client-poc.pantheonsite.io",
-  );
+  const client = new JsonApiClient("https://drupal-api-demo.party");
   articles.value = await client.getCollection("node--article");
 });
 </script>

@@ -9,7 +9,7 @@ import { Logger } from "tslog";
 
 const baseUrl = import.meta.env.VITE_BASE_URL
   ? import.meta.env.VITE_BASE_URL
-  : "https://dev-drupal-api-client-poc.pantheonsite.io";
+  : "https://drupal-api-demo.party";
 
 const customFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   console.log("Using custom fetch");

@@ -162,16 +162,16 @@ From the root of the repository, run:
 
 `pnpm ddev:init`
 
-This will create a new Drupal instance in `/drupal`, build your DDEV instance, install Drupal with Umami demo data, and configure features used by the API Client. The `/drupal` directory is ignored by version control.
+This will create a new Drupal instance in `/drupal`, build your DDEV instance, install Drupal with Umami demo data, and configure features used by the API Client. The `/drupal` directory is a clone of https://github.com/backlineint/drupal-api-demo
 
 Drupal will be available at:
 
-`https://drupal-client.ddev.site`
+`https://drupal-api-demo.ddev.site`
 
 and the following API endpoints will be active:
 
-`https://drupal-client.ddev.site/jsonapi`
-`https://drupal-client.ddev.site/router/translate-path`
+`https://drupal-api-demo.ddev.site/jsonapi`
+`https://drupal-api-demo.ddev.site/router/translate-path`
 
 You will be able to interact with your DDEV instance [using the `ddev` command](https://ddev.readthedocs.io/en/stable/users/usage/cli/) inside of the `/drupal` directory. Drush will also be installed and available via `ddev drush`.
 

@@ -2,7 +2,7 @@ import { GraphqlClient } from "@drupal-api-client/graphql-client";
 
 const baseUrl = import.meta.env.VITE_BASE_URL
   ? import.meta.env.VITE_BASE_URL
-  : "https://dev-drupal-api-client-poc.pantheonsite.io";
+  : "https://drupal-api-demo.party";
 
 async function main() {
   const graphqlClient = new GraphqlClient(baseUrl, {

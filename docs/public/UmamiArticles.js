@@ -12,7 +12,7 @@ class LitUmamiArticles extends LitElement {
     super.connectedCallback()
 
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
+      "https://drupal-api-demo.party",
     );
     this.articles = await client.getCollection("node--article");
   }
@@ -46,7 +46,7 @@ class UmamiArticles extends HTMLElement {
 
     // Retrieve data from Drupal
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
+      "https://drupal-api-demo.party",
     );
     const articles = await client.getCollection("node--article");
 

@@ -10,7 +10,7 @@ In our examples thus far we have been working with JSON:API collections, which i
 
 If you know the id of the recipe you are looking for, you can use the `getResource` method to retrieve it. For example, if you used getCollection elsewhere in your application to get a list of all recipes, you likely already know the id of any individual recipe you want to retrieve.
 
-Below we'll use `getResource` to display the instructions for a recipe with the id '35f7cd32-2c54-49f2-8740-0b0ec2ba61f6'.
+Below we'll use `getResource` to display the instructions for a recipe with the id '6bf4b5b1-08c6-4c16-8a6d-b9af5af4ed04'.
 
 ```astro live
 ---
@@ -18,11 +18,11 @@ import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io"
+  "https://drupal-api-demo.party"
 );
 const recipe = await client.getResource(
   "node--recipe",
-  "35f7cd32-2c54-49f2-8740-0b0ec2ba61f6",
+  "6bf4b5b1-08c6-4c16-8a6d-b9af5af4ed04",
 );
 ---
 <h2>{recipe.data.attributes.title}</h2>
@@ -47,7 +47,7 @@ import { JsonApiClient } from "@drupal-api-client/json-api-client";
 import { Jsona } from "jsona";
 
 const client = new JsonApiClient(
-  "https://dev-drupal-api-client-poc.pantheonsite.io"
+  "https://drupal-api-demo.party"
 );
 const recipe = await client.getResourceByPath(
   "/recipes/deep-mediterranean-quiche"

@@ -18,7 +18,7 @@ In a client-side Svelte component, data fetching often happens within a [lifecyc
 
   onMount(async () => {
     const client = new JsonApiClient(
-      "https://dev-drupal-api-client-poc.pantheonsite.io",
+      "https://drupal-api-demo.party",
     );
     articles = await client.getCollection("node--article");
   });
