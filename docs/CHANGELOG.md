@@ -1,5 +1,13 @@
 # docs
 
+## 0.0.7
+
+### Patch Changes
+
+- 0d75012: Updated astro and starlight dependencies
+- Updated dependencies [1714bd9]
+  - @drupal-api-client/json-api-client@1.2.0
+
 ## 0.0.6
 
 ### Patch Changes

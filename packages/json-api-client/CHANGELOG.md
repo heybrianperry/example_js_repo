@@ -1,5 +1,11 @@
 # @drupal-api-client/json-api-client
 
+## 1.2.0
+
+### Minor Changes
+
+- 1714bd9: Adds getView method for use with the jsonapi_views module
+
 ## 1.1.0
 
 ### Minor Changes
