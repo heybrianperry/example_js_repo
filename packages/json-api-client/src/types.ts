@@ -82,6 +82,14 @@ export interface EndpointUrlSegments {
    */
   bundleId?: string;
   /**
+   * Optional. The machine name of a view.
+   */
+  viewName?: string;
+  /**
+   * Optional. The display ID of a view.
+   */
+  viewDisplayId?: string;
+  /**
    * Optional. The locale segment. Default is an empty string.
    */
   localeSegment?: string;

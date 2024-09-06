@@ -224,6 +224,8 @@ export class JsonApiClient extends ApiClient {
     localeSegment,
     entityTypeId,
     bundleId,
+    viewName,
+    viewDisplayId,
     resourceId,
     queryString,
   }: EndpointUrlSegments) {
@@ -272,6 +274,19 @@ export class JsonApiClient extends ApiClient {
           queryString ? `?${queryString}` : ""
         }`;
       }
+    }
+
+    if (viewName) {
+      const viewApiUrlObject = new URL(
+        `${localeSegment ?? ""}/${
+          this.apiPrefix
+        }/views/${viewName}/${viewDisplayId}${
+          queryString ? `?${queryString}` : ""
+        }`,
+        this.baseUrl,
+      );
+
+      return viewApiUrlObject.toString();
     }
 
     const apiUrlObject = new URL(
@@ -391,6 +406,8 @@ export class JsonApiClient extends ApiClient {
   static async createCacheKey({
     entityTypeId,
     bundleId,
+    viewName,
+    viewDisplayId,
     localeSegment,
     resourceId,
     queryString,
@@ -410,9 +427,88 @@ export class JsonApiClient extends ApiClient {
       queryStringPart = `--${hashResultHex}`;
     }
 
+    if (viewName) {
+      // We're prefixing views with view-- here to avoid conflicts with resource collections. There is nothing preventing someone from creating a view with the same name viewName and viewDisplayId as a collection's entityTypeId and bundleId, which would cause a cache key collision.
+      return `view--${localePart}${viewName}${
+        viewDisplayId ? `--${viewDisplayId}` : ""
+      }${id}${queryStringPart}`;
+    }
     return `${localePart}${entityTypeId}${
       bundleId ? `--${bundleId}` : ""
     }${id}${queryStringPart}`;
+  }
+
+  /**
+   * Retrieves a collection of data of a specific view display via JSON:API views.
+   * Requires that the jsonapi_views module is enabled on your Drupal site.
+   * @param type - The type of resource to retrieve, in the format "name--display_id".
+   * For example, "content--page_1".
+   * @param options - (Optional) Additional options for customizing the request. {@link GetOptions}
+   * @returns A Promise that resolves to the JSON data of the requested collection.
+   *
+   * @example
+   * Using JSONAPI.CollectionResourceDoc type from the jsonapi-typescript package
+   * ```ts
+   * const view = await jsonApiClient.getView<JSONAPI.CollectionResourceDoc<string, Recipe>>("recipes--page_1");
+   * ```
+   */
+  async getView<T>(
+    type: string,
+    options?: GetOptions,
+  ): Promise<T | RawApiResponseWithData<T>> {
+    const [viewName, viewDisplayId] = type.split("--");
+    const localeSegment = options?.locale || this.defaultLocale;
+    const queryString = options?.queryString;
+    const rawResponse = options?.rawResponse || false;
+
+    const cacheKey = await JsonApiClient.createCacheKey({
+      viewName,
+      viewDisplayId,
+      localeSegment,
+      queryString,
+      cacheKey: options?.cacheKey,
+    });
+
+    if (!rawResponse && !options?.disableCache) {
+      const cachedResponse = await this.getCachedResponse<T>(cacheKey);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+    }
+
+    const apiUrl = await this.createURL({
+      localeSegment,
+      viewName,
+      viewDisplayId,
+      queryString,
+    });
+
+    if (this.debug) {
+      this.log("verbose", `Fetching endpoint ${apiUrl}`);
+    }
+
+    const init: RequestInit = options?.disableAuthentication
+      ? { credentials: "omit" }
+      : {};
+    const { response, error } = await this.fetch(apiUrl, init);
+    if (error) {
+      if (this.debug) {
+        this.log(
+          "error",
+          `Failed to get view. Type: ${type}, Error: ${error.message}`,
+        );
+      }
+      throw error;
+    }
+    const json = (await this.processApiResponseAndParseBody(
+      response.clone(),
+      cacheKey,
+      options,
+    )) as T;
+    if (options?.rawResponse) {
+      return { response, json } as RawApiResponseWithData<T>;
+    }
+    return json;
   }
 
   /**

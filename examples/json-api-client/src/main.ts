@@ -152,6 +152,9 @@ async function main() {
     );
     console.log("JSON:API Router response", routerResponse);
 
+    const viewResponse = await jsonApiClient.getView("recipes--page_1");
+    console.log("JSON:API View response", viewResponse);
+
     // Example demonstrating creating a resource
     // const basicAuthClient = new JsonApiClient(baseUrl, {
     //   authentication: {

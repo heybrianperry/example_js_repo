@@ -1,7 +1,7 @@
-import { http } from "msw";
+import { http, HttpResponse } from "msw";
 import notFound from "./data/404.json";
-import jsonApiIndex from "./data/index.json";
 import jsonApiIndexEs from "./data/index-es.json";
+import jsonApiIndex from "./data/index.json";
 import nodePageEnglish from "./data/node-page-en.json";
 import nodePageSpanish from "./data/node-page-es.json";
 import nodePage from "./data/node-page.json";
@@ -12,6 +12,11 @@ import nodeRecipe from "./data/node-recipe.json";
 import resolvedRecipeEs from "./data/resolved-recipe-es.json";
 import resolvedRecipe from "./data/resolved-recipe.json";
 import unresolvedRecipe from "./data/unresolved-recipe.json";
+import jsonApiViewsArticlePageDynamic from "./data/views-article-dynamic.json";
+import jsonApiViewsArticlePageCustomPath from "./data/views-article-page-1--custom-path-prefix.json";
+import jsonApiViewsArticlePage from "./data/views-article-page-1--default.json";
+import jsonApiViewsArticlePageFiltered from "./data/views-article-page-1--filtered.json";
+import jsonApiViewsArticlePageLocaleEs from "./data/views-article-page-1--locale-es.json";
 
 import nodePageUpdateResource200Response from "./data/node-page-update-resource-200-response.json";
 import nodePageUpdateResource404Response from "./data/node-page-update-resource-404-response.json";
@@ -32,6 +37,66 @@ export default [
     `${baseUrl}/${apiPrefix}`,
     ({ request }) =>
       new Response(JSON.stringify(jsonApiIndex), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      }),
+  ),
+  http.get(`${baseUrl}/${apiPrefix}/views/article/page_1`, ({ request }) => {
+    const url = new URL(request.url);
+    const filter = url.searchParams.get("filter[title][value]");
+    if (filter !== undefined && filter === "My recipe") {
+      return new Response(JSON.stringify(jsonApiViewsArticlePageFiltered), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      });
+    }
+    return new Response(JSON.stringify(jsonApiViewsArticlePage), {
+      status: 200,
+      statusText: "Ok",
+      headers: request.headers,
+    });
+  }),
+  http.get(
+    `${baseUrl}/${apiPrefix}/views/article/page_requires_authentication`,
+    ({ request, cookies }) => {
+      if (!cookies.sessionCookieKey) {
+        return new HttpResponse(null, { status: 400 });
+      } else {
+        return new Response(JSON.stringify(jsonApiViewsArticlePage), {
+          status: 200,
+          statusText: "Ok",
+          headers: request.headers,
+        });
+      }
+    },
+  ),
+  http.get(`${baseUrl}/${apiPrefix}/views/article/dynamic`, ({ request }) => {
+    let json = JSON.stringify(jsonApiViewsArticlePageDynamic);
+    json = json.replace(
+      "DYNAMIC_TITLE_PLACEHOLDER",
+      "DYNAMIC_TITLE " + Math.random() * 10000000000,
+    );
+    return new Response(json, {
+      status: 200,
+      statusText: "Ok",
+      headers: request.headers,
+    });
+  }),
+  http.get(
+    `${baseUrl}/${overrideLocale}/${apiPrefix}/views/article/page_1`,
+    ({ request }) =>
+      new Response(JSON.stringify(jsonApiViewsArticlePageLocaleEs), {
+        status: 200,
+        statusText: "Ok",
+        headers: request.headers,
+      }),
+  ),
+  http.get(
+    `${baseUrl}/custom_api_prefix/views/article/page_1`,
+    ({ request }) =>
+      new Response(JSON.stringify(jsonApiViewsArticlePageCustomPath), {
         status: 200,
         statusText: "Ok",
         headers: request.headers,

@@ -11,7 +11,6 @@ ddev start
 ddev composer install
 
 # Open up CORS for local development
-cat ../scripts/config/enable-local-settings.php >> web/sites/default/settings.php
 cp web/sites/example.settings.local.php web/sites/default/settings.local.php
 
 # Install Drupal
