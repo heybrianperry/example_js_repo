@@ -5,6 +5,7 @@ import {
   type BaseUrl,
   type FetchReturn,
   type LogLevels,
+  type OAuthCredentials,
   type OAuthTokenResponse,
 } from "./types";
 import defaultLogger from "./utils/defaultLogger";
@@ -132,26 +133,42 @@ export class ApiClient {
 
   /**
    * Fetch the OAuth token from the BaseUrl
-   * @param0 the Client ID
-   * @param1 the Client secret
+   * @params params - The credentials for getting an OAuth token. {@link OAuthCredentials}
    */
   protected async getAccessToken({
+    grantType = "client_credentials",
     clientId,
     clientSecret,
-  }: {
-    [key in "clientId" | "clientSecret"]: string;
-  }): Promise<OAuthTokenResponse> {
+    username,
+    password,
+  }: OAuthCredentials): Promise<OAuthTokenResponse> {
     if (!clientId || !clientSecret || !isOAuth(this.authentication)) {
       throw new Error(
         "credentials.clientId or credentials.clientSecret is missing on the authentication option.",
       );
     }
 
-    const tokenRequestBody: Record<string, string> = {
-      grant_type: "client_credentials",
-      client_id: clientId,
-      client_secret: clientSecret,
-    };
+    let tokenRequestBody: Record<string, string>;
+    if (grantType === "password") {
+      if (!username || !password || !isOAuth(this.authentication)) {
+        throw new Error(
+          "credentials.username or credentials.password is missing on the authentication option.",
+        );
+      }
+      tokenRequestBody = {
+        grant_type: "password",
+        client_id: clientId,
+        client_secret: clientSecret,
+        username,
+        password,
+      };
+    } else {
+      tokenRequestBody = {
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret,
+      };
+    }
 
     const apiUrl = `${this.baseUrl}/oauth/token`;
 
@@ -236,8 +253,11 @@ export class ApiClient {
             );
           }
           const tokenResponse = await this.getAccessToken({
+            grantType: this.authentication.credentials.grantType,
             clientId: this.authentication.credentials.clientId,
             clientSecret: this.authentication.credentials.clientSecret,
+            username: this.authentication.credentials.username,
+            password: this.authentication.credentials.password,
           });
           tokenType = tokenResponse.tokenType;
           accessToken = tokenResponse.accessToken;

@@ -90,6 +90,32 @@ export type OAuthTokenResponse = {
 };
 
 /**
+ * Possible credentials that can be used when requesting an OAuth token
+ */
+export type OAuthCredentials = {
+  /**
+   * The OAuth Grant Type
+   */
+  grantType?: "client_credentials" | "password";
+  /**
+   * The OAuth Client ID
+   */
+  clientId: string;
+  /**
+   * The OAuth Client secret
+   */
+  clientSecret: string;
+  /**
+   * The Drupal account username or email
+   */
+  username?: string;
+  /**
+   * The Drupal account password
+   */
+  password?: string;
+};
+
+/**
  * Valid auth types
  */
 type AuthType = "Basic" | "OAuth" | "Custom";
@@ -109,16 +135,7 @@ type Credentials<AT extends AuthType> = AT extends "Basic"
       password: string;
     }
   : AT extends "OAuth"
-  ? {
-      /**
-       * The OAuth Client ID
-       */
-      clientId: string;
-      /**
-       * The OAuth Client secret
-       */
-      clientSecret: string;
-    }
+  ? OAuthCredentials
   : AT extends "Custom"
   ? {
       /**

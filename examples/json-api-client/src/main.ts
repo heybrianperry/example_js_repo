@@ -155,6 +155,26 @@ async function main() {
     const viewResponse = await jsonApiClient.getView("recipes--page_1");
     console.log("JSON:API View response", viewResponse);
 
+    // Example demonstrating password grant
+    // const passwordGrantClient = new JsonApiClient(baseUrl, {
+    //   authentication: {
+    //     type: "OAuth",
+    //     credentials: {
+    //       grantType: "password",
+    //       clientId: import.meta.env.VITE_CLIENT_ID,
+    //       clientSecret: import.meta.env.VITE_CLIENT_SECRET,
+    //       username: import.meta.env.VITE_USERNAME,
+    //       password: import.meta.env.VITE_PASSWORD,
+    //     },
+    //   },
+    //   debug: true,
+    // });
+
+    // const passwordGrantResponse = await passwordGrantClient.getCollection(
+    //   "action--action",
+    // );
+    // console.log("JSON:API Password Grant response", passwordGrantResponse);
+
     // Example demonstrating creating a resource
     // const basicAuthClient = new JsonApiClient(baseUrl, {
     //   authentication: {

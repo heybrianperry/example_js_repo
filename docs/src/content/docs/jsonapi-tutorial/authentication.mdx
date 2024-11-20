@@ -36,6 +36,13 @@ export const actions = await client.getCollection("action--action");
 
 Looking at the response object, the data array is empty. Under the 'meta' property, we'll also see the message 'Some resources have been omitted because of insufficient authorization.' Let's adapt this example to use a variety of authentication methods supported by the client.
 
+<Aside type="danger">
+  While this package can be run both on the server and the client, many of the
+  authentication methods described here could pose risks if used client-side.
+  Ensure that your application doesn't expose sensitive information to the
+  client and handle authentication server-side when possible.
+</Aside>
+
 ## Basic Authentication
 
 While many decoupled projects chose alternative authentication methods, the client does support basic authentication provided by Drupal Core.
@@ -75,15 +82,18 @@ After making that change, the necessary headers for basic authentication will be
 
 A popular choice for handling authentication on Decoupled Drupal projects is the [Simple OAuth module](https://www.drupal.org/project/simple_oauth).
 
-To use Simple OAuth, make the following changes when creating an instance of the `JsonApiClient` class:
+### Client Credentials Grant
 
-```js ins={5-13}
+To use Simple OAuth with the client credentials grant, make the following changes when creating an instance of the `JsonApiClient` class:
+
+```js ins={5-14}
 import { JsonApiClient } from "@drupal-api-client/json-api-client";
 
 const client = new JsonApiClient("https://drupal-api-demo.party", {
   authentication: {
     type: "OAuth",
     credentials: {
+      grantType: "client_credentials", // defaults to 'client_credentials' if omitted
       clientId: process.env.MY_CLIENT_ID,
       clientSecret: process.env.MY_CLIENT_SECRET,
     },
@@ -97,6 +107,31 @@ const actions = await client.getCollection("action--action");
   When using the Simple OAuth module, the client ID and client secret are
   specified when creating a consumer entity.
 </Aside>
+
+After making that change, the necessary authentication headers will be added to all requests made by the client. The client will also automatically handle negotiating your access token, including refreshing the access token when it expires.
+
+### Password Grant
+
+To use Simple OAuth with the password grant, make the following changes when creating an instance of the `JsonApiClient` class:
+
+```js ins={5-14}
+import { JsonApiClient } from "@drupal-api-client/json-api-client";
+
+const client = new JsonApiClient("https://drupal-api-demo.party", {
+  authentication: {
+    type: "OAuth",
+    credentials: {
+      grantType: "password",
+      clientId: process.env.MY_CLIENT_ID,
+      clientSecret: process.env.MY_CLIENT_SECRET,
+      username: process.env.MY_USERNAME,
+      password: process.env.MY_PASSWORD,
+    },
+  },
+});
+
+const actions = await client.getCollection("action--action");
+```
 
 After making that change, the necessary authentication headers will be added to all requests made by the client. The client will also automatically handle negotiating your access token, including refreshing the access token when it expires.
 

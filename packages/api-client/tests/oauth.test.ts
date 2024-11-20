@@ -5,13 +5,32 @@ import { ApiClient } from "../src/ApiClient";
 const baseUrl = "https://dev-drupal-api-client.poc";
 
 describe("Simple OAuth", async () => {
-  it("should fetch the OAuth token from Drupal", async () => {
+  it("should fetch the OAuth token from Drupal using client_credentials grant", async () => {
     const apiClient = new ApiClient(baseUrl, {
       authentication: {
         type: "OAuth",
         credentials: {
           clientId: "test-id",
           clientSecret: "test-secret",
+        },
+      },
+    });
+
+    const authHeaderSpy = vi.spyOn(apiClient, "addAuthorizationHeader");
+    await apiClient.fetch(`${baseUrl}/test-route`);
+
+    expect(authHeaderSpy).toHaveBeenCalledOnce();
+  });
+  it("should fetch the OAuth token from Drupal using password grant", async () => {
+    const apiClient = new ApiClient(baseUrl, {
+      authentication: {
+        type: "OAuth",
+        credentials: {
+          grantType: "password",
+          clientId: "test-id",
+          clientSecret: "test-secret",
+          username: "test-username",
+          password: "test-password",
         },
       },
     });
@@ -96,7 +115,7 @@ describe("Simple OAuth", async () => {
     expect(logSpy).toHaveBeenCalledOnce();
   });
   it.fails(
-    "should throw an error if the credentials are incorrect",
+    "should throw an error if the credentials are incorrect - client_credentials grant",
     async () => {
       const apiClient = new ApiClient(baseUrl, {
         authentication: {
@@ -119,6 +138,23 @@ describe("Simple OAuth", async () => {
         // @ts-expect-error - intentionally missing credentials
         credentials: {
           clientSecret: "wrong-secret",
+        },
+      },
+    });
+
+    expect(() => apiClient.fetch(`${baseUrl}/test-route`)).toThrowError(
+      "credentials.clientId or credentials.clientSecret is missing on the authentication option.",
+    );
+  });
+  it.fails("should throw an error if the credentials are missing", async () => {
+    const apiClient = new ApiClient(baseUrl, {
+      authentication: {
+        type: "OAuth",
+        credentials: {
+          grantType: "password",
+          clientId: "test-id",
+          clientSecret: "test-secret",
+          password: "test-password",
         },
       },
     });
