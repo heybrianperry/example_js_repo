@@ -1,5 +1,11 @@
 # @drupal-api-client/api-client
 
+## 1.3.0
+
+### Minor Changes
+
+- 6225317: Added support for OAuth Password Grant
+
 ## 1.1.0
 
 ### Minor Changes

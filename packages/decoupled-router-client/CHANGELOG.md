@@ -1,5 +1,12 @@
 # @drupal-api-client/decoupled-router-client
 
+## 1.1.1
+
+### Patch Changes
+
+- Updated dependencies [6225317]
+  - @drupal-api-client/api-client@1.3.0
+
 ## 1.1.0
 
 ### Minor Changes

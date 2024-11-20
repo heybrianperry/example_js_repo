@@ -1,5 +1,14 @@
 # @drupal-api-client/json-api-client
 
+## 1.3.0
+
+### Patch Changes
+
+- Updated dependencies [6225317]
+  - @drupal-api-client/api-client@1.3.0
+  - @drupal-api-client/decoupled-router-client@1.1.1
+  - @drupal-api-client/utils@0.3.0
+
 ## 1.2.0
 
 ### Minor Changes
