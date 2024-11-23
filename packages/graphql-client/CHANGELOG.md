@@ -1,5 +1,11 @@
 # @drupal-api-client/graphql-client
 
+## 0.1.3
+
+### Patch Changes
+
+- 1f0bed1: Publish pre-release version of @drupal-api-client/graphql-client
+
 ## 0.1.2
 
 ### Patch Changes
