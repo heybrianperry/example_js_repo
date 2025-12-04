@@ -1,0 +1,10 @@
+---
+globs: ["docs/**"]
+alwaysApply: false
+---
+
+# Extend Classes With JavaScript Inheritance
+
+## Policies
+
+1. Extend JavaScript classes where possible
