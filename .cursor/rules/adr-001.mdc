@@ -1,0 +1,10 @@
+---
+globs: ["**/src/types.ts"]
+alwaysApply: false
+---
+
+# TypeScript Type Safety - Export Centralized Type Definitions
+
+## Policies
+
+1. Define shared types in centralized types.ts files and export for cross-package use
