@@ -1,0 +1,10 @@
+---
+globs: ["packages/**"]
+alwaysApply: false
+---
+
+# Adopt Multi-Client API Architecture with Specialized Client Packages
+
+## Policies
+
+1. Implement a multi-package architecture with specialized API client libraries, each dedicated to a specific API standard or integration pattern. Create separate packages for json-api-client, graphql-client, api-client, and decoupled-router-client. Each package is independently buildable (using tsup/vite), testable (with MSW mock servers and handlers), and publishable. This allows each client to implement protocol-specific optimizations, type definitions, and error handling while sharing common build tooling patterns across packages.
